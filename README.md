@@ -1,6 +1,6 @@
 # Quick Mongo Super
-[![Downloads](https://img.shields.io/npm/dt/quick-mongodb-super?style=for-the-badge)](https://www.npmjs.com/package/quick-mongodb-super)
-[![Stable Version](https://img.shields.io/npm/v/quick-mongodb-super?style=for-the-badge)](https://www.npmjs.com/package/quick-mongodb-super)
+[![Downloads](https://img.shields.io/npm/dt/quick-mongo-super?style=for-the-badge)](https://www.npmjs.com/package/quick-mongo-super)
+[![Stable Version](https://img.shields.io/npm/v/quick-mongo-super?style=for-the-badge)](https://www.npmjs.com/package/quick-mongo-super)
 
 <b>Quick Mongo Super</b> is a light-weight and easy-to-use Node.js module written in TypeScript to work with [MongoDB](https://mongodb.com/).
 
@@ -17,9 +17,9 @@
 <b>Note:</br><b>
 <b>Node.js 14.0.0 or newer is required.</b><br>
 ```console
-npm i quick-mongodb-super
-yarn add quick-mongodb-super
-pnpm add quick-mongodb-super
+npm i quick-mongo-super
+yarn add quick-mongo-super
+pnpm add quick-mongo-super
 ```
 
 ## Examples
@@ -103,7 +103,7 @@ const db = new QuickMongo({
     // disconnect from database
     await db.disconnect()
 ```
-See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongodb-super/tree/main/examples).
+See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
 
 
 ## 🤔 | Help
@@ -117,9 +117,9 @@ See the full examples for JavaScript and TypeScript [here](https://github.com/sh
 
 ## ❗ | Useful Links
 <ul>
-<li><b><a href="https://www.npmjs.com/package/quick-mongodb-super">NPM</a></b></li>
-<li><b><a href="https://github.com/shadowplay1/quick-mongodb-super">GitHub</a></b></li>
-<li><b><a href="https://github.com/shadowplay1/quick-mongodb-super/tree/main/examples">Examples</a></b></li>
+<li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>
+<li><b><a href="https://github.com/shadowplay1/quick-mongo-super">GitHub</a></b></li>
+<li><b><a href="https://github.com/shadowplay1/quick-mongo-super/tree/main/examples">Examples</a></b></li>
 <li><b><a href="https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
 </ul>
 <br>

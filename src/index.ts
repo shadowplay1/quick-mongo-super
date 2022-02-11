@@ -1,3 +1,5 @@
+/* typescript-eslint-disable @typescript-eslint/no-implicit-any */
+
 import { MongoClient, Db, Collection, Document } from 'mongodb'
 
 import Emitter from './classes/Emitter'
@@ -7,6 +9,11 @@ import Utils from './classes/Utils'
 
 import errors from './errors'
 
+import {
+    MongoConnectionOptions,
+    DatabaseObject, AnyObject,
+    MongoPingData
+} from './interfaces/QuickMongo'
 
 class Mongo extends Emitter {
     public ready = false
@@ -78,6 +85,86 @@ class Mongo extends Emitter {
     }
 
     /**
+     * Sends a read, write and delete request to the database
+     * and returns the request latencies.
+     * @returns {Promise<MongoPingData>} Database latency object.
+     */
+    public async ping(): Promise<MongoPingData> {
+        let readLatency = -1
+        let writeLatency = -1
+        let deleteLatency = -1
+
+        if (!this.ready) {
+            throw new DatabaseError(errors.connection.notReady)
+        }
+
+
+        const writeStartDate = Date.now()
+
+        await this.set('___PING___', 1)
+        writeLatency = Date.now() - writeStartDate
+
+
+        const readStartDate = Date.now()
+
+        await this.fetch<number>('___PING___')
+        readLatency = Date.now() - readStartDate
+
+
+        const deleteStartDate = Date.now()
+
+        await this.delete('___PING___')
+        deleteLatency = Date.now() - deleteStartDate
+
+
+        return {
+            readLatency,
+            writeLatency,
+            deleteLatency
+        }
+    }
+
+    /**
+     * Checks if the element is existing in database.
+     * @param {String} key The key in database
+     * @returns {Promise<Boolean>} Is the element is existing in database.
+     */
+    public async has(key: string): Promise<boolean> {
+        const data = await this.fetch(key)
+        return !!data
+    }
+
+    /**
+     * Checks if the element is existing in database.
+     * 
+     * This method is an alias for `QuickMongo.has()` method.
+     * @param {String} key The key in database
+     * @returns {Promise<Boolean>} Is the element is existing in database.
+     */
+    public async includes(key: string): Promise<boolean> {
+        return this.has(key)
+    }
+
+    /**
+     * Gets the random element of array in database.
+     * 
+     * [!!!] The target must be an array.
+     * @param {String} key The key in database.
+     * @returns {K} The random element in array.
+     */
+    public async random<T>(key: string): Promise<T> {
+        const array = await this.fetch<any[]>(key)
+
+        if (!array) return null
+
+        if (!Array.isArray(array)) {
+            throw new DatabaseError(errors.target.notArray + typeof array)
+        }
+
+        return array[Math.floor(Math.random() * array.length)]
+    }
+
+    /**
     * Gets a list of keys in database.
     * @param {String} key The key in database.
     * @returns {Promise<String[]>} An array with all keys in database or 'null' if nothing found.
@@ -134,7 +221,7 @@ class Mongo extends Emitter {
      */
     public async set<T>(key: string, value: T): Promise<boolean> {
         const { isObject } = this.utils
-        let storageData = await this.all()
+        const storageData = await this.all()
 
         if (!key) {
             throw new DatabaseError(errors.notSpecified.key)
@@ -199,7 +286,7 @@ class Mongo extends Emitter {
     */
     public async remove(key: string): Promise<boolean> {
         const { isObject } = this.utils
-        let storageData = await this.all()
+        const storageData = await this.all()
 
         if (!key) {
             throw new DatabaseError(errors.notSpecified.key)
@@ -258,6 +345,8 @@ class Mongo extends Emitter {
 
     /**
      * Adds a number to a property data in database.
+     * 
+     * [!!!] The target must be a number.
      * @param {String} key The key in database.
      * @param {Number} value Any number to add.
      * @returns {Promise<Boolean>} If added successfully: true; else: false
@@ -287,6 +376,8 @@ class Mongo extends Emitter {
 
     /**
      * Subtracts a number from a property data in database.
+     * 
+     * [!!!] The target must be a number.
      * @param {String} key The key in database.
      * @param {Number} value Any number to subtract.
      * @returns {Promise<Boolean>} If set successfully: true; else: false
@@ -327,6 +418,8 @@ class Mongo extends Emitter {
 
     /**
      * Pushes a value to a specified array from the database.
+     * 
+     * [!!!] The target must be an array.
      * @param {String} key The key in database.
      * @param {T} value The key in database.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
@@ -353,6 +446,8 @@ class Mongo extends Emitter {
 
     /**
      * Removes an element from a specified array in the database.
+     * 
+     * [!!!] The target must be an array.
      * @param {String} key The key in database.
      * @param {Number} index The index in the array.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
@@ -373,6 +468,8 @@ class Mongo extends Emitter {
     /**
      * Removes an element from a specified array in the database.
      * 
+     * [!!!] The target must be an array.
+     * 
      * This method is an alias for the `QuickMongo.removeElement()` method.
      * @param {String} key The key in database.
      * @param {Number} index The index in the array.
@@ -384,6 +481,8 @@ class Mongo extends Emitter {
 
     /**
     * Changes the specified element's value in a specified array in the database.
+    * 
+    * [!!!] The target must be an array.
     * @param {String} key The key in database.
     * @param {Number} index The index in the array.
     * @param {T} newValue The new value to set.
@@ -410,7 +509,7 @@ class Mongo extends Emitter {
         const obj = {}
         const elements = await this.raw()
 
-        for (let element of elements) {
+        for (const element of elements) {
             obj[element.__KEY] = element.__VALUE
         }
 
@@ -428,21 +527,6 @@ class Mongo extends Emitter {
         rawArray.map((element: any) => delete element._id)
         return rawArray
     }
-}
-
-interface AnyObject {
-    [key: string]: any
-}
-
-interface DatabaseObject {
-    __KEY: string
-    __VALUE: any
-}
-
-interface MongoConnectionOptions {
-    connectionURI: string
-    dbName?: string
-    collectionName?: string
 }
 
 export = Mongo

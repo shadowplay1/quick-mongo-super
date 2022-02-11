@@ -19,7 +19,8 @@ export = {
 
     connection: {
         failedToConnect: 'Failed to connect to the database: ',
-        alreadyConnected: 'You have already connected to the database.',
-        alreadyDestroyed: 'The connection was already destroyed.'
+        alreadyConnected: 'The module is already connected to MongoDB.',
+        alreadyDestroyed: 'The connection was already destroyed.',
+        notReady: 'The module is not connected to MongoDB.'
     }
 }

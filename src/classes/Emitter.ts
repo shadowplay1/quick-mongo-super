@@ -1,10 +1,9 @@
 import { EventEmitter } from 'events'
-import MongoDatabaseEvents from '../interfaces/MongoDatabaseEvents'
+import { MongoDatabaseEvents } from '../interfaces/QuickMongo'
 
 const emitter = new EventEmitter()
 
 class Emitter {
-    constructor() { }
 
     /**
      * Listens to the event.
