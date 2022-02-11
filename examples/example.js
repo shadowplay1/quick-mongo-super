@@ -1,7 +1,8 @@
+// eslint-disable-next-line
 const QuickMongo = require('../dist/index')
 
 const db = new QuickMongo({
-    connectionURI: 'mongodb://sviinka:hannelbannel123@backupbot-shard-00-00.ehpa9.mongodb.net:27017,backupbot-shard-00-01.ehpa9.mongodb.net:27017,backupbot-shard-00-02.ehpa9.mongodb.net:27017/test?ssl=true&replicaSet=BackupBot-shard-0&authSource=admin&retryWrites=true&w=majority',
+    connectionURI: 'your mongodb connection URI here',
     dbName: 'test',
     collectionName: 'database' // MongoDB collection name to use
 })
