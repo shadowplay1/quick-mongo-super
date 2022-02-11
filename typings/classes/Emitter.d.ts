@@ -1,6 +1,5 @@
-import MongoDatabaseEvents from '../interfaces/MongoDatabaseEvents';
+import { MongoDatabaseEvents } from '../interfaces/QuickMongo';
 declare class Emitter {
-    constructor();
     /**
      * Listens to the event.
      * @param {keyof MongoDatabaseEvents} event Event name.

@@ -18,6 +18,7 @@ declare const _default: {
         failedToConnect: string;
         alreadyConnected: string;
         alreadyDestroyed: string;
+        notReady: string;
     };
 };
 export = _default;

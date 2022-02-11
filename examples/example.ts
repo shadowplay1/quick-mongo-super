@@ -9,8 +9,11 @@ const db = new QuickMongo({
 const main = async () => {
 
     // connect to database
-    console.log('Connecting to database...') // also using a 'connecting' event (line 86) for that is allowed
-    await db.connect() // using promise instead of listening to 'ready' event (line 76) is allowed
+    console.log('Connecting to database...') // also using a 'connecting' event (line 105) for that is allowed
+    await db.connect() // using promise instead of listening to 'ready' event (line 94) is allowed
+
+    // database ping
+    await db.ping() // { readLatency: 123, writeLatency: 123, deleteLatency: 123 }
 
 
     // SETTING DATA
@@ -31,17 +34,26 @@ const main = async () => {
     //     }
     // }
 
+    // is the element exists in database
+    await db.has('accountData') // true
+
 
     // ARRAYS
 
     // pushing into an array
     await db.push<string>('accountData.roles', 'admin') // accountData.roles in database: ['admin']
 
-    // changing the array element in database
-    await db.changeElement<string>('accountData.roles', 0, 'user') // accountData.roles in database: ['user']
+    // pushing into an array
+    await db.push<string>('accountData.roles', 'member') // accountData.roles in database: ['admin', 'member']
+
+    // getting random element from array
+    await db.random('accountData.roles') // 'admin' or 'member'
 
     // changing the array element in database
-    await db.removeElement('accountData.roles', 0) // accountData.roles in database: []
+    await db.changeElement<string>('accountData.roles', 0, 'user') // accountData.roles in database: ['user', 'member']
+
+    // changing the array element in database
+    await db.removeElement('accountData.roles', 0) // accountData.roles in database: ['member']
 
 
     // NUMBERS
@@ -58,7 +70,8 @@ const main = async () => {
 
     // GETTING DATA
 
-    await db.fetch<AccountData>('accountData')
+    const data = await db.fetch<AccountData>('accountData')
+    console.log(data)
 
 
     // OTHER
