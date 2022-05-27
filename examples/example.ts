@@ -1,19 +1,43 @@
 import QuickMongo from '../src/index'
 
 const db = new QuickMongo({
-    connectionURI: 'your mongodb connection URI here',
+    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database
     dbName: 'db',
-    collectionName: 'database' // MongoDB collection name to use
+    collectionName: 'database', // MongoDB collection name to use
+
+    mongoClientOptions: {
+        // mongo client options here
+    }
 })
 
 const main = async () => {
 
-    // connect to database
+    // checking for updates (optional)
+    const versionData = await db.checkUpdates()
+    console.log(versionData)
+
+    // output:
+    // { 
+    //   updated: true, 
+    //   installedVersion: '1.0.2', 
+    //   packageVersion: '1.0.2' 
+    // }
+
+    
+
+    // [IMPORTANT] - connect to database
     console.log('Connecting to database...') // also using a 'connecting' event (line 105) for that is allowed
     await db.connect() // using promise instead of listening to 'ready' event (line 94) is allowed
 
     // database ping
-    await db.ping() // { readLatency: 123, writeLatency: 123, deleteLatency: 123 }
+    await db.ping()
+
+    // output:
+    // { 
+    //    readLatency: 123, 
+    //    writeLatency: 123, 
+    //    deleteLatency: 123 
+    // }
 
 
     // SETTING DATA
@@ -90,17 +114,17 @@ const main = async () => {
     await db.disconnect()
 }
 
-// listening to 'ready' event if successfully connected
+// listening to 'ready' event if successfully connected:
 db.on('ready', () => {
     console.log('Connected to database!')
 })
 
-// listening to 'destroy' event if the connection was closed
+// listening to 'destroy' event if the connection was closed:
 db.on('destroy', () => {
     console.log('Connection was closed.')
 })
 
-// listening to 'connecting' event if started to connect to database
+// listening to 'connecting' event if started to connect to database:
 // db.on('connecting', () => {
 //     console.log('Connecting to database...')
 // })

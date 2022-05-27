@@ -1,21 +1,25 @@
 {
   "name": "quick-mongo-super",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Quick Mongo Super is a light-weight and easy-to-use Node.js module written in TypeScript to work with MongoDB.",
   "main": "./dist/index.js",
   "types": "./typings/index.d.ts",
   "scripts": {
-    "build": "npx tsc"
+    "start": "ts-node ./utils/test.ts",
+    "build": "npx tsc",
+		"postinstall": "node postinstall.js",
+    "lint": "eslint ./",
+    "lint:fix": "eslint ./ --fix"
   },
   "author": "shadowplay",
   "license": "MIT",
   "dependencies": {
-    "mongodb": "^4.3.1"
+    "mongodb": "^4.3.1",
+    "node-fetch": "^2.6.7"
   },
   "directories": {
-    "example": "examples"
+    "example": "./examples"
   },
-  "devDependencies": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shadowplay1/quick-mongo.git"
@@ -37,16 +41,23 @@
     "quick",
     "data",
     "clouddata",
+    "cloud-data",
     "clouddatabase",
     "wrapper",
     "quick.mongo",
     "quick.mongo-super",
     "quick.mongo.super",
     "quick-mongo.super",
+    "quick mongo super",
+    "quick mongo",
     "shadowplay"
   ],
   "bugs": {
     "url": "https://github.com/shadowplay1/quick-mongo/issues"
   },
-  "homepage": "https://github.com/shadowplay1/quick-mongo#readme"
+  "homepage": "https://github.com/shadowplay1/quick-mongo#readme",
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.1",
+    "@typescript-eslint/eslint-plugin": "^5.26.0"
+  }
 }

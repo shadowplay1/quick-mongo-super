@@ -1,4 +1,5 @@
 declare const _default: {
+    invalidType(param: string, requiredType: string, receivedObject: any): string;
     invalidTypes: {
         key: string;
         value: string;
@@ -15,10 +16,15 @@ declare const _default: {
         newValue: string;
     };
     connection: {
+        uri: {
+            notSpecified: string;
+            invalid: string;
+        };
         failedToConnect: string;
         alreadyConnected: string;
         alreadyDestroyed: string;
-        notReady: string;
+        noConnection: string;
+        connectionFailure: string;
     };
 };
 export = _default;

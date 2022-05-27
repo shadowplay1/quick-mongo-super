@@ -1,9 +1,10 @@
-import { MongoClient, Db, Collection, Document } from 'mongodb';
+import { MongoClient, MongoClientOptions, Db, Collection, Document } from 'mongodb';
 import Emitter from './classes/Emitter';
-import { MongoConnectionOptions, DatabaseObject, AnyObject, MongoPingData } from './interfaces/QuickMongo';
+import { MongoConnectionOptions, DatabaseObject, DatabaseProperties, VersionData, MongoLatencyData } from './interfaces/QuickMongo';
 declare class Mongo extends Emitter {
     ready: boolean;
     options: MongoConnectionOptions;
+    mongoClientOptions: MongoClientOptions;
     mongo: MongoClient;
     database: Db;
     collection: Collection<Document>;
@@ -24,11 +25,16 @@ declare class Mongo extends Emitter {
     */
     disconnect(): Promise<boolean>;
     /**
+    * Checks for the module updates.
+    * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
+    */
+    checkUpdates(): Promise<VersionData>;
+    /**
      * Sends a read, write and delete request to the database
      * and returns the request latencies.
-     * @returns {Promise<MongoPingData>} Database latency object.
+     * @returns {Promise<MongoLatencyData>} Database latency object.
      */
-    ping(): Promise<MongoPingData>;
+    ping(): Promise<MongoLatencyData>;
     /**
      * Checks if the element is existing in database.
      * @param {String} key The key in database
@@ -58,7 +64,7 @@ declare class Mongo extends Emitter {
     */
     keysList(key: string): Promise<string[]>;
     /**
-     * Fetches the data from the storage file.
+     * Fetches the data from the database.
      * @param {String} key The key in database.
      * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
      */
@@ -103,13 +109,21 @@ declare class Mongo extends Emitter {
      */
     subtract(key: string, value: number): Promise<boolean>;
     /**
-     * Fetches the data from the storage file.
+     * Fetches the data from the database.
      *
      * This method is an alias for the `QuickMongo.fetch()` method.
      * @param {String} key The key in database.
      * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
      */
     find<T>(key: string): Promise<T>;
+    /**
+     * Fetches the data from the database.
+     *
+     * This method is an alias for the `QuickMongo.fetch()` method.
+     * @param {String} key The key in database.
+     * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     */
+    get<T>(key: string): Promise<T>;
     /**
      * Pushes a value to a specified array from the database.
      *
@@ -151,9 +165,9 @@ declare class Mongo extends Emitter {
     changeElement<T>(key: string, index: number, newValue: T): Promise<boolean>;
     /**
     * Fetches the entire database.
-    * @returns {Promise<AnyObject>} Database contents
+    * @returns {Promise<DatabaseProperties>} Database contents
     */
-    all(): Promise<AnyObject>;
+    all(): Promise<DatabaseProperties>;
     /**
     * Fetches the raw content of database.
     * @returns {Promise<DatabaseObject[]>} Database contents
@@ -161,9 +175,3 @@ declare class Mongo extends Emitter {
     raw(): Promise<DatabaseObject[]>;
 }
 export = Mongo;
-/**
- * @typedef {Object} MongoConnectionOptions
- * @property {String} connectionURI MongoDB connection URI.
- * @property {String} [dbName] MongoDB database name to use.
- * @property {String} [collectionName='database'] MongoDB collection name to use.
- */

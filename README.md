@@ -29,14 +29,30 @@ pnpm add quick-mongo-super
 import QuickMongo from '../src/index'
 
 const db = new QuickMongo({
-    connectionURI: 'your mongodb connection URI here', // MongoDB URI to connect to the database
+    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database
     dbName: 'db', // MongoDB database name to use
-    collectionName: 'database' // MongoDB database name to use
+    collectionName: 'database' // MongoDB collection name to use
+
+    mongoClientOptions: {
+      // mongo client options here
+    }
 })
 ```
 
 ### Example Usage
 ```ts
+    // checking for updates (optional)
+    const versionData = await db.checkUpdates()
+    console.log(versionData)
+
+    // output:
+    // { 
+    //   updated: true, 
+    //   installedVersion: '1.0.2', 
+    //   packageVersion: '1.0.2' 
+    // }
+
+
     // connect to database
     console.log('Connecting to database...')
     await db.connect()
@@ -105,6 +121,8 @@ const db = new QuickMongo({
 ```
 See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
 
+See the full changelog [here](https://github.com/shadowplay1/quick-mongo-super/blob/main/changelog.md).
+
 
 ## 🤔 | Help
 <b>If you don't understand something or you're experiencing problems, feel free to join our <a href="https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
@@ -120,6 +138,7 @@ See the full examples for JavaScript and TypeScript [here](https://github.com/sh
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>
 <li><b><a href="https://github.com/shadowplay1/quick-mongo-super">GitHub</a></b></li>
 <li><b><a href="https://github.com/shadowplay1/quick-mongo-super/tree/main/examples">Examples</a></b></li>
+<li><b><a href="https://github.com/shadowplay1/quick-mongo-super/blob/main/changelog.md">Changelog</a></b></li>
 <li><b><a href="https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
 </ul>
 <br>

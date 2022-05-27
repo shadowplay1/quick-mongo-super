@@ -1,12 +1,13 @@
-import { Collection, Document, MongoClient } from 'mongodb'
+import { Collection, Document, MongoClient, MongoClientOptions } from 'mongodb'
 
-export interface MongoDatabaseEvents {
+
+export interface DatabaseEvents {
     connecting: void
     ready: Collection<Document>
     destroy: MongoClient
 }
 
-export interface AnyObject {
+export interface DatabaseProperties {
     [key: string]: any
 }
 
@@ -16,13 +17,44 @@ export interface DatabaseObject {
 }
 
 export interface MongoConnectionOptions {
+
+    /**
+     * MongoDB connection URI.
+     */
     connectionURI: string
+    
+    /**
+     * Name of the database. Default: 'db'.
+     */
     dbName?: string
+
+    /**
+     * Name of the collection. Default: 'database'.
+     */
     collectionName?: string
+
+    /**
+     * Mongo client options.
+     */
+    mongoClientOptions?: MongoClientOptions
 }
 
-export interface MongoPingData {
-    readLatency: number
-    writeLatency: number
-    deleteLatency: number
+export interface VersionData {
+
+    /**
+     * Checks for if module is up to date.
+     */
+    updated: boolean
+
+    /**
+     * Shows an installed version of the module
+     */
+    installedVersion: string
+
+    /**
+     * Shows the latest version of the module
+     */
+    packageVersion: string
 }
+
+export type MongoLatencyData = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>

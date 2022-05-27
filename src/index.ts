@@ -1,6 +1,9 @@
-/* typescript-eslint-disable @typescript-eslint/no-implicit-any */
+import {
+    MongoClient, MongoClientOptions,
+    Db, Collection, Document
+} from 'mongodb'
 
-import { MongoClient, Db, Collection, Document } from 'mongodb'
+import fetch from 'node-fetch'
 
 import Emitter from './classes/Emitter'
 
@@ -11,20 +14,23 @@ import errors from './errors'
 
 import {
     MongoConnectionOptions,
-    DatabaseObject, AnyObject,
-    MongoPingData
+    DatabaseObject, DatabaseProperties,
+    VersionData, MongoLatencyData
 } from './interfaces/QuickMongo'
 
 class Mongo extends Emitter {
-    public ready = false
+    public ready: boolean = false
 
     public options: MongoConnectionOptions
+    public mongoClientOptions: MongoClientOptions
+
     public mongo: MongoClient
 
     public database: Db
     public collection: Collection<Document>
 
-    private utils = new Utils()
+    private utils: Utils = new Utils()
+
 
     /**
      * QuickMongo class.
@@ -33,7 +39,37 @@ class Mongo extends Emitter {
     constructor(options: MongoConnectionOptions) {
         super()
 
+        if (!options.connectionURI) {
+            throw new DatabaseError(errors.connection.uri.notSpecified)
+        }
+
+        if (typeof options.connectionURI !== 'string') {
+            throw new DatabaseError(errors.connection.uri.invalid)
+        }
+
+
+        if (options.collectionName && typeof options.collectionName !== 'string') {
+            throw new DatabaseError(
+                errors.invalidType('options.collectionName', 'string', options.collectionName)
+            )
+        }
+
+        if (options.dbName && typeof options.dbName !== 'string') {
+            throw new DatabaseError(
+                errors.invalidType('options.dbName', 'string', options.dbName)
+            )
+        }
+
+        if (options.mongoClientOptions && typeof options.mongoClientOptions !== 'object') {
+            throw new DatabaseError(
+                errors.invalidType('options.mongoClientOptions', 'object', options.mongoClientOptions)
+            )
+        }
+
+
+
         this.options = options
+        this.mongoClientOptions = options?.mongoClientOptions
     }
 
     /**
@@ -42,22 +78,27 @@ class Mongo extends Emitter {
      */
     public connect(): Promise<Collection<Document>> {
         return new Promise((resolve, reject) => {
-            const mongoClient = new MongoClient(this.options.connectionURI)
-
             if (this.ready) {
                 throw new DatabaseError(errors.connection.alreadyConnected)
             }
 
+            const mongoClient = new MongoClient(this.options.connectionURI, this.mongoClientOptions)
             this.emit('connecting')
+
 
             mongoClient.connect((err, mongo) => {
                 if (err) {
-                    reject(new DatabaseError(errors.connection.failedToConnect))
+                    reject(new DatabaseError(errors.connection.failedToConnect + err))
                 }
+
+                if (!mongo.db) {
+                    throw new DatabaseError(errors.connection.connectionFailure)
+                }
+
 
                 this.mongo = mongo
 
-                this.database = mongo.db(this.options.collectionName)
+                this.database = mongo.db(this.options.dbName || 'db')
                 this.collection = this.database.collection(this.options.collectionName || 'database')
 
                 this.emit('ready', this.collection)
@@ -77,43 +118,69 @@ class Mongo extends Emitter {
             throw new DatabaseError(errors.connection.alreadyDestroyed)
         }
 
+        this.ready = false
+
         await this.mongo.close()
         this.emit('destroy', this.mongo)
 
-        this.ready = false
         return true
+    }
+
+    /**
+    * Checks for the module updates.
+    * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
+    */
+    async checkUpdates(): Promise<VersionData> {
+        const version = require('../../package.json').version
+
+        const packageData = await fetch('https://registry.npmjs.com/quick-mongo-super')
+            .then(text => text.json())
+
+        if (version == packageData['dist-tags'].latest) return {
+            updated: true,
+            installedVersion: version,
+            packageVersion: packageData['dist-tags'].latest
+        }
+
+        return {
+            updated: false,
+            installedVersion: version,
+            packageVersion: packageData['dist-tags'].latest
+        }
     }
 
     /**
      * Sends a read, write and delete request to the database
      * and returns the request latencies.
-     * @returns {Promise<MongoPingData>} Database latency object.
+     * @returns {Promise<MongoLatencyData>} Database latency object.
      */
-    public async ping(): Promise<MongoPingData> {
+    public async ping(): Promise<MongoLatencyData> {
         let readLatency = -1
         let writeLatency = -1
         let deleteLatency = -1
 
         if (!this.ready) {
-            throw new DatabaseError(errors.connection.notReady)
+            throw new DatabaseError(errors.connection.noConnection)
         }
 
-
+        // write latency checking
         const writeStartDate = Date.now()
-
         await this.set('___PING___', 1)
+
         writeLatency = Date.now() - writeStartDate
 
 
+        // read latency checking
         const readStartDate = Date.now()
-
         await this.fetch<number>('___PING___')
+
         readLatency = Date.now() - readStartDate
 
 
+        // delete latency checking
         const deleteStartDate = Date.now()
-
         await this.delete('___PING___')
+
         deleteLatency = Date.now() - deleteStartDate
 
 
@@ -184,7 +251,7 @@ class Mongo extends Emitter {
 
 
     /**
-     * Fetches the data from the storage file.
+     * Fetches the data from the database.
      * @param {String} key The key in database.
      * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
      */
@@ -196,6 +263,7 @@ class Mongo extends Emitter {
         if (typeof key !== 'string') {
             throw new DatabaseError(errors.invalidTypes.key + typeof key)
         }
+
 
         let parsed = await this.all() as T
 
@@ -406,13 +474,24 @@ class Mongo extends Emitter {
     }
 
     /**
-     * Fetches the data from the storage file.
+     * Fetches the data from the database.
      * 
      * This method is an alias for the `QuickMongo.fetch()` method.
      * @param {String} key The key in database.
      * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
      */
     public async find<T>(key: string): Promise<T> {
+        return this.fetch<T>(key)
+    }
+
+    /**
+     * Fetches the data from the database.
+     * 
+     * This method is an alias for the `QuickMongo.fetch()` method.
+     * @param {String} key The key in database.
+     * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     */
+    public async get<T>(key: string): Promise<T> {
         return this.fetch<T>(key)
     }
 
@@ -503,11 +582,16 @@ class Mongo extends Emitter {
 
     /**
     * Fetches the entire database.
-    * @returns {Promise<AnyObject>} Database contents
+    * @returns {Promise<DatabaseProperties>} Database contents
     */
-    public async all(): Promise<AnyObject> {
+    public async all(): Promise<DatabaseProperties> {
+        if (!this.ready) {
+            throw new DatabaseError(errors.connection.noConnection)
+        }
+
         const obj = {}
-        const elements = await this.raw()
+        const elements = await this.raw() || []
+
 
         for (const element of elements) {
             obj[element.__KEY] = element.__VALUE
@@ -521,6 +605,10 @@ class Mongo extends Emitter {
     * @returns {Promise<DatabaseObject[]>} Database contents
     */
     public async raw(): Promise<DatabaseObject[]> {
+        if (!this.ready) {
+            throw new DatabaseError(errors.connection.noConnection)
+        }
+
         const rawData = this.collection.find()
         const rawArray = await rawData.toArray() as any[]
 
@@ -529,11 +617,5 @@ class Mongo extends Emitter {
     }
 }
 
-export = Mongo
 
-/**
- * @typedef {Object} MongoConnectionOptions
- * @property {String} connectionURI MongoDB connection URI.
- * @property {String} [dbName] MongoDB database name to use.
- * @property {String} [collectionName='database'] MongoDB collection name to use.
- */
+export = Mongo

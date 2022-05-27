@@ -1,7 +1,7 @@
 import { Collection, Document, MongoClient } from 'mongodb';
-interface MongoDatabaseEvents {
+interface DatabaseEvents {
     connecting: void;
     ready: Collection<Document>;
     destroy: MongoClient;
 }
-export = MongoDatabaseEvents;
+export = DatabaseEvents;
