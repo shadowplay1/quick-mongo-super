@@ -7,7 +7,7 @@
   "scripts": {
     "start": "ts-node ./utils/test.ts",
     "build": "npx tsc",
-		"postinstall": "node postinstall.js",
+    "postinstall": "node postinstall.js",
     "lint": "eslint ./",
     "lint:fix": "eslint ./ --fix"
   },
