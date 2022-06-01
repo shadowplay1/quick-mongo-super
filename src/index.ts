@@ -447,7 +447,7 @@ class Mongo extends Emitter {
      * @returns {Promise<Boolean>} If added successfully: true; else: false
      */
     public async add(key: string, value: number): Promise<boolean> {
-        let data = await this.fetch<number>(key)
+        const data = (await this.fetch<number>(key)) || 0
 
         if (value == undefined) {
             throw new DatabaseError(errors.notSpecified.value)
@@ -455,10 +455,6 @@ class Mongo extends Emitter {
 
         if (typeof value !== 'number') {
             throw new DatabaseError(errors.invalidTypes.valueNumber + typeof value)
-        }
-
-        if (!data) {
-            data = value
         }
 
         if (typeof data !== 'number') {
@@ -478,7 +474,7 @@ class Mongo extends Emitter {
      * @returns {Promise<Boolean>} If set successfully: true; else: false
      */
     public async subtract(key: string, value: number): Promise<boolean> {
-        let data = await this.fetch<number>(key)
+        const data = (await this.fetch<number>(key)) || 0
 
         if (value == undefined) {
             throw new DatabaseError(errors.notSpecified.value)
@@ -486,10 +482,6 @@ class Mongo extends Emitter {
 
         if (typeof value !== 'number') {
             throw new DatabaseError(errors.invalidTypes.valueNumber + typeof value)
-        }
-
-        if (!data) {
-            data = -value
         }
 
         if (typeof data !== 'number') {

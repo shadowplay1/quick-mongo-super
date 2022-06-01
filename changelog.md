@@ -29,6 +29,9 @@
 - Added a new `db.deleteAll()`/`db.clear()` methods to clear the whole database.
 - Other minor bug fixes.
 
+**v1.0.4**
+- Fixed the bug in `db.add()`/`db.subtract()`: when the target array was empty, module adds/subtracts 2 times.
+
 ## ❗ | Useful Links
 <ul>
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>
