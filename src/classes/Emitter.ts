@@ -10,7 +10,7 @@ class Emitter {
      * @param {keyof DatabaseEvents} event Event name.
      * @param {(...args: DatabaseEvents[K][]) => void} listener Listener function.
      */
-    on<K extends keyof DatabaseEvents>(event: K, listener: (...args: DatabaseEvents[K][]) => void): this {
+    public on<K extends keyof DatabaseEvents>(event: K, listener: (...args: DatabaseEvents[K][]) => void): this {
         emitter.on(event, listener)
         return this
     }
@@ -20,7 +20,7 @@ class Emitter {
      * @param {keyof DatabaseEvents} event Event name.
      * @param {(...args: DatabaseEvents[K][]) => void} listener Listener function.
      */
-    once<K extends keyof DatabaseEvents>(event: K, listener: (...args: DatabaseEvents[K][]) => void): this {
+    public once<K extends keyof DatabaseEvents>(event: K, listener: (...args: DatabaseEvents[K][]) => void): this {
         emitter.once(event, listener)
         return this
     }
@@ -30,7 +30,7 @@ class Emitter {
      * @param {keyof DatabaseEvents} event Event name.
      * @param {DatabaseEvents[K][]} args Listener arguments.
      */
-    emit<K extends keyof DatabaseEvents>(event: K, ...args: DatabaseEvents[K][]): boolean {
+    public emit<K extends keyof DatabaseEvents>(event: K, ...args: DatabaseEvents[K][]): boolean {
         return emitter.emit(event, ...args)
     }
 }

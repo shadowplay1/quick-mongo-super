@@ -24,6 +24,11 @@
 - Added the changelog page
 - Other minor changes
 
+**v1.0.3**
+- Fixed the bug in `db.push()` when 2 items where added when the target array was empty.
+- Added a new `db.deleteAll()`/`db.clear()` methods to clear the whole database.
+- Other minor bug fixes.
+
 ## ❗ | Useful Links
 <ul>
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>

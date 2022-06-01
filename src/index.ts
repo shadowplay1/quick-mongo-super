@@ -18,8 +18,11 @@ import {
     VersionData, MongoLatencyData
 } from './interfaces/QuickMongo'
 
+import modulePackage from '../package.json'
+
+
 class Mongo extends Emitter {
-    public ready: boolean = false
+    public ready = false
 
     public options: MongoConnectionOptions
     public mongoClientOptions: MongoClientOptions
@@ -131,7 +134,7 @@ class Mongo extends Emitter {
     * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
     */
     async checkUpdates(): Promise<VersionData> {
-        const version = require('../../package.json').version
+        const version = modulePackage.version
 
         const packageData = await fetch('https://registry.npmjs.com/quick-mongo-super')
             .then(text => text.json())
@@ -412,6 +415,30 @@ class Mongo extends Emitter {
     }
 
     /**
+     * Clears the whole database.
+     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     */
+    public async deleteAll(): Promise<boolean> {
+        const keys = await this.keysList('')
+
+        for(const key of keys) {
+            await this.remove(key)
+        }
+
+        return true
+    }
+
+    /**
+     * Clears the whole database.
+     * 
+     * This method is an alias for `QuickMongo.deleteAll()` method.
+     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     */
+    public clear(): Promise<boolean> {
+        return this.deleteAll()
+    }
+
+    /**
      * Adds a number to a property data in database.
      * 
      * [!!!] The target must be a number.
@@ -504,18 +531,17 @@ class Mongo extends Emitter {
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
     public async push<T>(key: string, value: T): Promise<boolean> {
-        let array = await this.fetch<any[]>(key)
+        const array = await this.fetch<any[]>(key)
 
         if (!value) {
             throw new DatabaseError(errors.notSpecified.value)
         }
 
         if (!array) {
-            await this.set(key, [value])
-            array = [value]
+            await this.set(key, [])
         }
 
-        if (!Array.isArray(array)) {
+        if (array && !Array.isArray(array)) {
             throw new DatabaseError(errors.target.notArray + typeof array)
         }
 
