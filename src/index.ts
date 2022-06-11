@@ -421,7 +421,7 @@ class Mongo extends Emitter {
     public async deleteAll(): Promise<boolean> {
         const keys = await this.keysList('')
 
-        for(const key of keys) {
+        for (const key of keys) {
             await this.remove(key)
         }
 
@@ -523,14 +523,10 @@ class Mongo extends Emitter {
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
     public async push<T>(key: string, value: T): Promise<boolean> {
-        const array = await this.fetch<any[]>(key)
+        const array = (await this.fetch<any[]>(key)) || []
 
         if (!value) {
             throw new DatabaseError(errors.notSpecified.value)
-        }
-
-        if (!array) {
-            await this.set(key, [])
         }
 
         if (array && !Array.isArray(array)) {
@@ -549,7 +545,7 @@ class Mongo extends Emitter {
      * @param {Number} index The index in the array.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
-    public async removeElement(key: string, index: number): Promise<boolean> {
+    public async pop(key: string, index: number): Promise<boolean> {
         const array = await this.fetch<any[]>(key)
 
         if (!array) return false
@@ -567,13 +563,13 @@ class Mongo extends Emitter {
      * 
      * [!!!] The target must be an array.
      * 
-     * This method is an alias for the `QuickMongo.removeElement()` method.
+     * This method is an alias for the `QuickMongo.pop()` method.
      * @param {String} key The key in database.
      * @param {Number} index The index in the array.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
-    public async deleteElement(key: string, index: number): Promise<boolean> {
-        return this.removeElement(key, index)
+    public async removeElement(key: string, index: number): Promise<boolean> {
+        return this.pop(key, index)
     }
 
     /**
@@ -585,7 +581,7 @@ class Mongo extends Emitter {
     * @param {T} newValue The new value to set.
     * @returns {Promise<Boolean>} If cleared: true; else: false.
     */
-    public async changeElement<T>(key: string, index: number, newValue: T): Promise<boolean> {
+    public async pull<T>(key: string, index: number, newValue: T): Promise<boolean> {
         const array = await this.fetch<any[]>(key)
 
         if (!array) return false
@@ -597,6 +593,22 @@ class Mongo extends Emitter {
         array.splice(index, 1, newValue)
         return this.set<any>(key, array)
     }
+
+    /**
+    * Changes the specified element's value in a specified array in the database.
+    * 
+    * [!!!] The target must be an array.
+    * 
+    * This method is an alias for the `QuickMongo.pull()` method.
+    * @param {String} key The key in database.
+    * @param {Number} index The index in the array.
+    * @param {T} newValue The new value to set.
+    * @returns {Promise<Boolean>} If cleared: true; else: false.
+    */
+    public changeElement<T>(key: string, index: number, newValue: T): Promise<boolean> {
+        return this.pull(key, index, newValue)
+    }
+
 
     /**
     * Fetches the entire database.

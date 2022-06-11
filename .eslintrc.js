@@ -11,7 +11,7 @@ module.exports = {
         '@typescript-eslint',
     ],
     rules: {
-        'semi': ['error', 'never'],
+        'semi': ['warn', 'never'],
         'no-plusplus': 'off',
         'implicit-arrow-linebreak': 'off',
         'operator-linebreak': 'off',

@@ -32,6 +32,11 @@
 **v1.0.4**
 - Fixed the bug in `db.add()`/`db.subtract()`: when the target array was empty, module adds/subtracts 2 times.
 
+**v1.0.5**
+- Fixed the crash when pushing to an empty key.
+- `db.changeElement()` and `db.removeElement()` methods now are aliases for new `db.pull()` and `db.pop()` methods
+- `db.deleteElement()` alias for `db.removeElement()` was removed
+
 ## ❗ | Useful Links
 <ul>
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>

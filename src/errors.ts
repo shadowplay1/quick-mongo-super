@@ -1,4 +1,4 @@
-export = {
+const errors = {
     invalidType(param: string, requiredType: string, receivedObject: any): string {
         const receivedType = Array.isArray(receivedObject) ? 'array' : typeof receivedObject
 
@@ -46,3 +46,5 @@ export = {
             'or the connection timed out.'
     }
 }
+
+export = errors

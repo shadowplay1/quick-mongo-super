@@ -23,7 +23,7 @@ const main = async () => {
     //   packageVersion: '1.0.2' 
     // }
 
-    
+
 
     // [IMPORTANT] - connect to database
     console.log('Connecting to database...') // also using a 'connecting' event (line 105) for that is allowed

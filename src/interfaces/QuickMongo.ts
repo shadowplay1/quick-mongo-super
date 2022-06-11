@@ -7,6 +7,7 @@ export interface DatabaseEvents {
     destroy: MongoClient
 }
 
+
 export interface DatabaseProperties {
     [key: string]: any
 }
@@ -16,13 +17,14 @@ export interface DatabaseObject {
     __VALUE: any
 }
 
+
 export interface MongoConnectionOptions {
 
     /**
      * MongoDB connection URI.
      */
     connectionURI: string
-    
+
     /**
      * Name of the database. Default: 'db'.
      */
@@ -56,5 +58,6 @@ export interface VersionData {
      */
     packageVersion: string
 }
+
 
 export type MongoLatencyData = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
