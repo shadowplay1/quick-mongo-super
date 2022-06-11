@@ -1,4 +1,4 @@
-declare const _default: {
+declare const errors: {
     invalidType(param: string, requiredType: string, receivedObject: any): string;
     invalidTypes: {
         key: string;
@@ -27,4 +27,4 @@ declare const _default: {
         connectionFailure: string;
     };
 };
-export = _default;
+export = errors;

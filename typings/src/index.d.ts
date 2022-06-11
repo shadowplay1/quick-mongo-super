@@ -153,22 +153,34 @@ declare class Mongo extends Emitter {
      * @param {Number} index The index in the array.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
-    removeElement(key: string, index: number): Promise<boolean>;
+    pop(key: string, index: number): Promise<boolean>;
     /**
      * Removes an element from a specified array in the database.
      *
      * [!!!] The target must be an array.
      *
-     * This method is an alias for the `QuickMongo.removeElement()` method.
+     * This method is an alias for the `QuickMongo.pop()` method.
      * @param {String} key The key in database.
      * @param {Number} index The index in the array.
      * @returns {Promise<Boolean>} If cleared: true; else: false.
      */
-    deleteElement(key: string, index: number): Promise<boolean>;
+    removeElement(key: string, index: number): Promise<boolean>;
     /**
     * Changes the specified element's value in a specified array in the database.
     *
     * [!!!] The target must be an array.
+    * @param {String} key The key in database.
+    * @param {Number} index The index in the array.
+    * @param {T} newValue The new value to set.
+    * @returns {Promise<Boolean>} If cleared: true; else: false.
+    */
+    pull<T>(key: string, index: number, newValue: T): Promise<boolean>;
+    /**
+    * Changes the specified element's value in a specified array in the database.
+    *
+    * [!!!] The target must be an array.
+    *
+    * This method is an alias for the `QuickMongo.pull()` method.
     * @param {String} key The key in database.
     * @param {Number} index The index in the array.
     * @param {T} newValue The new value to set.
