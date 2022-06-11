@@ -32,10 +32,13 @@
 **v1.0.4**
 - Fixed the bug in `db.add()`/`db.subtract()`: when the target array was empty, module adds/subtracts 2 times.
 
-**v1.0.5**
+**v1.0.6**
 - Fixed the crash when pushing to an empty key.
 - `db.changeElement()` and `db.removeElement()` methods are now aliases for new `db.pull()` and `db.pop()` methods
 - `db.deleteElement()` alias for `db.removeElement()` was removed
+
+**v1.0.7**
+- Fixed typings bug.
 
 ## ❗ | Useful Links
 <ul>
