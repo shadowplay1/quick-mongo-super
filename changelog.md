@@ -34,7 +34,7 @@
 
 **v1.0.5**
 - Fixed the crash when pushing to an empty key.
-- `db.changeElement()` and `db.removeElement()` methods now are aliases for new `db.pull()` and `db.pop()` methods
+- `db.changeElement()` and `db.removeElement()` methods are now aliases for new `db.pull()` and `db.pop()` methods
 - `db.deleteElement()` alias for `db.removeElement()` was removed
 
 ## ❗ | Useful Links
