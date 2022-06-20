@@ -33,9 +33,10 @@ const errors = {
             invalid: 'Mongo connection URI is invalid.'
         },
 
+        badAuth: 'Failed to authenticate with specified connection URI: the creditionals are incorrect.',
         failedToConnect: 'Failed to connect to the database: ',
         alreadyConnected: 'Already connected to the Mongo database server.',
-        alreadyDestroyed: 'The connection was already destroyed.',
+        alreadyDestroyed: 'The connection is already destroyed.',
         noConnection: 'No connection to the Mongo database server.',
 
         connectionFailure:

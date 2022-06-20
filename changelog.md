@@ -40,6 +40,9 @@
 **v1.0.7**
 - Fixed typings bug.
 
+**v1.0.8**
+- Fixed bugs on connectoion errors.
+
 ## ❗ | Useful Links
 <ul>
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>

@@ -63,12 +63,12 @@ class Mongo extends Emitter {
             )
         }
 
+
         if (options.mongoClientOptions && typeof options.mongoClientOptions !== 'object') {
             throw new DatabaseError(
                 errors.invalidType('options.mongoClientOptions', 'object', options.mongoClientOptions)
             )
         }
-
 
 
         this.options = options
@@ -91,10 +91,14 @@ class Mongo extends Emitter {
 
             mongoClient.connect((err, mongo) => {
                 if (err) {
-                    reject(new DatabaseError(errors.connection.failedToConnect + err))
+                    if (err.message.includes('bad auth')) {
+                        return reject(new DatabaseError(errors.connection.badAuth))
+                    }
+
+                    return reject(new DatabaseError(errors.connection.failedToConnect + err))
                 }
 
-                if (!mongo.db) {
+                if (!mongo) {
                     throw new DatabaseError(errors.connection.connectionFailure)
                 }
 
