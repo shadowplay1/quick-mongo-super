@@ -1,6 +1,8 @@
 declare const errors: {
     invalidType(param: string, requiredType: string, receivedObject: any): string;
+    requiredParameterMissing(parameter: string): string;
     invalidTypes: {
+        functionIsValue: string;
         key: string;
         value: string;
         valueNumber: string;
@@ -9,6 +11,7 @@ declare const errors: {
     target: {
         notNumber: string;
         notArray: string;
+        empty: string;
     };
     notSpecified: {
         key: string;
@@ -20,6 +23,7 @@ declare const errors: {
             notSpecified: string;
             invalid: string;
         };
+        badAuth: string;
         failedToConnect: string;
         alreadyConnected: string;
         alreadyDestroyed: string;

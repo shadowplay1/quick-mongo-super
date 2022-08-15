@@ -6,7 +6,6 @@ import {
 import fetch from 'node-fetch'
 
 import Emitter from './classes/Emitter'
-
 import DatabaseError from './classes/DatabaseError'
 import Utils from './classes/Utils'
 
@@ -20,7 +19,10 @@ import {
 
 import modulePackage from '../package.json'
 
-
+/**
+ * QuickMongo class.
+ * @param {MongoConnectionOptions} options MongoDB connection options.
+ */
 class Mongo extends Emitter {
     public ready = false
 
@@ -32,13 +34,8 @@ class Mongo extends Emitter {
     public database: Db
     public collection: Collection<Document>
 
-    private utils: Utils = new Utils()
+    private utils = new Utils()
 
-
-    /**
-     * QuickMongo class.
-     * @param {MongoConnectionOptions} options MongoDB connection options.
-     */
     constructor(options: MongoConnectionOptions) {
         super()
 
@@ -49,7 +46,6 @@ class Mongo extends Emitter {
         if (typeof options.connectionURI !== 'string') {
             throw new DatabaseError(errors.connection.uri.invalid)
         }
-
 
         if (options.collectionName && typeof options.collectionName !== 'string') {
             throw new DatabaseError(
@@ -63,13 +59,11 @@ class Mongo extends Emitter {
             )
         }
 
-
         if (options.mongoClientOptions && typeof options.mongoClientOptions !== 'object') {
             throw new DatabaseError(
                 errors.invalidType('options.mongoClientOptions', 'object', options.mongoClientOptions)
             )
         }
-
 
         this.options = options
         this.mongoClientOptions = options?.mongoClientOptions
@@ -79,46 +73,40 @@ class Mongo extends Emitter {
      * Connects to the database.
      * @returns {Promise<Collection<Document>>} If connected - MongoDB collection will be returned.
      */
-    public connect(): Promise<Collection<Document>> {
-        return new Promise((resolve, reject) => {
-            if (this.ready) {
-                throw new DatabaseError(errors.connection.alreadyConnected)
+    public async connect(): Promise<Collection<Document>> {
+        if (this.ready) {
+            throw new DatabaseError(errors.connection.alreadyConnected)
+        }
+
+        const mongoClient = new MongoClient(this.options.connectionURI, this.mongoClientOptions)
+        this.emit('connecting')
+
+        const mongo = await mongoClient.connect().catch((err: Error) => {
+            if (err.message.toLowerCase().includes('bad auth')) {
+                throw new DatabaseError(errors.connection.badAuth)
             }
 
-            const mongoClient = new MongoClient(this.options.connectionURI, this.mongoClientOptions)
-            this.emit('connecting')
-
-
-            mongoClient.connect((err, mongo) => {
-                if (err) {
-                    if (err.message.includes('bad auth')) {
-                        return reject(new DatabaseError(errors.connection.badAuth))
-                    }
-
-                    return reject(new DatabaseError(errors.connection.failedToConnect + err))
-                }
-
-                if (!mongo) {
-                    throw new DatabaseError(errors.connection.connectionFailure)
-                }
-
-
-                this.mongo = mongo
-
-                this.database = mongo.db(this.options.dbName || 'db')
-                this.collection = this.database.collection(this.options.collectionName || 'database')
-
-                this.emit('ready', this.collection)
-                this.ready = true
-
-                resolve(this.collection)
-            })
+            throw new DatabaseError(errors.connection.failedToConnect + err)
         })
+
+        if (!mongo) {
+            throw new DatabaseError(errors.connection.connectionFailure)
+        }
+
+        this.mongo = mongo
+
+        this.database = mongo.db(this.options.dbName || 'db')
+        this.collection = this.database.collection(this.options.collectionName || 'database')
+
+        this.emit('ready', this.collection)
+        this.ready = true
+
+        return this.collection
     }
 
     /**
     * Closes the connection.
-    * @returns {Promise<Boolean>} If closed - true will be returned.
+    * @returns {Promise<boolean>} If closed - true will be returned.
     */
     public async disconnect(): Promise<boolean> {
         if (!this.ready) {
@@ -140,8 +128,7 @@ class Mongo extends Emitter {
     async checkUpdates(): Promise<VersionData> {
         const version = modulePackage.version
 
-        const packageData = await fetch('https://registry.npmjs.com/quick-mongo-super')
-            .then(text => text.json())
+        const packageData = await fetch('https://registry.npmjs.com/quick-mongo-super').then(res => res.json())
 
         if (version == packageData['dist-tags'].latest) return {
             updated: true,
@@ -176,20 +163,17 @@ class Mongo extends Emitter {
 
         writeLatency = Date.now() - writeStartDate
 
-
         // read latency checking
         const readStartDate = Date.now()
         await this.fetch<number>('___PING___')
 
         readLatency = Date.now() - readStartDate
 
-
         // delete latency checking
         const deleteStartDate = Date.now()
         await this.delete('___PING___')
 
         deleteLatency = Date.now() - deleteStartDate
-
 
         return {
             readLatency,
@@ -200,8 +184,8 @@ class Mongo extends Emitter {
 
     /**
      * Checks if the element is existing in database.
-     * @param {String} key The key in database
-     * @returns {Promise<Boolean>} Is the element is existing in database.
+     * @param {string} key The key in database
+     * @returns {Promise<boolean>} Is the element is existing in database.
      */
     public async has(key: string): Promise<boolean> {
         const data = await this.fetch(key)
@@ -212,8 +196,8 @@ class Mongo extends Emitter {
      * Checks if the element is existing in database.
      * 
      * This method is an alias for `QuickMongo.has()` method.
-     * @param {String} key The key in database
-     * @returns {Promise<Boolean>} Is the element is existing in database.
+     * @param {string} key The key in database
+     * @returns {Promise<boolean>} Is the element is existing in database.
      */
     public async includes(key: string): Promise<boolean> {
         return this.has(key)
@@ -223,13 +207,17 @@ class Mongo extends Emitter {
      * Gets the random element of array in database.
      * 
      * [!!!] The target must be an array.
-     * @param {String} key The key in database.
-     * @returns {K} The random element in array.
+     * @param {string} key The key in database.
+     * @returns {T} The random element in array.
      */
-    public async random<T>(key: string): Promise<T> {
-        const array = await this.fetch<any[]>(key)
+    public async random<T = any>(key: string): Promise<T> {
+        const array = await this.fetch<T[]>(key)
 
-        if (!array) return null
+        if (!array) {
+            throw new DatabaseError(
+                errors.requiredParameterMissing('key')
+            )
+        }
 
         if (!Array.isArray(array)) {
             throw new DatabaseError(errors.target.notArray + typeof array)
@@ -240,49 +228,47 @@ class Mongo extends Emitter {
 
     /**
     * Gets a list of keys in database.
-    * @param {String} key The key in database.
-    * @returns {Promise<String[]>} An array with all keys in database or 'null' if nothing found.
+    * @param {string} key The key in database.
+    * @returns {Promise<string[]>} An array with all keys in database.
     */
     public async keysList(key: string): Promise<string[]> {
         const data = await this.find(key)
 
         if (key == '') {
             const rawData = await this.raw()
-
             return rawData.map(obj => obj.__KEY)
         }
 
-        return Object.keys(data)
-            .filter(key => data[key] !== undefined && data[key] !== null)
+        return Object.keys(data).filter(key => data[key] !== undefined && data[key] !== null)
     }
-
 
     /**
      * Fetches the data from the database.
-     * @param {String} key The key in database.
-     * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     * @param {string} key The key in database.
+     * @returns {Promise<T>} Value from the database.
      */
-    public async fetch<T>(key: string): Promise<T> {
-        if (!key && typeof key !== 'string') {
-            throw new DatabaseError(errors.notSpecified.key)
+    public async fetch<T = any>(key: string): Promise<T> {
+        if (!key) {
+            throw new DatabaseError(
+                errors.requiredParameterMissing('key')
+            )
         }
 
         if (typeof key !== 'string') {
             throw new DatabaseError(errors.invalidTypes.key + typeof key)
         }
 
-
         let parsed = await this.all() as T
 
         const keys = key.split('.')
-        let tmp = parsed
+        let database = parsed
 
         for (let i = 0; i < keys.length; i++) {
-            if ((keys.length - 1) == i) {
-                parsed = tmp?.[keys[i]] || null
+            if (keys.length - 1 == i) {
+                parsed = database?.[keys[i]] || null
             }
 
-            tmp = tmp?.[keys[i]]
+            database = database?.[keys[i]]
         }
 
         return parsed || null
@@ -290,16 +276,18 @@ class Mongo extends Emitter {
 
     /**
      * Sets data in a property in database.
-     * @param {String} key The key in database.
+     * @param {string} key The key in database.
      * @param {T} value Any data to set in property.
-     * @returns {Promise<Boolean>} If set successfully: true; else: false
+     * @returns {Promise<DatabaseProperties>} If set successfully: true; else: false
      */
-    public async set<T>(key: string, value: T): Promise<boolean> {
+    public async set<T = any, P = any>(key: string, value: T): Promise<DatabaseProperties<P>> {
         const { isObject } = this.utils
-        const storageData = await this.all()
+        const fetched = await this.all()
 
         if (!key) {
-            throw new DatabaseError(errors.notSpecified.key)
+            throw new DatabaseError(
+                errors.requiredParameterMissing('key')
+            )
         }
 
         if (typeof key !== 'string') {
@@ -307,27 +295,27 @@ class Mongo extends Emitter {
         }
 
         if (value == undefined) {
-            throw new DatabaseError(errors.notSpecified.value)
+            throw new DatabaseError(
+                errors.requiredParameterMissing('value')
+            )
         }
 
         if (typeof value == 'function') {
-            throw new DatabaseError(errors.invalidTypes.value)
+            throw new DatabaseError(errors.invalidTypes.functionIsValue)
         }
 
-
         const keys = key.split('.')
-        let tmp = storageData
+        let database = fetched
 
         for (let i = 0; i < keys.length; i++) {
+            if (keys.length - 1 == i) {
+                database[keys[i]] = value
 
-            if ((keys.length - 1) == i) {
-                tmp[keys[i]] = value
-
-            } else if (!isObject(tmp[keys[i]])) {
-                tmp[keys[i]] = {}
+            } else if (!isObject(database[keys[i]])) {
+                database[keys[i]] = {}
             }
 
-            tmp = tmp?.[keys[i]]
+            database = database?.[keys[i]]
         }
 
         const data = await this.collection.findOne({
@@ -337,7 +325,7 @@ class Mongo extends Emitter {
         if (!data) {
             this.collection.insertOne({
                 __KEY: keys[0],
-                __VALUE: storageData[keys[0]]
+                __VALUE: fetched[keys[0]]
             })
         }
 
@@ -346,25 +334,27 @@ class Mongo extends Emitter {
                 __KEY: keys[0]
             }, {
                 $set: {
-                    __VALUE: storageData[keys[0]]
+                    __VALUE: fetched[keys[0]]
                 }
             })
         }
 
-        return true
+        return fetched
     }
 
     /**
     * Removes the property from the existing object in database.
-    * @param {String} key The key in database.
-    * @returns {Promise<Boolean>} If cleared: true; else: false.
+    * @param {string} key The key in database.
+    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
     */
-    public async remove(key: string): Promise<boolean> {
+    public async remove<P = any>(key: string): Promise<DatabaseProperties<P>> {
         const { isObject } = this.utils
-        const storageData = await this.all()
+        const fetched = await this.all()
 
         if (!key) {
-            throw new DatabaseError(errors.notSpecified.key)
+            throw new DatabaseError(
+                errors.requiredParameterMissing('key')
+            )
         }
 
         if (typeof key !== 'string') {
@@ -372,20 +362,23 @@ class Mongo extends Emitter {
         }
 
         const data = this.fetch<any>(key)
-        if (data == null) return false
+
+        if (data == null || data == undefined) {
+            throw new DatabaseError(errors.target.empty)
+        }
 
         const keys = key.split('.')
-        let tmp = storageData
+        let database = fetched
 
         for (let i = 0; i < keys.length; i++) {
-            if ((keys.length - 1) == i) {
-                delete tmp?.[keys[i]]
+            if (keys.length - 1 == i) {
+                delete database?.[keys[i]]
 
-            } else if (!isObject(tmp?.[keys[i]])) {
-                tmp[keys[i]] = {}
+            } else if (!isObject(database?.[keys[i]])) {
+                database[keys[i]] = {}
             }
 
-            tmp = tmp?.[keys[i]]
+            database = database?.[keys[i]]
         }
 
         if (keys.length == 1) {
@@ -399,28 +392,28 @@ class Mongo extends Emitter {
                 __KEY: keys[0]
             }, {
                 $set: {
-                    __VALUE: storageData[keys[0]]
+                    __VALUE: fetched[keys[0]]
                 }
             })
         }
 
-        return true
+        return fetched
     }
 
     /**
      * Removes the property from the existing object in database.
      * 
      * This method is an alias for `QuickMongo.remove()` method.
-     * @param {String} key The key in database.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @param {string} key The key in database.
+     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
      */
-    public async delete(key: string): Promise<boolean> {
+    public async delete<T = any>(key: string): Promise<DatabaseProperties<T>> {
         return this.remove(key)
     }
 
     /**
      * Clears the whole database.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @returns {Promise<boolean>} If cleared: true; else: false.
      */
     public async deleteAll(): Promise<boolean> {
         const keys = await this.keysList('')
@@ -436,7 +429,7 @@ class Mongo extends Emitter {
      * Clears the whole database.
      * 
      * This method is an alias for `QuickMongo.deleteAll()` method.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @returns {Promise<boolean>} If cleared: true; else: false.
      */
     public clear(): Promise<boolean> {
         return this.deleteAll()
@@ -446,16 +439,12 @@ class Mongo extends Emitter {
      * Adds a number to a property data in database.
      * 
      * [!!!] The target must be a number.
-     * @param {String} key The key in database.
-     * @param {Number} value Any number to add.
-     * @returns {Promise<Boolean>} If added successfully: true; else: false
+     * @param {string} key The key in database.
+     * @param {number} value Any number to add.
+     * @returns {Promise<DatabaseProperties>} If added successfully: true; else: false
      */
-    public async add(key: string, value: number): Promise<boolean> {
+    public async add<T = any>(key: string, value: number): Promise<DatabaseProperties<T>> {
         const data = (await this.fetch<number>(key)) || 0
-
-        if (value == undefined) {
-            throw new DatabaseError(errors.notSpecified.value)
-        }
 
         if (typeof value !== 'number') {
             throw new DatabaseError(errors.invalidTypes.valueNumber + typeof value)
@@ -465,24 +454,20 @@ class Mongo extends Emitter {
             throw new DatabaseError(errors.target.notNumber + typeof data)
         }
 
-        await this.set(key, data + value)
-        return true
+        const result = await this.set(key, data + value)
+        return result
     }
 
     /**
      * Subtracts a number from a property data in database.
      * 
      * [!!!] The target must be a number.
-     * @param {String} key The key in database.
-     * @param {Number} value Any number to subtract.
-     * @returns {Promise<Boolean>} If set successfully: true; else: false
+     * @param {string} key The key in database.
+     * @param {number} value Any number to subtract.
+     * @returns {Promise<DatabaseProperties>} If set successfully: true; else: false
      */
-    public async subtract(key: string, value: number): Promise<boolean> {
+    public async subtract<P = any>(key: string, value: number): Promise<DatabaseProperties<P>> {
         const data = (await this.fetch<number>(key)) || 0
-
-        if (value == undefined) {
-            throw new DatabaseError(errors.notSpecified.value)
-        }
 
         if (typeof value !== 'number') {
             throw new DatabaseError(errors.invalidTypes.valueNumber + typeof value)
@@ -492,18 +477,18 @@ class Mongo extends Emitter {
             throw new DatabaseError(errors.target.notNumber + typeof data)
         }
 
-        await this.set(key, data - value)
-        return true
+        const result = await this.set(key, data - value)
+        return result
     }
 
     /**
      * Fetches the data from the database.
      * 
      * This method is an alias for the `QuickMongo.fetch()` method.
-     * @param {String} key The key in database.
-     * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     * @param {string} key The key in database.
+     * @returns {Promise<T>} Value from the database.
      */
-    public async find<T>(key: string): Promise<T> {
+    public async find<T = any>(key: string): Promise<T> {
         return this.fetch<T>(key)
     }
 
@@ -511,10 +496,10 @@ class Mongo extends Emitter {
      * Fetches the data from the database.
      * 
      * This method is an alias for the `QuickMongo.fetch()` method.
-     * @param {String} key The key in database.
-     * @returns {Promise<T>} Value from the specified key or 'false' if failed to read or 'null' if nothing found.
+     * @param {string} key The key in database.
+     * @returns {Promise<T>} Value from the database.
      */
-    public async get<T>(key: string): Promise<T> {
+    public async get<T = any>(key: string): Promise<T> {
         return this.fetch<T>(key)
     }
 
@@ -522,44 +507,42 @@ class Mongo extends Emitter {
      * Pushes a value to a specified array from the database.
      * 
      * [!!!] The target must be an array.
-     * @param {String} key The key in database.
+     * @param {string} key The key in database.
      * @param {T} value The key in database.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
      */
-    public async push<T>(key: string, value: T): Promise<boolean> {
-        const array = (await this.fetch<any[]>(key)) || []
-
-        if (!value) {
-            throw new DatabaseError(errors.notSpecified.value)
-        }
+    public async push<T = any, P = any>(key: string, value: T): Promise<DatabaseProperties<P>> {
+        const array = (await this.fetch<T[]>(key)) || []
 
         if (array && !Array.isArray(array)) {
             throw new DatabaseError(errors.target.notArray + typeof array)
         }
 
         array.push(value)
-        return this.set<any>(key, array)
+        return this.set<T[]>(key, array)
     }
 
     /**
      * Removes an element from a specified array in the database.
      * 
      * [!!!] The target must be an array.
-     * @param {String} key The key in database.
-     * @param {Number} index The index in the array.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @param {string} key The key in database.
+     * @param {number} index The index in the array.
+     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
      */
-    public async pop(key: string, index: number): Promise<boolean> {
-        const array = await this.fetch<any[]>(key)
+    public async pop<T = any, P = any>(key: string, index: number): Promise<DatabaseProperties<P>> {
+        const array = await this.fetch<T[]>(key)
 
-        if (!array) return false
+        if (!array) {
+            throw new DatabaseError(errors.target.empty)
+        }
 
         if (!Array.isArray(array)) {
             throw new DatabaseError(errors.target.notArray + typeof array)
         }
 
         array.splice(index, 1)
-        return this.set<any>(key, array)
+        return this.set<T[]>(key, array)
     }
 
     /**
@@ -568,11 +551,11 @@ class Mongo extends Emitter {
      * [!!!] The target must be an array.
      * 
      * This method is an alias for the `QuickMongo.pop()` method.
-     * @param {String} key The key in database.
-     * @param {Number} index The index in the array.
-     * @returns {Promise<Boolean>} If cleared: true; else: false.
+     * @param {string} key The key in database.
+     * @param {number} index The index in the array.
+     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
      */
-    public async removeElement(key: string, index: number): Promise<boolean> {
+    public async removeElement<P = any>(key: string, index: number): Promise<DatabaseProperties<P>> {
         return this.pop(key, index)
     }
 
@@ -580,22 +563,24 @@ class Mongo extends Emitter {
     * Changes the specified element's value in a specified array in the database.
     * 
     * [!!!] The target must be an array.
-    * @param {String} key The key in database.
-    * @param {Number} index The index in the array.
+    * @param {string} key The key in database.
+    * @param {number} index The index in the array.
     * @param {T} newValue The new value to set.
-    * @returns {Promise<Boolean>} If cleared: true; else: false.
+    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
     */
-    public async pull<T>(key: string, index: number, newValue: T): Promise<boolean> {
-        const array = await this.fetch<any[]>(key)
+    public async pull<T = any, P = any>(key: string, index: number, newValue: T): Promise<DatabaseProperties<P>> {
+        const array = await this.fetch<T[]>(key)
 
-        if (!array) return false
+        if (!array) {
+            throw new DatabaseError(errors.target.empty)
+        }
 
         if (!Array.isArray(array)) {
             throw new DatabaseError(errors.target.notArray + typeof array)
         }
 
         array.splice(index, 1, newValue)
-        return this.set<any>(key, array)
+        return this.set<T[]>(key, array)
     }
 
     /**
@@ -604,28 +589,26 @@ class Mongo extends Emitter {
     * [!!!] The target must be an array.
     * 
     * This method is an alias for the `QuickMongo.pull()` method.
-    * @param {String} key The key in database.
-    * @param {Number} index The index in the array.
+    * @param {string} key The key in database.
+    * @param {number} index The index in the array.
     * @param {T} newValue The new value to set.
-    * @returns {Promise<Boolean>} If cleared: true; else: false.
+    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
     */
-    public changeElement<T>(key: string, index: number, newValue: T): Promise<boolean> {
+    public changeElement<T = any, P = any>(key: string, index: number, newValue: T): Promise<DatabaseProperties<P>> {
         return this.pull(key, index, newValue)
     }
-
 
     /**
     * Fetches the entire database.
     * @returns {Promise<DatabaseProperties>} Database contents
     */
-    public async all(): Promise<DatabaseProperties> {
+    public async all<P = any>(): Promise<DatabaseProperties<P>> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
 
         const obj = {}
         const elements = await this.raw() || []
-
 
         for (const element of elements) {
             obj[element.__KEY] = element.__VALUE
@@ -638,7 +621,7 @@ class Mongo extends Emitter {
     * Fetches the raw content of database.
     * @returns {Promise<DatabaseObject[]>} Database contents
     */
-    public async raw(): Promise<DatabaseObject[]> {
+    public async raw<P = any>(): Promise<DatabaseObject<P>[]> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
@@ -650,6 +633,5 @@ class Mongo extends Emitter {
         return rawArray
     }
 }
-
 
 export = Mongo

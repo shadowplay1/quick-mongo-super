@@ -5,20 +5,15 @@ class DatabaseError extends Error {
 
     /**
      * Creates a 'DatabaseError' instance.
-     * @param {String | Error} msg Error message.
+     * @param {string} msg Error message.
      */
-    constructor(msg?: any) {
-        if (msg instanceof Error) {
-            super(msg.message)
-            Error.captureStackTrace(this, this.constructor)
-        }
-
-        else super(msg)
-
+    constructor(msg?: string) {
+        super(msg)
+        Error.captureStackTrace(this, this.constructor)
 
         /**
          * Error name.
-         * @type {String}
+         * @type {string}
          */
         this.name = 'DatabaseError'
     }

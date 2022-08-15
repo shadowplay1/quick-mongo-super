@@ -4,12 +4,12 @@ export interface DatabaseEvents {
     ready: Collection<Document>;
     destroy: MongoClient;
 }
-export interface DatabaseProperties {
-    [key: string]: any;
+export interface DatabaseProperties<T = any> {
+    [key: string]: T;
 }
-export interface DatabaseObject {
+export interface DatabaseObject<T = any> {
     __KEY: string;
-    __VALUE: any;
+    __VALUE: T;
 }
 export interface MongoConnectionOptions {
     /**

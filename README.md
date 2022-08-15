@@ -146,4 +146,4 @@ See the full changelog [here](https://github.com/shadowplay1/quick-mongo-super/b
 <br>
 <b>Module Created by ShadowPlay.</b>
 
-# ❤️ Thanks for using Quick Mongo ❤️
+# ❤️ Thanks for using Quick Mongo Super ❤️

@@ -4,8 +4,8 @@
 declare class DatabaseError extends Error {
     /**
      * Creates a 'DatabaseError' instance.
-     * @param {String | Error} msg Error message.
+     * @param {string} msg Error message.
      */
-    constructor(msg?: any);
+    constructor(msg?: string);
 }
 export = DatabaseError;

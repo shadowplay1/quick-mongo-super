@@ -9,7 +9,12 @@ const errors = {
         return message
     },
 
+    requiredParameterMissing(parameter: string): string {
+        return `${parameter} is required but is missing.`
+    },
+
     invalidTypes: {
+        functionIsValue: 'Value cannot be a function.',
         key: 'Key must be a string. Received: ',
         value: 'Value in add/subtract methods must be a number. Received: ',
         valueNumber: 'Value is cannot be a function.',
@@ -18,7 +23,8 @@ const errors = {
 
     target: {
         notNumber: 'Target is not a number. Received: ',
-        notArray: 'Target is not an array. Received: '
+        notArray: 'Target is not an array. Received: ',
+        empty: 'The target is already empty.'
     },
 
     notSpecified: {
@@ -29,11 +35,11 @@ const errors = {
 
     connection: {
         uri: {
-            notSpecified: 'Mongo connection URI is not specified.',
-            invalid: 'Mongo connection URI is invalid.'
+            notSpecified: 'MongoDB connection URI is not specified.',
+            invalid: 'MongoDB connection URI is invalid.'
         },
 
-        badAuth: 'Failed to authenticate with specified connection URI: the creditionals are incorrect.',
+        badAuth: 'Failed to authenticate with specified connection URI: the credentials are incorrect.',
         failedToConnect: 'Failed to connect to the database: ',
         alreadyConnected: 'Already connected to the Mongo database server.',
         alreadyDestroyed: 'The connection is already destroyed.',
