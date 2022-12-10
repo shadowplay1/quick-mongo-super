@@ -47,8 +47,8 @@ const errors = {
 
         connectionFailure:
             'A connection error has occured. ' +
-            'It may happen if you\'re not connected to the Internet or the connection is slow, ' +
-            'your Internet provider is blocking the connection attempts, ' +
+            'It may happen if you\'re not connected to the network or the connection is slow, ' +
+            'your network provider is blocking the connection attempts, ' +
             'the database server is not available, ' +
             'or the connection timed out.'
     }

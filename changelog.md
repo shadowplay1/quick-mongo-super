@@ -6,8 +6,12 @@
 
 ## 🕘 | Changelog
 
+**v1.0.10**
+- Fixed the wrong error appearing when the options are not specified.
+- Fixed `db.keyList()` method bugs.
+
 **v1.0.9**
-- Code refactoring.
+- Code refactor.
 - Code optimization.
 - JSDoc mismatches and typos fixes.
 - `DatabaseProperties` and `DatabaseObject` interfaces are generic now.
@@ -27,7 +31,7 @@
 - `all()`, `raw()` and all the methods above have received a new `P` type parameter to use them in `DatabaseProperties` and `DatabaseObject` interfaces.
 
 **v1.0.8**
-- Fixed bugs on connectoion errors.
+- Fixed bugs on connection errors.
 
 **v1.0.7**
 - Fixed typings bug.

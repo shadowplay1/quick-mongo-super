@@ -39,29 +39,29 @@ class Mongo extends Emitter {
     constructor(options: MongoConnectionOptions) {
         super()
 
-        if (!options.connectionURI) {
+        if (!options?.connectionURI) {
             throw new DatabaseError(errors.connection.uri.notSpecified)
         }
 
-        if (typeof options.connectionURI !== 'string') {
+        if (typeof options?.connectionURI !== 'string') {
             throw new DatabaseError(errors.connection.uri.invalid)
         }
 
-        if (options.collectionName && typeof options.collectionName !== 'string') {
+        if (options?.collectionName && typeof options?.collectionName !== 'string') {
             throw new DatabaseError(
-                errors.invalidType('options.collectionName', 'string', options.collectionName)
+                errors.invalidType('options.collectionName', 'string', options?.collectionName)
             )
         }
 
-        if (options.dbName && typeof options.dbName !== 'string') {
+        if (options?.dbName && typeof options?.dbName !== 'string') {
             throw new DatabaseError(
                 errors.invalidType('options.dbName', 'string', options.dbName)
             )
         }
 
-        if (options.mongoClientOptions && typeof options.mongoClientOptions !== 'object') {
+        if (options?.mongoClientOptions && typeof options?.mongoClientOptions !== 'object') {
             throw new DatabaseError(
-                errors.invalidType('options.mongoClientOptions', 'object', options.mongoClientOptions)
+                errors.invalidType('options.mongoClientOptions', 'object', options?.mongoClientOptions)
             )
         }
 
@@ -248,7 +248,7 @@ class Mongo extends Emitter {
      * @returns {Promise<T>} Value from the database.
      */
     public async fetch<T = any>(key: string): Promise<T> {
-        if (!key) {
+        if (!key && typeof key !== 'string') {
             throw new DatabaseError(
                 errors.requiredParameterMissing('key')
             )
