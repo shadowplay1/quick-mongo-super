@@ -1,11 +1,11 @@
 {
   "name": "quick-mongo-super",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "Quick Mongo Super is a light-weight and easy-to-use Node.js module written in TypeScript to work with MongoDB.",
   "main": "./dist/src/index.js",
   "types": "./typings/src/index.d.ts",
   "scripts": {
-    "start": "ts-node ./utils/test.ts",
+    "test": "ts-node ./utils/test.ts",
     "build": "npx tsc",
     "postinstall": "node postinstall.js",
     "lint": "eslint ./",
@@ -18,8 +18,8 @@
     "node-fetch": "^2.6.7"
   },
   "directories": {
-    "example": "./examples"
-  },
+		"lib": "./dist"
+	},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/shadowplay1/quick-mongo.git"
@@ -32,6 +32,7 @@
     "nosql",
     "cloud",
     "cloud-database",
+    "clouddatabase",
     "super",
     "quick-mongo",
     "quick.db",
@@ -39,17 +40,24 @@
     "quick-mongo-db",
     "quick-mongo-super",
     "quick",
-    "data",
+    "easy",
+    "simple",
+    "fast",
+    "lightweight",
     "clouddata",
+    "data",
     "cloud-data",
-    "clouddatabase",
     "wrapper",
+    "mongo.js",
+    "mongodb.js",
+    "easy-mongo",
     "quick.mongo",
     "quick.mongo-super",
     "quick.mongo.super",
     "quick-mongo.super",
     "quick mongo super",
     "quick mongo",
+    "easy mongo",
     "shadowplay"
   ],
   "bugs": {

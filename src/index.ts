@@ -12,21 +12,21 @@ import Utils from './classes/Utils'
 import errors from './errors'
 
 import {
-    MongoConnectionOptions,
-    DatabaseObject, DatabaseProperties,
-    VersionData, MongoLatencyData
+    IMongoConnectionOptions,
+    IDatabaseObject, IDatabaseProperties,
+    IVersionData, MongoLatency
 } from './interfaces/QuickMongo'
 
 import modulePackage from '../package.json'
 
 /**
  * QuickMongo class.
- * @param {MongoConnectionOptions} options MongoDB connection options.
+ * @param {IMongoConnectionOptions} options MongoDB connection options.
  */
 class Mongo extends Emitter {
     public ready = false
 
-    public options: MongoConnectionOptions
+    public options: IMongoConnectionOptions
     public mongoClientOptions: MongoClientOptions
 
     public mongo: MongoClient
@@ -36,7 +36,7 @@ class Mongo extends Emitter {
 
     private utils = new Utils()
 
-    constructor(options: MongoConnectionOptions) {
+    constructor(options: IMongoConnectionOptions) {
         super()
 
         if (!options?.connectionURI) {
@@ -123,9 +123,9 @@ class Mongo extends Emitter {
 
     /**
     * Checks for the module updates.
-    * @returns {Promise<VersionData>} Is the module updated, latest version and installed version.
+    * @returns {Promise<IVersionData>} Is the module updated, latest version and installed version.
     */
-    async checkUpdates(): Promise<VersionData> {
+    async checkUpdates(): Promise<IVersionData> {
         const version = modulePackage.version
 
         const packageData = await fetch('https://registry.npmjs.com/quick-mongo-super').then(res => res.json())
@@ -144,11 +144,11 @@ class Mongo extends Emitter {
     }
 
     /**
-     * Sends a read, write and delete request to the database
+     * Sends a read, write and delete requests to the database.
      * and returns the request latencies.
-     * @returns {Promise<MongoLatencyData>} Database latency object.
+     * @returns {Promise<MongoLatency>} Database latency object.
      */
-    public async ping(): Promise<MongoLatencyData> {
+    public async ping(): Promise<MongoLatency> {
         let readLatency = -1
         let writeLatency = -1
         let deleteLatency = -1
@@ -194,7 +194,7 @@ class Mongo extends Emitter {
 
     /**
      * Checks if the element is existing in database.
-     * 
+     *
      * This method is an alias for `QuickMongo.has()` method.
      * @param {string} key The key in database
      * @returns {Promise<boolean>} Is the element is existing in database.
@@ -205,15 +205,20 @@ class Mongo extends Emitter {
 
     /**
      * Gets the random element of array in database.
-     * 
+     *
      * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * - T: The type of random element in the array.
+     *
      * @param {string} key The key in database.
-     * @returns {T} The random element in array.
+     * @returns {Promise<T>} The random element in the array.
      */
     public async random<T = any>(key: string): Promise<T> {
         const array = await this.fetch<T[]>(key)
 
-        if (!array) {
+        if (!key) {
             throw new DatabaseError(
                 errors.requiredParameterMissing('key')
             )
@@ -231,19 +236,23 @@ class Mongo extends Emitter {
     * @param {string} key The key in database.
     * @returns {Promise<string[]>} An array with all keys in database.
     */
-    public async keysList(key: string): Promise<string[]> {
-        const data = await this.find(key)
-
+    public async keysList(key: string = ''): Promise<string[]> {
         if (key == '') {
             const rawData = await this.raw()
             return rawData.map(obj => obj.__KEY)
+        } else {
+            const data = await this.find(key)
+            return Object.keys(data).filter(key => data[key] !== undefined && data[key] !== null)
         }
-
-        return Object.keys(data).filter(key => data[key] !== undefined && data[key] !== null)
     }
 
     /**
      * Fetches the data from the database.
+     *
+     * Type parameters:
+     *
+     * - T: The type of data that will be returned from database.
+     *
      * @param {string} key The key in database.
      * @returns {Promise<T>} Value from the database.
      */
@@ -276,11 +285,17 @@ class Mongo extends Emitter {
 
     /**
      * Sets data in a property in database.
+     *
+     * Type parameters:
+     *
+     * - T: The type of value to set for a specified key.
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {T} value Any data to set in property.
-     * @returns {Promise<DatabaseProperties>} If set successfully: true; else: false
+     * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    public async set<T = any, P = any>(key: string, value: T): Promise<DatabaseProperties<P>> {
+    public async set<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>> {
         const { isObject } = this.utils
         const fetched = await this.all()
 
@@ -343,11 +358,16 @@ class Mongo extends Emitter {
     }
 
     /**
-    * Removes the property from the existing object in database.
-    * @param {string} key The key in database.
-    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
-    */
-    public async remove<P = any>(key: string): Promise<DatabaseProperties<P>> {
+     * Removes the property from the existing object in database.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside the specified database property.
+     *
+     * @param {string} key The key in database.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     */
+    public async remove<P = any>(key: string): Promise<IDatabaseProperties<P>> {
         const { isObject } = this.utils
         const fetched = await this.all()
 
@@ -402,12 +422,17 @@ class Mongo extends Emitter {
 
     /**
      * Removes the property from the existing object in database.
-     * 
+     *
      * This method is an alias for `QuickMongo.remove()` method.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
-     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async delete<T = any>(key: string): Promise<DatabaseProperties<T>> {
+    public async delete<P = any>(key: string): Promise<IDatabaseProperties<P>> {
         return this.remove(key)
     }
 
@@ -427,7 +452,7 @@ class Mongo extends Emitter {
 
     /**
      * Clears the whole database.
-     * 
+     *
      * This method is an alias for `QuickMongo.deleteAll()` method.
      * @returns {Promise<boolean>} If cleared: true; else: false.
      */
@@ -437,13 +462,18 @@ class Mongo extends Emitter {
 
     /**
      * Adds a number to a property data in database.
-     * 
+     *
      * [!!!] The target must be a number.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {number} value Any number to add.
-     * @returns {Promise<DatabaseProperties>} If added successfully: true; else: false
+     * @returns {Promise<IDatabaseProperties<P>>} If added successfully: true; else: false
      */
-    public async add<T = any>(key: string, value: number): Promise<DatabaseProperties<T>> {
+    public async add<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -460,13 +490,18 @@ class Mongo extends Emitter {
 
     /**
      * Subtracts a number from a property data in database.
-     * 
+     *
      * [!!!] The target must be a number.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {number} value Any number to subtract.
-     * @returns {Promise<DatabaseProperties>} If set successfully: true; else: false
+     * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    public async subtract<P = any>(key: string, value: number): Promise<DatabaseProperties<P>> {
+    public async subtract<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -483,8 +518,13 @@ class Mongo extends Emitter {
 
     /**
      * Fetches the data from the database.
-     * 
+     *
      * This method is an alias for the `QuickMongo.fetch()` method.
+     *
+     * Type parameters:
+     *
+     * - T: The type of data that will be returned from database.
+     *
      * @param {string} key The key in database.
      * @returns {Promise<T>} Value from the database.
      */
@@ -494,8 +534,13 @@ class Mongo extends Emitter {
 
     /**
      * Fetches the data from the database.
-     * 
+     *
      * This method is an alias for the `QuickMongo.fetch()` method.
+     *
+     * Type parameters:
+     *
+     * - T: The type of data that will be returned from database.
+     *
      * @param {string} key The key in database.
      * @returns {Promise<T>} Value from the database.
      */
@@ -505,13 +550,19 @@ class Mongo extends Emitter {
 
     /**
      * Pushes a value to a specified array from the database.
-     * 
+     *
      * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * - T: The type of value to push in the array.
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {T} value The key in database.
-     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async push<T = any, P = any>(key: string, value: T): Promise<DatabaseProperties<P>> {
+    public async push<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>> {
         const array = (await this.fetch<T[]>(key)) || []
 
         if (array && !Array.isArray(array)) {
@@ -524,13 +575,19 @@ class Mongo extends Emitter {
 
     /**
      * Removes an element from a specified array in the database.
-     * 
+     *
      * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * - T: The type of value to remove from the array.
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {number} index The index in the array.
-     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async pop<T = any, P = any>(key: string, index: number): Promise<DatabaseProperties<P>> {
+    public async pop<T = any, P = any>(key: string, index: number): Promise<IDatabaseProperties<P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -547,28 +604,39 @@ class Mongo extends Emitter {
 
     /**
      * Removes an element from a specified array in the database.
-     * 
+     *
      * [!!!] The target must be an array.
-     * 
-     * This method is an alias for the `QuickMongo.pop()` method.
+     *
+     * This method is an alias for the `QuickMongo.pop()` method, for legacy reasons.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside the specified database property.
+     *
      * @param {string} key The key in database.
      * @param {number} index The index in the array.
-     * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async removeElement<P = any>(key: string, index: number): Promise<DatabaseProperties<P>> {
+    public async removeElement<P = any>(key: string, index: number): Promise<IDatabaseProperties<P>> {
         return this.pop(key, index)
     }
 
     /**
-    * Changes the specified element's value in a specified array in the database.
-    * 
-    * [!!!] The target must be an array.
-    * @param {string} key The key in database.
-    * @param {number} index The index in the array.
-    * @param {T} newValue The new value to set.
-    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
-    */
-    public async pull<T = any, P = any>(key: string, index: number, newValue: T): Promise<DatabaseProperties<P>> {
+     * Changes the specified element's value in a specified array in the database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * - T: The type of element to change in the array.
+     * - P: The type of data inside the specified database property.
+     *
+     * @param {string} key The key in database.
+     * @param {number} index The index in the array.
+     * @param {T} newValue The new value to set.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     */
+    public async pull<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -584,25 +652,36 @@ class Mongo extends Emitter {
     }
 
     /**
-    * Changes the specified element's value in a specified array in the database.
-    * 
-    * [!!!] The target must be an array.
-    * 
-    * This method is an alias for the `QuickMongo.pull()` method.
-    * @param {string} key The key in database.
-    * @param {number} index The index in the array.
-    * @param {T} newValue The new value to set.
-    * @returns {Promise<DatabaseProperties>} If cleared: true; else: false.
-    */
-    public changeElement<T = any, P = any>(key: string, index: number, newValue: T): Promise<DatabaseProperties<P>> {
+     * Changes the specified element's value in a specified array in the database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * This method is an alias for the `QuickMongo.pull()` method, for legacy reasons.
+     *
+     * Type parameters:
+     *
+     * - T: The type of element to change in the array.
+     * - P: The type of data inside the specified database property.
+     *
+     * @param {string} key The key in database.
+     * @param {number} index The index in the array.
+     * @param {T} newValue The new value to set.
+     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     */
+    public changeElement<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
         return this.pull(key, index, newValue)
     }
 
     /**
-    * Fetches the entire database.
-    * @returns {Promise<DatabaseProperties>} Database contents
-    */
-    public async all<P = any>(): Promise<DatabaseProperties<P>> {
+     * Fetches the database contents.
+     *
+     * Type parameters:
+     *
+     * - P: The type of data inside all the database properties.
+     *
+     * @returns {Promise<IDatabaseProperties<P>>} Database contents.
+     */
+    public async all<P = any>(): Promise<IDatabaseProperties<P>> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
@@ -618,10 +697,15 @@ class Mongo extends Emitter {
     }
 
     /**
-    * Fetches the raw content of database.
-    * @returns {Promise<DatabaseObject[]>} Database contents
-    */
-    public async raw<P = any>(): Promise<DatabaseObject<P>[]> {
+     * Fetches the raw databas contents.
+     *
+     * Type parameters:
+     *
+     * - P: The type of `__VALUE` property for every raw database entry.
+     *
+     * @returns {Promise<IDatabaseObject<P>[]>} Raw database contents.
+     */
+    public async raw<P = any>(): Promise<IDatabaseObject<P>[]> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }

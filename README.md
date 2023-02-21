@@ -29,12 +29,12 @@ pnpm add quick-mongo-super
 import QuickMongo from '../src/index'
 
 const db = new QuickMongo({
-    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database
-    dbName: 'db', // MongoDB database name to use
-    collectionName: 'database' // MongoDB collection name to use
+    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database.
+    dbName: 'db', // MongoDB database name to use.
+    collectionName: 'database' // MongoDB collection name to use.
 
     mongoClientOptions: {
-      // mongo client options here
+      // MongoDB client options here.
     }
 })
 ```
@@ -48,8 +48,8 @@ const db = new QuickMongo({
     // output:
     // { 
     //   updated: true, 
-    //   installedVersion: '1.0.2', 
-    //   packageVersion: '1.0.2' 
+    //   installedVersion: '1.0.11', 
+    //   packageVersion: '1.0.11' 
     // }
 
 
@@ -146,4 +146,4 @@ See the full changelog [here](https://github.com/shadowplay1/quick-mongo-super/b
 <br>
 <b>Module Created by ShadowPlay.</b>
 
-# ❤️ Thanks for using Quick Mongo Super ❤️
+# ❤️ Thanks for choosing Quick Mongo Super ❤️

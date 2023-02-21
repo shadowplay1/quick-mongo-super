@@ -1,56 +1,55 @@
-import QuickMongo from '../src/index'
+import QuickMongo from '../src/index' // import QuickMongo from 'quick-mongo-super'
 
 const db = new QuickMongo({
-    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database
+    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database.
     dbName: 'db',
-    collectionName: 'database', // MongoDB collection name to use
+    collectionName: 'database', // MongoDB collection name to use.
 
     mongoClientOptions: {
-        // mongo client options here
+        // MongoDB client options here.
     }
 })
 
-const main = async () => {
+const main = async (): Promise<void> => {
 
     // checking for updates (optional)
     const versionData = await db.checkUpdates()
     console.log(versionData)
 
     // output:
-    // { 
-    //   updated: true, 
-    //   installedVersion: '1.0.2', 
-    //   packageVersion: '1.0.2' 
+    // {
+    //   updated: true,
+    //   installedVersion: '1.0.2',
+    //   packageVersion: '1.0.2'
     // }
 
 
-
     // [IMPORTANT] - connect to database
-    console.log('Connecting to database...') // also using a 'connecting' event (line 105) for that is allowed
-    await db.connect() // using promise instead of listening to 'ready' event (line 94) is allowed
+    console.log('Connecting to database...') // also using a 'connecting' event (line 130) for that is allowed
+    await db.connect() // using promise instead of listening to 'ready' event (line 118) is allowed
 
     // database ping
     await db.ping()
 
     // output:
-    // { 
-    //    readLatency: 123, 
-    //    writeLatency: 123, 
-    //    deleteLatency: 123 
+    // {
+    //    readLatency: 123,
+    //    writeLatency: 123,
+    //    deleteLatency: 123
     // }
 
 
     // SETTING DATA
 
     // setting object in database
-    await db.set<Omit<AccountData['auth'], 'password'>>('accountData.auth', {
+    await db.set<Omit<IAccountData['auth'], 'password'>>('accountData.auth', {
         username: 'shadowplay'
     })
 
     // setting a property in object
     await db.set<string>('accountData.auth.password', 'test123')
 
-    // accountData in database: 
+    // accountData in database:
     // {
     //     auth: {
     //         username: 'shadowplay',
@@ -71,7 +70,7 @@ const main = async () => {
     await db.push<string>('accountData.roles', 'member') // accountData.roles in database: ['admin', 'member']
 
     // getting random element from array
-    await db.random('accountData.roles') // 'admin' or 'member'
+    await db.random('accountData.roles') // 'admin' or 'member' - random element from roles array each time
 
     // changing the array element in database
     await db.changeElement<string>('accountData.roles', 0, 'user') // accountData.roles in database: ['user', 'member']
@@ -94,7 +93,7 @@ const main = async () => {
 
     // GETTING DATA
 
-    const data = await db.fetch<AccountData>('accountData')
+    const data = await db.fetch<IAccountData>('accountData')
     console.log(data)
 
 
@@ -114,6 +113,7 @@ const main = async () => {
     await db.disconnect()
 }
 
+
 // listening to 'ready' event if successfully connected:
 db.on('ready', () => {
     console.log('Connected to database!')
@@ -124,14 +124,16 @@ db.on('destroy', () => {
     console.log('Connection was closed.')
 })
 
+
 // listening to 'connecting' event if started to connect to database:
+
 // db.on('connecting', () => {
 //     console.log('Connecting to database...')
 // })
 
 main()
 
-interface AccountData {
+interface IAccountData {
     auth: {
         username: string
         password: string

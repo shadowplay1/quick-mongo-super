@@ -6,9 +6,32 @@
 
 ## 🕘 | Changelog
 
+**v1.0.11**
+- Fixed the empty key error when trying to clear the database - now the `key` parameter in `keysList()` method is optional and defaults to empty string (`''`) if not specified.
+- Changed the ESLint configuration and linted the code to make it look prettier.
+- Added the `I` prefix to all interface names (e.g. `MongoConnectionOptions` => `IMongoConnectionOptions`). Keeping the `DatabaseProperties` interface without the `I` prefix for legacy reasons.
+- Removed the `./src/` and `./examples/` directories from publishing on NPM to reduce the package size. These folders will still be available in module's GitHub repository. From now, only compiled version of the module (`./dist/`) and typings (`./typings`) folders are going to be published on NPM.
+- Removed `./typings` directory from pushing in the repository as the folder unnecessary in the repository.
+- Added a type parameters description in each generic method's description.
+- Fixed JSDoc **parameter types**/**return types** and **descriptions** mismatches.
+- Fixed linting issues in example scripts.
+- Fixed minor bugs.
+- Added an option for `package.json` to disable the post-install greeting logs. To disable them, you need to add this in your `package.json`:
+```json
+"quick-mongo-super": {
+    "postinstall": false
+}
+```
+To enable them back, you need to set the `"postinstall"` property of `"quick-mongo-super"` object to `true`:
+```json
+"quick-mongo-super": {
+    "postinstall": true
+}
+```
+
 **v1.0.10**
 - Fixed the wrong error appearing when the options are not specified.
-- Fixed `db.keyList()` method bugs.
+- Fixed the `db.keyList()` method bugs.
 
 **v1.0.9**
 - Code refactor.
@@ -17,16 +40,16 @@
 - `DatabaseProperties` and `DatabaseObject` interfaces are generic now.
 - If the target requires to have data but it not, the module will throw an error now.
 - Return types were changed from `boolean` to `DatabaseProperties` type for 
-- - `set`
-- - `remove`
-- - `delete`
-- - `add`
-- - `subtract` 
-- - `push` 
-- - `pop`
-- - `removeElement`
-- - `pull`
-- - `changeElement`
+- - `set()`
+- - `remove()`
+- - `delete()`
+- - `add()`
+- - `subtract()`
+- - `push()`
+- - `pop()`
+- - `removeElement()`
+- - `pull()`
+- - `changeElement()`
 - methods in a main class.
 - `all()`, `raw()` and all the methods above have received a new `P` type parameter to use them in `DatabaseProperties` and `DatabaseObject` interfaces.
 

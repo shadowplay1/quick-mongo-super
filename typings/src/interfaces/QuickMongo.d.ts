@@ -1,5 +1,5 @@
 import { Collection, Document, MongoClient, MongoClientOptions } from 'mongodb';
-export interface DatabaseEvents {
+export interface IDatabaseEvents {
     connecting: void;
     ready: Collection<Document>;
     destroy: MongoClient;
@@ -7,11 +7,14 @@ export interface DatabaseEvents {
 export interface DatabaseProperties<T = any> {
     [key: string]: T;
 }
-export interface DatabaseObject<T = any> {
+export interface IDatabaseProperties<T = any> {
+    [key: string]: T;
+}
+export interface IDatabaseObject<T = any> {
     __KEY: string;
     __VALUE: T;
 }
-export interface MongoConnectionOptions {
+export interface IMongoConnectionOptions {
     /**
      * MongoDB connection URI.
      */
@@ -29,7 +32,7 @@ export interface MongoConnectionOptions {
      */
     mongoClientOptions?: MongoClientOptions;
 }
-export interface VersionData {
+export interface IVersionData {
     /**
      * Checks for if module is up to date.
      */
@@ -43,4 +46,4 @@ export interface VersionData {
      */
     packageVersion: string;
 }
-export declare type MongoLatencyData = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>;
+export declare type MongoLatency = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>;

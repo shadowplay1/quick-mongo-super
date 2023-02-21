@@ -1,13 +1,15 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const QuickMongo = require('../dist/index')
+/* eslint-disable @typescript-eslint/no-var-requires */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
+
+const QuickMongo = require('../dist/index') // const QuickMongo = require('quick-mongo-super')
 
 const db = new QuickMongo({
-    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database
-    dbName: 'db', // MongoDB database name to use
-    collectionName: 'database', // MongoDB collection name to use
+    connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database.
+    dbName: 'db', // MongoDB database name to use.
+    collectionName: 'database', // MongoDB collection name to use.
 
     mongoClientOptions: {
-        // mongo client options here
+        // MongoDB client options here.
     }
 })
 
@@ -18,24 +20,25 @@ const main = async () => {
     console.log(versionData)
 
     // output:
-    // { 
-    //   updated: true, 
-    //   installedVersion: '1.0.2', 
-    //   packageVersion: '1.0.2' 
+    // {
+    //   updated: true,
+    //   installedVersion: '1.0.2',
+    //   packageVersion: '1.0.2'
     // }
 
+
     // [IMPORTANT] - connect to database
-    console.log('Connecting to database...') // also using a 'connecting' event (line 105) for that is allowed
-    await db.connect() // using promise instead of listening to 'ready' event (line 94) is allowed
+    console.log('Connecting to database...') // also using a 'connecting' event (line 130) for that is allowed
+    await db.connect() // using promise instead of listening to 'ready' event (line 119) is allowed
 
     // database ping
     await db.ping()
 
     // output:
-    // { 
-    //    readLatency: 123, 
-    //    writeLatency: 123, 
-    //    deleteLatency: 123 
+    // {
+    //    readLatency: 123,
+    //    writeLatency: 123,
+    //    deleteLatency: 123
     // }
 
 
@@ -49,7 +52,7 @@ const main = async () => {
     // setting a property in object
     await db.set('accountData.auth.password', 'test123')
 
-    // accountData in database: 
+    // accountData in database:
     // {
     //     auth: {
     //         username: 'shadowplay',
@@ -70,7 +73,7 @@ const main = async () => {
     await db.push('accountData.roles', 'member') // accountData.roles in database: ['admin', 'member']
 
     // getting random element from array
-    await db.random('accountData.roles') // 'admin' or 'member'
+    await db.random('accountData.roles') // 'admin' or 'member' - random element from roles array each time
 
     // changing the array element in database
     await db.changeElement('accountData.roles', 0, 'user') // accountData.roles in database: ['user', 'member']
@@ -123,7 +126,9 @@ db.on('destroy', () => {
     console.log('Connection was closed.')
 })
 
+
 // listening to 'connecting' event if started to connect to database:
+
 // db.on('connecting', () => {
 //     console.log('Connecting to database...')
 // })
