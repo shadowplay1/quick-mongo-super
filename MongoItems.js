@@ -1,8 +1,8 @@
-const { DatabaseError } = require('./src/classes/DatabaseError')
-const { Emitter } = require('./src/classes/Emitter')
-const { Utils } = require('./src/classes/Utils')
+const { DatabaseError } = require('./dist/src/classes/DatabaseError')
+const { Emitter } = require('./dist/src/classes/Emitter')
+const { Utils } = require('./dist/src/classes/Utils')
 
-const Mongo = require('./src/index')
+const Mongo = require('./dist/src/index')
 
 module.exports = {
     DatabaseError,

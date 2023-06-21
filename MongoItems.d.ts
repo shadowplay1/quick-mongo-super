@@ -1,12 +1,12 @@
-export { DatabaseError } from './src/classes/DatabaseError'
-export { Emitter } from './src/classes/Emitter'
-export { Utils } from './src/classes/Utils'
+export { DatabaseError } from './typings/src/classes/DatabaseError'
+export { Emitter } from './typings/src/classes/Emitter'
+export { Utils } from './typings/src/classes/Utils'
 
 export {
     IMongoConnectionOptions,
     IDatabaseObject, IDatabaseEvents,
     IDatabaseProperties, IVersionData,
     MongoLatency, DatabaseProperties
-} from './src/interfaces/QuickMongo'
+} from './typings/src/interfaces/QuickMongo'
 
-export import Mongo = require('./src/index')
+export import Mongo = require('./typings/src/index')

@@ -6,6 +6,9 @@
 
 ## 🕘 | Changelog
 
+**v1.0.14**
+- Fixed the incorrect import paths in `MongoItems` files
+
 **v1.0.13**
 - Changed the way how all files are exported. (keeping QuickMongo exported as it is for legacy reasons)
 - Improved configurations.
