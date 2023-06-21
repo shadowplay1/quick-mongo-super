@@ -1,5 +1,9 @@
+# dependencies
 node_modules/
 
+# utilities
 utils/
+
+# compiled source code & types
 dist/
 typings/

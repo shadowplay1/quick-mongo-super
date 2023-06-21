@@ -5,25 +5,25 @@ import {
 
 import fetch from 'node-fetch'
 
-import Emitter from './classes/Emitter'
-import DatabaseError from './classes/DatabaseError'
-import Utils from './classes/Utils'
+import { Emitter } from './classes/Emitter'
+import { DatabaseError } from './classes/DatabaseError'
+import { Utils } from './classes/Utils'
 
 import errors from './errors'
 
 import {
     IMongoConnectionOptions,
-    IDatabaseObject, IDatabaseProperties,
-    IVersionData, MongoLatency
+    IDatabaseObject, IDatabaseEvents,
+    IDatabaseProperties, IVersionData, MongoLatency
 } from './interfaces/QuickMongo'
 
 import modulePackage from '../package.json'
 
 /**
  * QuickMongo class.
- * @param {IMongoConnectionOptions} options MongoDB connection options.
+ * @extends {Emitter}
  */
-class Mongo extends Emitter {
+class Mongo<V = any> extends Emitter<IDatabaseEvents> {
     public ready = false
 
     public options: IMongoConnectionOptions
@@ -34,9 +34,9 @@ class Mongo extends Emitter {
     public database: Db
     public collection: Collection<Document>
 
-    private utils = new Utils()
+    private _utils = new Utils()
 
-    constructor(options: IMongoConnectionOptions) {
+    public constructor(options: IMongoConnectionOptions) {
         super()
 
         if (!options?.connectionURI) {
@@ -215,7 +215,7 @@ class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<T>} The random element in the array.
      */
-    public async random<T = any>(key: string): Promise<T> {
+    public async random<T>(key: string): Promise<T> {
         const array = await this.fetch<T[]>(key)
 
         if (!key) {
@@ -236,7 +236,7 @@ class Mongo extends Emitter {
     * @param {string} key The key in database.
     * @returns {Promise<string[]>} An array with all keys in database.
     */
-    public async keysList(key: string = ''): Promise<string[]> {
+    public async keysList(key = ''): Promise<string[]> {
         if (key == '') {
             const rawData = await this.raw()
             return rawData.map(obj => obj.__KEY)
@@ -267,7 +267,7 @@ class Mongo extends Emitter {
             throw new DatabaseError(errors.invalidTypes.key + typeof key)
         }
 
-        let parsed = await this.all() as T
+        let parsed = await this.all() as any
 
         const keys = key.split('.')
         let database = parsed
@@ -295,9 +295,9 @@ class Mongo extends Emitter {
      * @param {T} value Any data to set in property.
      * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    public async set<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>> {
-        const { isObject } = this.utils
-        const fetched = await this.all()
+    public async set<T = any, P = V>(key: string, value: T): Promise<IDatabaseProperties<P>> {
+        const { isObject } = this._utils
+        const fetched = await this.all<P>()
 
         if (!key) {
             throw new DatabaseError(
@@ -320,7 +320,7 @@ class Mongo extends Emitter {
         }
 
         const keys = key.split('.')
-        let database = fetched
+        let database = fetched as any
 
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
@@ -367,9 +367,9 @@ class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async remove<P = any>(key: string): Promise<IDatabaseProperties<P>> {
-        const { isObject } = this.utils
-        const fetched = await this.all()
+    public async remove<P = V>(key: string): Promise<IDatabaseProperties<P>> {
+        const { isObject } = this._utils
+        const fetched = await this.all<P>()
 
         if (!key) {
             throw new DatabaseError(
@@ -388,7 +388,7 @@ class Mongo extends Emitter {
         }
 
         const keys = key.split('.')
-        let database = fetched
+        let database = fetched as any
 
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
@@ -432,7 +432,7 @@ class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async delete<P = any>(key: string): Promise<IDatabaseProperties<P>> {
+    public async delete<P = V>(key: string): Promise<IDatabaseProperties<P>> {
         return this.remove(key)
     }
 
@@ -473,7 +473,7 @@ class Mongo extends Emitter {
      * @param {number} value Any number to add.
      * @returns {Promise<IDatabaseProperties<P>>} If added successfully: true; else: false
      */
-    public async add<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>> {
+    public async add<P = V>(key: string, value: number): Promise<IDatabaseProperties<P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -485,7 +485,7 @@ class Mongo extends Emitter {
         }
 
         const result = await this.set(key, data + value)
-        return result
+        return result as any
     }
 
     /**
@@ -501,7 +501,7 @@ class Mongo extends Emitter {
      * @param {number} value Any number to subtract.
      * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    public async subtract<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>> {
+    public async subtract<P = V>(key: string, value: number): Promise<IDatabaseProperties<P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -513,7 +513,7 @@ class Mongo extends Emitter {
         }
 
         const result = await this.set(key, data - value)
-        return result
+        return result as any
     }
 
     /**
@@ -562,7 +562,7 @@ class Mongo extends Emitter {
      * @param {T} value The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async push<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>> {
+    public async push<T = any, P = V>(key: string, value: T): Promise<IDatabaseProperties<P>> {
         const array = (await this.fetch<T[]>(key)) || []
 
         if (array && !Array.isArray(array)) {
@@ -570,7 +570,7 @@ class Mongo extends Emitter {
         }
 
         array.push(value)
-        return this.set<T[]>(key, array)
+        return this.set<T[]>(key, array) as any
     }
 
     /**
@@ -587,7 +587,7 @@ class Mongo extends Emitter {
      * @param {number} index The index in the array.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async pop<T = any, P = any>(key: string, index: number): Promise<IDatabaseProperties<P>> {
+    public async pop<T = any, P = V>(key: string, index: number): Promise<IDatabaseProperties<P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -599,7 +599,7 @@ class Mongo extends Emitter {
         }
 
         array.splice(index, 1)
-        return this.set<T[]>(key, array)
+        return this.set<T[]>(key, array) as any
     }
 
     /**
@@ -617,7 +617,7 @@ class Mongo extends Emitter {
      * @param {number} index The index in the array.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async removeElement<P = any>(key: string, index: number): Promise<IDatabaseProperties<P>> {
+    public async removeElement<P = V>(key: string, index: number): Promise<IDatabaseProperties<P>> {
         return this.pop(key, index)
     }
 
@@ -636,7 +636,7 @@ class Mongo extends Emitter {
      * @param {T} newValue The new value to set.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public async pull<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
+    public async pull<T = any, P = V>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -648,7 +648,7 @@ class Mongo extends Emitter {
         }
 
         array.splice(index, 1, newValue)
-        return this.set<T[]>(key, array)
+        return this.set<T[]>(key, array) as any
     }
 
     /**
@@ -668,7 +668,7 @@ class Mongo extends Emitter {
      * @param {T} newValue The new value to set.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    public changeElement<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
+    public changeElement<T = any, P = V>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>> {
         return this.pull(key, index, newValue)
     }
 
@@ -681,7 +681,7 @@ class Mongo extends Emitter {
      *
      * @returns {Promise<IDatabaseProperties<P>>} Database contents.
      */
-    public async all<P = any>(): Promise<IDatabaseProperties<P>> {
+    public async all<P = V>(): Promise<IDatabaseProperties<P>> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
@@ -705,7 +705,7 @@ class Mongo extends Emitter {
      *
      * @returns {Promise<IDatabaseObject<P>[]>} Raw database contents.
      */
-    public async raw<P = any>(): Promise<IDatabaseObject<P>[]> {
+    public async raw<P = V>(): Promise<IDatabaseObject<P>[]> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }

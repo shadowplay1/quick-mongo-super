@@ -1,38 +1,34 @@
 import { EventEmitter } from 'events'
-import { IDatabaseEvents } from '../interfaces/QuickMongo'
-
 const emitter = new EventEmitter()
 
-class Emitter {
+export class Emitter<E extends object> {
 
     /**
      * Listens to the event.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {(...args: IDatabaseEvents[K][]) => void} listener Listener function.
+     * @param {keyof E} event Event name.
+     * @param {(...args: E[K][]) => void} listener Listener function.
      */
-    public on<K extends keyof IDatabaseEvents>(event: K, listener: (...args: IDatabaseEvents[K][]) => void): this {
-        emitter.on(event as any, listener)
+    public on<K extends keyof E>(event: K, listener: (...args: E[K][]) => void): this {
+        emitter.on(event as string, listener)
         return this
     }
 
     /**
      * Listens to the event only for once.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {(...args: IDatabaseEvents[K][]) => void} listener Listener function.
+     * @param {keyof E} event Event name.
+     * @param {(...args: E[K][]) => void} listener Listener function.
      */
-    public once<K extends keyof IDatabaseEvents>(event: K, listener: (...args: IDatabaseEvents[K][]) => void): this {
-        emitter.once(event as any, listener)
+    public once<K extends keyof E>(event: K, listener: (...args: E[K][]) => void): this {
+        emitter.once(event as string, listener)
         return this
     }
 
     /**
      * Emits the event.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {IDatabaseEvents[K][]} args Listener arguments.
+     * @param {keyof E} event Event name.
+     * @param {E[K][]} args Listener arguments.
      */
-    public emit<K extends keyof IDatabaseEvents>(event: K, ...args: IDatabaseEvents[K][]): boolean {
-        return emitter.emit(event as any, ...args)
+    public emit<K extends keyof E>(event: K, ...args: E[K][]): boolean {
+        return emitter.emit(event as string, ...args)
     }
 }
-
-export = Emitter

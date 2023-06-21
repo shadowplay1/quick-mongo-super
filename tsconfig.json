@@ -19,7 +19,8 @@
 		"declarationDir": "./typings"
 	},
 	"include": [
-		"src"
+		"src/**/*",
+		"mongoTypes.ts"
 	],
 	"exclude": [
 		"node_modules"

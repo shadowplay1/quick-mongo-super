@@ -6,6 +6,19 @@
 
 ## 🕘 | Changelog
 
+**v1.0.13**
+- Changed the way how all files are exported. (keeping QuickMongo exported as it is for legacy reasons)
+- Improved configurations.
+- Improved code linting & code quality.
+- Deleted unnecessary files to reduce the package size.
+- Added an optional type parameter to the main `Mongo` class that will be used in all methods that are returning the `DatabaseProperties` object.
+- Added a type parameter to the `Emitter` class that will determine what type will be used to get the event names and their return types from.
+- Added a new `MongoItems.js` file that contains all the module's **types**, and **classes**.
+- Added a new `MongoItems.d.ts` file that contains all the module's **types**, **interfaces** and **classes**.
+
+**v1.0.12**
+- Bug fixes.
+
 **v1.0.11**
 - Fixed the empty key error when trying to clear the database - now the `key` parameter in `keysList()` method is optional and defaults to empty string (`''`) if not specified.
 - Changed the ESLint configuration and linted the code to make it look prettier.
@@ -39,7 +52,7 @@ To enable them back, you need to set the `"postinstall"` property of `"quick-mon
 - JSDoc mismatches and typos fixes.
 - `DatabaseProperties` and `DatabaseObject` interfaces are generic now.
 - If the target requires to have data but it not, the module will throw an error now.
-- Return types were changed from `boolean` to `DatabaseProperties` type for 
+- Return types were changed from `boolean` to `DatabaseProperties` type for
 - - `set()`
 - - `remove()`
 - - `delete()`
@@ -81,9 +94,9 @@ To enable them back, you need to set the `"postinstall"` property of `"quick-mon
 - Improved the [examples](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
 - Added the changelog page.
 - Other minor changes.
-- 
+-
 **v1.0.1**
-- Added new methods: 
+- Added new methods:
 1. `db.ping()` (checks the read, write and delete latencies).
 2. `db.has(key)` / `db.includes(key)` methods were added.
 3. `db.random(key)` (random element from array in database).

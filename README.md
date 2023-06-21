@@ -5,7 +5,7 @@
 <b>Quick Mongo Super</b> is a light-weight and easy-to-use Node.js module written in TypeScript to work with [MongoDB](https://mongodb.com/).
 
 ## ❓ | Why?
-<ul>                                                                                                                                                          
+<ul>
 <li><b>TypeScript Support 📘</b></li>
 <li><b>100% Promise-based 📜</b></li>
 <li><b>Flexible ⚙️</b></li>
@@ -46,10 +46,10 @@ const db = new QuickMongo({
     console.log(versionData)
 
     // output:
-    // { 
-    //   updated: true, 
-    //   installedVersion: '1.0.11', 
-    //   packageVersion: '1.0.11' 
+    // {
+    //   updated: true,
+    //   installedVersion: '1.0.11',
+    //   packageVersion: '1.0.11'
     // }
 
 
@@ -98,7 +98,7 @@ const db = new QuickMongo({
 
     // subtracting from a number
     await db.subtract('accountData.balance', 50)
-  
+
     // deleting properties
     await db.delete('accountData.roles')
 

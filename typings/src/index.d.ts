@@ -1,18 +1,18 @@
 import { MongoClient, MongoClientOptions, Db, Collection, Document } from 'mongodb';
-import Emitter from './classes/Emitter';
-import { IMongoConnectionOptions, IDatabaseObject, IDatabaseProperties, IVersionData, MongoLatency } from './interfaces/QuickMongo';
+import { Emitter } from './classes/Emitter';
+import { IMongoConnectionOptions, IDatabaseObject, IDatabaseEvents, IDatabaseProperties, IVersionData, MongoLatency } from './interfaces/QuickMongo';
 /**
  * QuickMongo class.
- * @param {IMongoConnectionOptions} options MongoDB connection options.
+ * @extends {Emitter}
  */
-declare class Mongo extends Emitter {
+declare class Mongo<V = any> extends Emitter<IDatabaseEvents> {
     ready: boolean;
     options: IMongoConnectionOptions;
     mongoClientOptions: MongoClientOptions;
     mongo: MongoClient;
     database: Db;
     collection: Collection<Document>;
-    private utils;
+    private _utils;
     constructor(options: IMongoConnectionOptions);
     /**
      * Connects to the database.
@@ -61,7 +61,7 @@ declare class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<T>} The random element in the array.
      */
-    random<T = any>(key: string): Promise<T>;
+    random<T>(key: string): Promise<T>;
     /**
     * Gets a list of keys in database.
     * @param {string} key The key in database.
@@ -91,7 +91,7 @@ declare class Mongo extends Emitter {
      * @param {T} value Any data to set in property.
      * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    set<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>>;
+    set<T = any, P = V>(key: string, value: T): Promise<IDatabaseProperties<P>>;
     /**
      * Removes the property from the existing object in database.
      *
@@ -102,7 +102,7 @@ declare class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    remove<P = any>(key: string): Promise<IDatabaseProperties<P>>;
+    remove<P = V>(key: string): Promise<IDatabaseProperties<P>>;
     /**
      * Removes the property from the existing object in database.
      *
@@ -115,7 +115,7 @@ declare class Mongo extends Emitter {
      * @param {string} key The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    delete<P = any>(key: string): Promise<IDatabaseProperties<P>>;
+    delete<P = V>(key: string): Promise<IDatabaseProperties<P>>;
     /**
      * Clears the whole database.
      * @returns {Promise<boolean>} If cleared: true; else: false.
@@ -141,7 +141,7 @@ declare class Mongo extends Emitter {
      * @param {number} value Any number to add.
      * @returns {Promise<IDatabaseProperties<P>>} If added successfully: true; else: false
      */
-    add<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>>;
+    add<P = V>(key: string, value: number): Promise<IDatabaseProperties<P>>;
     /**
      * Subtracts a number from a property data in database.
      *
@@ -155,7 +155,7 @@ declare class Mongo extends Emitter {
      * @param {number} value Any number to subtract.
      * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
      */
-    subtract<P = any>(key: string, value: number): Promise<IDatabaseProperties<P>>;
+    subtract<P = V>(key: string, value: number): Promise<IDatabaseProperties<P>>;
     /**
      * Fetches the data from the database.
      *
@@ -196,7 +196,7 @@ declare class Mongo extends Emitter {
      * @param {T} value The key in database.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    push<T = any, P = any>(key: string, value: T): Promise<IDatabaseProperties<P>>;
+    push<T = any, P = V>(key: string, value: T): Promise<IDatabaseProperties<P>>;
     /**
      * Removes an element from a specified array in the database.
      *
@@ -211,7 +211,7 @@ declare class Mongo extends Emitter {
      * @param {number} index The index in the array.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    pop<T = any, P = any>(key: string, index: number): Promise<IDatabaseProperties<P>>;
+    pop<T = any, P = V>(key: string, index: number): Promise<IDatabaseProperties<P>>;
     /**
      * Removes an element from a specified array in the database.
      *
@@ -227,7 +227,7 @@ declare class Mongo extends Emitter {
      * @param {number} index The index in the array.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    removeElement<P = any>(key: string, index: number): Promise<IDatabaseProperties<P>>;
+    removeElement<P = V>(key: string, index: number): Promise<IDatabaseProperties<P>>;
     /**
      * Changes the specified element's value in a specified array in the database.
      *
@@ -243,7 +243,7 @@ declare class Mongo extends Emitter {
      * @param {T} newValue The new value to set.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    pull<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>>;
+    pull<T = any, P = V>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>>;
     /**
      * Changes the specified element's value in a specified array in the database.
      *
@@ -261,7 +261,7 @@ declare class Mongo extends Emitter {
      * @param {T} newValue The new value to set.
      * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
      */
-    changeElement<T = any, P = any>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>>;
+    changeElement<T = any, P = V>(key: string, index: number, newValue: T): Promise<IDatabaseProperties<P>>;
     /**
      * Fetches the database contents.
      *
@@ -271,7 +271,7 @@ declare class Mongo extends Emitter {
      *
      * @returns {Promise<IDatabaseProperties<P>>} Database contents.
      */
-    all<P = any>(): Promise<IDatabaseProperties<P>>;
+    all<P = V>(): Promise<IDatabaseProperties<P>>;
     /**
      * Fetches the raw databas contents.
      *
@@ -281,6 +281,6 @@ declare class Mongo extends Emitter {
      *
      * @returns {Promise<IDatabaseObject<P>[]>} Raw database contents.
      */
-    raw<P = any>(): Promise<IDatabaseObject<P>[]>;
+    raw<P = V>(): Promise<IDatabaseObject<P>[]>;
 }
 export = Mongo;

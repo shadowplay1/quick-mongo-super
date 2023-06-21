@@ -1,4 +1,4 @@
-declare class Utils {
+export declare class Utils {
     /**
     * Checks for is the item object and returns it.
     * @param {T} item The item to check.
@@ -6,4 +6,3 @@ declare class Utils {
     */
     isObject<T>(item: T): boolean;
 }
-export = Utils;

@@ -1,14 +1,29 @@
 module.exports = {
     root: true,
+    parser: '@typescript-eslint/parser',
 
     parserOptions: {
-        ecmaVersion: 12,
-        sourceType: 'module'
+        ecmaVersion: 2020,
+        sourceType: 'module',
+        tsconfigRootDir: __dirname,
+
+        ecmaFeatures: {
+            jsx: true,
+            globalReturn: false,
+        },
+
+        project: [
+            './tsconfig.json'
+        ]
     },
 
     extends: [
         'eslint:recommended',
-        'plugin:@typescript-eslint/recommended'
+        'plugin:@typescript-eslint/recommended',
+    ],
+
+    plugins: [
+        '@typescript-eslint'
     ],
 
     env: {
@@ -24,6 +39,12 @@ module.exports = {
         process: true
     },
 
+    ignorePatterns: [
+        'node_modules/*',
+        '.eslintrc.js',
+        'commitlint.config.js'
+    ],
+
     rules: {
         semi: [
             'warn',
@@ -33,6 +54,7 @@ module.exports = {
         'no-plusplus': 'off',
         'implicit-arrow-linebreak': 'off',
         'operator-linebreak': 'off',
+
         'arrow-body-style': 'off',
         'no-param-reassign': 'off',
         'consistent-return': 'off',
@@ -40,6 +62,11 @@ module.exports = {
         'no-mixed-spaces-and-tabs': 'off',
 
         'eol-last': 'warn',
+
+        'linebreak-style': [
+            'error',
+            'unix'
+        ],
 
         '@typescript-eslint/consistent-type-definitions': [
             'warn',
@@ -55,7 +82,6 @@ module.exports = {
         '@typescript-eslint/unbound-method': 'off',
         '@typescript-eslint/ban-ts-comment': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
-        '@typescript-eslint/no-inferrable-types': 'off',
 
         '@typescript-eslint/naming-convention': [
             'error',
@@ -118,9 +144,31 @@ module.exports = {
         ]
     },
 
-    'parser': '@typescript-eslint/parser',
+    overrides: [
+        {
+            files: [
+                '*.js',
+                '*.ts',
+                '*.tsx'
+            ],
 
-    'plugins': [
-        '@typescript-eslint'
+            rules: {
+                'indent': [
+                    'warn',
+                    4,
+                    {
+                        'SwitchCase': 1
+                    }
+                ]
+            }
+        }, {
+            files: [
+                './src/commands/**/*'
+            ],
+
+            rules: {
+                "@typescript-eslint/no-unused-vars": 'off'
+            }
+        }
     ]
 }

@@ -6,7 +6,7 @@ export interface IDatabaseEvents {
     destroy: MongoClient
 }
 
-// For legacy reasons:
+// Keeping this for legacy reasons
 // eslint-disable-next-line
 export interface DatabaseProperties<T = any> {
     [key: string]: T

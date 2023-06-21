@@ -1,5 +1,14 @@
+# dependencies
 node_modules/
 
-typings/
-utils/
+# compiled source code & types
 dist/
+typings/
+*.js
+*.d.ts
+
+# usage examples
+examples/
+
+# utilities
+utils/

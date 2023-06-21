@@ -1,6 +1,31 @@
+# git files
 .git/
+
+# husky scripts
+.husky/
+
+# dependencies
 node_modules/
 
+# utilities
 utils/
+
+# source code
 src/
+
+# usage examples
 examples/
+
+# configuration files
+.editorconfig
+.gitattributes
+.eslintrc.js
+tsconfig.json
+
+# ignore lists
+.eslintignore
+.gitignore
+.npmignore
+
+# to reduce the final package size
+package-lock.json

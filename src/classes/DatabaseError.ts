@@ -1,7 +1,7 @@
 /**
  * DatabaseError class.
  */
-class DatabaseError extends Error {
+export class DatabaseError extends Error {
 
     /**
      * Creates a 'DatabaseError' instance.
@@ -9,7 +9,6 @@ class DatabaseError extends Error {
      */
     constructor(msg?: string) {
         super(msg)
-        Error.captureStackTrace(this, this.constructor)
 
         /**
          * Error name.
@@ -18,5 +17,3 @@ class DatabaseError extends Error {
         this.name = 'DatabaseError'
     }
 }
-
-export = DatabaseError

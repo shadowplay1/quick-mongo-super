@@ -1,4 +1,4 @@
-class Utils {
+export class Utils {
 
     /**
     * Checks for is the item object and returns it.
@@ -11,5 +11,3 @@ class Utils {
             && item !== null
     }
 }
-
-export = Utils

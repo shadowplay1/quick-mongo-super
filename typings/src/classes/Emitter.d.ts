@@ -1,22 +1,20 @@
-import { IDatabaseEvents } from '../interfaces/QuickMongo';
-declare class Emitter {
+export declare class Emitter<E extends object> {
     /**
      * Listens to the event.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {(...args: IDatabaseEvents[K][]) => void} listener Listener function.
+     * @param {keyof E} event Event name.
+     * @param {(...args: E[K][]) => void} listener Listener function.
      */
-    on<K extends keyof IDatabaseEvents>(event: K, listener: (...args: IDatabaseEvents[K][]) => void): this;
+    on<K extends keyof E>(event: K, listener: (...args: E[K][]) => void): this;
     /**
      * Listens to the event only for once.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {(...args: IDatabaseEvents[K][]) => void} listener Listener function.
+     * @param {keyof E} event Event name.
+     * @param {(...args: E[K][]) => void} listener Listener function.
      */
-    once<K extends keyof IDatabaseEvents>(event: K, listener: (...args: IDatabaseEvents[K][]) => void): this;
+    once<K extends keyof E>(event: K, listener: (...args: E[K][]) => void): this;
     /**
      * Emits the event.
-     * @param {keyof IDatabaseEvents} event Event name.
-     * @param {IDatabaseEvents[K][]} args Listener arguments.
+     * @param {keyof E} event Event name.
+     * @param {E[K][]} args Listener arguments.
      */
-    emit<K extends keyof IDatabaseEvents>(event: K, ...args: IDatabaseEvents[K][]): boolean;
+    emit<K extends keyof E>(event: K, ...args: E[K][]): boolean;
 }
-export = Emitter;
