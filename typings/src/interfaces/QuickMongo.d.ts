@@ -47,3 +47,4 @@ export interface IVersionData {
     packageVersion: string;
 }
 export declare type MongoLatency = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>;
+export declare type PropertyValue<V, VIfNull = any> = V extends null ? VIfNull : V;

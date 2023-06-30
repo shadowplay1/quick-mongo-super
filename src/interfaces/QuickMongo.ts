@@ -63,3 +63,4 @@ export interface IVersionData {
 }
 
 export type MongoLatency = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
+export type PropertyValue<V, VIfNull = any> = V extends null ? VIfNull : V

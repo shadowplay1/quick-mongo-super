@@ -6,8 +6,12 @@
 
 ## 🕘 | Changelog
 
+**v1.0.15**
+- Added the `K` generic type into main `Mongo` class that represents the type of database keys.
+- Typings bugfixes & improvements.
+
 **v1.0.14**
-- Fixed the incorrect import paths in `MongoItems` files
+- Fixed the incorrect import paths in `MongoItems` files.
 
 **v1.0.13**
 - Changed the way how all files are exported. (keeping QuickMongo exported as it is for legacy reasons)
