@@ -15,7 +15,7 @@ import {
     IMongoConnectionOptions,
     IDatabaseObject, IDatabaseEvents,
     IVersionData, MongoLatency,
-    PropertyValue, DatabseReturnType
+    PropertyValue, DatabaseReturnType
 } from './interfaces/QuickMongo'
 
 import modulePackage from '../package.json'
@@ -294,10 +294,10 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {PropertyValue<V, T>} value Any data to set in property.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
      */
     public async set<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
-        DatabseReturnType<IsUsingDatabaseProperties, V, P>
+        DatabaseReturnType<IsUsingDatabaseProperties, V, P>
     > {
         const { isObject } = this._utils
         const fetched = await this.all() as any
@@ -368,9 +368,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * - P: The type of data inside the specified database property.
      *
      * @param {K} key The key in database..
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async remove<P = V>(key: K): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async remove<P = V>(key: K): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const { isObject } = this._utils
         const fetched = await this.all() as any
 
@@ -433,9 +433,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * - P: The type of data inside the specified database property.
      *
      * @param {K} key The key in database..
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async delete<P = V>(key: K): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async delete<P = V>(key: K): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.remove(key)
     }
 
@@ -474,9 +474,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {number} value Any number to add.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If added successfully: true; else: false
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If added successfully: true; else: false
      */
-    public async add<P = V>(key: K, value: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async add<P = V>(key: K, value: number): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -502,9 +502,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {number} value Any number to subtract.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
      */
-    public async subtract<P = V>(key: K, value: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async subtract<P = V>(key: K, value: number): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -563,10 +563,10 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {T} value The key in database.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
     public async push<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
-        DatabseReturnType<IsUsingDatabaseProperties, V, P>
+        DatabaseReturnType<IsUsingDatabaseProperties, V, P>
     > {
         const array = (await this.fetch<T[]>(key)) || []
 
@@ -590,9 +590,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async pop<T = V, P = V>(key: K, index: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async pop<T = V, P = V>(key: K, index: number): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -620,9 +620,9 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async removeElement<P = V>(key: K, index: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    public async removeElement<P = V>(key: K, index: number): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.pop(key, index)
     }
 
@@ -639,13 +639,13 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
      * @param {T} newValue The new value to set.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
     public async pull<T = V, P = V>(
         key: K,
         index: number,
         newValue: PropertyValue<V, T>
-    ): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    ): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -675,13 +675,13 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
      * @param {T} newValue The new value to set.
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
     public changeElement<T = V, P = V>(
         key: K,
         index: number,
         newValue: PropertyValue<V, T>
-    ): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
+    ): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.pull(key, index, newValue as any)
     }
 
@@ -692,12 +692,12 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      *
      * - P: The type of data inside all the database properties.
      *
-     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, Record<string, any>, P>>} Database contents.
+     * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, Record<string, any>, P>>} Database contents.
      */
     public async all<
         P = Record<string, any>,
         UseDatabaseProperties extends boolean = IsUsingDatabaseProperties
-    >(): Promise<DatabseReturnType<UseDatabaseProperties, P, P>> {
+    >(): Promise<DatabaseReturnType<UseDatabaseProperties, P, P>> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
