@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
-const QuickMongo = require('../dist/index') // const QuickMongo = require('quick-mongo-super')
+const QuickMongo = require('quick-mongo-super')
 
 const db = new QuickMongo({
     connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database.

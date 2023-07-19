@@ -1,6 +1,6 @@
-import QuickMongo from '../src/index' // import QuickMongo from 'quick-mongo-super'
+import QuickMongo from 'quick-mongo-super'
 
-const db = new QuickMongo({
+const db = new QuickMongo<string, any>({
     connectionURI: 'your mongodb connection URI here', // MongoDB connection URI to connect to the database.
     dbName: 'db',
     collectionName: 'database', // MongoDB collection name to use.
