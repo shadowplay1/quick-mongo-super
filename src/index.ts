@@ -14,7 +14,8 @@ import errors from './errors'
 import {
     IMongoConnectionOptions,
     IDatabaseObject, IDatabaseEvents,
-    IDatabaseProperties, IVersionData, MongoLatency, PropertyValue
+    IVersionData, MongoLatency,
+    PropertyValue, DatabseReturnType
 } from './interfaces/QuickMongo'
 
 import modulePackage from '../package.json'
@@ -23,7 +24,7 @@ import modulePackage from '../package.json'
  * QuickMongo class.
  * @extends {Emitter}
  */
-class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
+class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = false> extends Emitter<IDatabaseEvents> {
     public ready = false
 
     public options: IMongoConnectionOptions
@@ -293,11 +294,13 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {PropertyValue<V, T>} value Any data to set in property.
-     * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
      */
-    public async set<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<IDatabaseProperties<P>> {
+    public async set<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
+        DatabseReturnType<IsUsingDatabaseProperties, V, P>
+    > {
         const { isObject } = this._utils
-        const fetched = await this.all<P>()
+        const fetched = await this.all() as any
 
         if (!key) {
             throw new DatabaseError(
@@ -365,11 +368,11 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      * - P: The type of data inside the specified database property.
      *
      * @param {K} key The key in database..
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async remove<P = V>(key: K): Promise<IDatabaseProperties<P>> {
+    public async remove<P = V>(key: K): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         const { isObject } = this._utils
-        const fetched = await this.all<P>()
+        const fetched = await this.all() as any
 
         if (!key) {
             throw new DatabaseError(
@@ -430,9 +433,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      * - P: The type of data inside the specified database property.
      *
      * @param {K} key The key in database..
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async delete<P = V>(key: K): Promise<IDatabaseProperties<P>> {
+    public async delete<P = V>(key: K): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.remove(key)
     }
 
@@ -471,9 +474,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {number} value Any number to add.
-     * @returns {Promise<IDatabaseProperties<P>>} If added successfully: true; else: false
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If added successfully: true; else: false
      */
-    public async add<P = V>(key: K, value: number): Promise<IDatabaseProperties<P>> {
+    public async add<P = V>(key: K, value: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -499,9 +502,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {number} value Any number to subtract.
-     * @returns {Promise<IDatabaseProperties<P>>} If set successfully: true; else: false
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
      */
-    public async subtract<P = V>(key: K, value: number): Promise<IDatabaseProperties<P>> {
+    public async subtract<P = V>(key: K, value: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         const data = (await this.fetch<number>(key)) || 0
 
         if (typeof value !== 'number') {
@@ -560,9 +563,11 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {T} value The key in database.
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async push<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<IDatabaseProperties<P>> {
+    public async push<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
+        DatabseReturnType<IsUsingDatabaseProperties, V, P>
+    > {
         const array = (await this.fetch<T[]>(key)) || []
 
         if (array && !Array.isArray(array)) {
@@ -585,9 +590,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async pop<T = V, P = V>(key: K, index: number): Promise<IDatabaseProperties<P>> {
+    public async pop<T = V, P = V>(key: K, index: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -615,9 +620,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async removeElement<P = V>(key: K, index: number): Promise<IDatabaseProperties<P>> {
+    public async removeElement<P = V>(key: K, index: number): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.pop(key, index)
     }
 
@@ -634,13 +639,13 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
      * @param {T} newValue The new value to set.
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
     public async pull<T = V, P = V>(
         key: K,
         index: number,
         newValue: PropertyValue<V, T>
-    ): Promise<IDatabaseProperties<P>> {
+    ): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         const array = await this.fetch<T[]>(key)
 
         if (!array) {
@@ -670,13 +675,13 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      * @param {K} key The key in database..
      * @param {number} index The index in the array.
      * @param {T} newValue The new value to set.
-     * @returns {Promise<IDatabaseProperties<P>>} If cleared: true; else: false.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
     public changeElement<T = V, P = V>(
         key: K,
         index: number,
         newValue: PropertyValue<V, T>
-    ): Promise<IDatabaseProperties<P>> {
+    ): Promise<DatabseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.pull(key, index, newValue as any)
     }
 
@@ -687,14 +692,17 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
      *
      * - P: The type of data inside all the database properties.
      *
-     * @returns {Promise<IDatabaseProperties<P>>} Database contents.
+     * @returns {Promise<DatabseReturnType<IsUsingDatabaseProperties, Record<string, any>, P>>} Database contents.
      */
-    public async all<P = V>(): Promise<IDatabaseProperties<P>> {
+    public async all<
+        P = Record<string, any>,
+        UseDatabaseProperties extends boolean = IsUsingDatabaseProperties
+    >(): Promise<DatabseReturnType<UseDatabaseProperties, P, P>> {
         if (!this.ready) {
             throw new DatabaseError(errors.connection.noConnection)
         }
 
-        const obj = {}
+        const obj: Record<any, any> = {}
         const elements = await this.raw() || []
 
         for (const element of elements) {
@@ -719,9 +727,9 @@ class Mongo<K = string, V = null> extends Emitter<IDatabaseEvents> {
         }
 
         const rawData = this.collection.find()
-        const rawArray = await rawData.toArray() as any[]
+        const rawArray: any[] = await rawData.toArray()
 
-        rawArray.map((element: any) => delete element._id)
+        rawArray.map(element => delete element._id)
         return rawArray
     }
 }

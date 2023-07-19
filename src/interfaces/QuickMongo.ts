@@ -1,4 +1,12 @@
-import { Collection, Document, MongoClient, MongoClientOptions } from 'mongodb'
+import {
+    Collection, Document,
+    MongoClient, MongoClientOptions
+} from 'mongodb'
+
+export type If<T extends boolean,
+    IfTrue,
+    IfFalse = null
+> = T extends true ? IfTrue : IfFalse
 
 export interface IDatabaseEvents {
     connecting: void
@@ -64,3 +72,9 @@ export interface IVersionData {
 
 export type MongoLatency = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
 export type PropertyValue<V, VIfNull = any> = V extends null ? VIfNull : V
+
+export type DatabseReturnType<IsUsingDatabaseProperties extends boolean, V, P> = If<
+    IsUsingDatabaseProperties,
+    IDatabaseProperties<P>,
+    V
+>

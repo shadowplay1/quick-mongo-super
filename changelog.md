@@ -6,6 +6,10 @@
 
 ## 🕘 | Changelog
 
+**v1.0.16**
+- Added the `IsUsingDatabaseProperties` generic type that defaults to `false` into main `Mongo` class to determine if `DatabaseProperties object will be returned in all database methods.
+- Typings improvements.
+
 **v1.0.15**
 - Added the `K` generic type into main `Mongo` class that represents the type of database keys.
 - Typings bugfixes & improvements.

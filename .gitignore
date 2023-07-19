@@ -6,4 +6,7 @@ utils/
 
 # compiled source code & types
 dist/
+
 typings/
+typings/src/
+typings/src/**/*
