@@ -293,10 +293,10 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * - P: The type of data inside the specified database property.
      *
      * @param {K} key The key in database..
-     * @param {PropertyValue<V, T>} value Any data to set in property.
+     * @param {PropertyValue<T, V>} value Any data to set in property.
      * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If set successfully: true; else: false
      */
-    public async set<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
+    public async set<T = V, P = V>(key: K, value: PropertyValue<T, V>): Promise<
         DatabaseReturnType<IsUsingDatabaseProperties, V, P>
     > {
         const { isObject } = this._utils
@@ -565,7 +565,7 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
      * @param {T} value The key in database.
      * @returns {Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>>} If cleared: true; else: false.
      */
-    public async push<T = V, P = V>(key: K, value: PropertyValue<V, T>): Promise<
+    public async push<T = V, P = V>(key: K, value: PropertyValue<T, V>): Promise<
         DatabaseReturnType<IsUsingDatabaseProperties, V, P>
     > {
         const array = (await this.fetch<T[]>(key)) || []
@@ -644,7 +644,7 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
     public async pull<T = V, P = V>(
         key: K,
         index: number,
-        newValue: PropertyValue<V, T>
+        newValue: PropertyValue<T, V>
     ): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         const array = await this.fetch<T[]>(key)
 
@@ -680,7 +680,7 @@ class Mongo<K = string, V = null, IsUsingDatabaseProperties extends boolean = fa
     public changeElement<T = V, P = V>(
         key: K,
         index: number,
-        newValue: PropertyValue<V, T>
+        newValue: PropertyValue<T, V>
     ): Promise<DatabaseReturnType<IsUsingDatabaseProperties, V, P>> {
         return this.pull(key, index, newValue as any)
     }

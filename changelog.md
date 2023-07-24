@@ -6,6 +6,9 @@
 
 ## 🕘 | Changelog
 
+**v1.0.18**
+- Fixed typing bug in all methods requiring to specify a value.
+
 **v1.0.17**
 - Fixed typo in type name.
 
