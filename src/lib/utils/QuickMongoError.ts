@@ -1,10 +1,10 @@
 /**
- * DatabaseError class.
+ * QuickMongoError class.
  */
-export class DatabaseError extends Error {
+export class QuickMongoError extends Error {
 
     /**
-     * Creates a 'DatabaseError' instance.
+     * Creates a 'QuickMongoError' instance.
      * @param {string} msg Error message.
      */
     constructor(msg?: string) {
@@ -14,6 +14,6 @@ export class DatabaseError extends Error {
          * Error name.
          * @type {string}
          */
-        this.name = 'DatabaseError'
+        this.name = 'QuickMongoError'
     }
 }

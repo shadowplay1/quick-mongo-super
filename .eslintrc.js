@@ -40,8 +40,12 @@ module.exports = {
     },
 
     ignorePatterns: [
-        'node_modules/*',
+        'node_modules/**/*',
+        'types/**/*',
+        'dist/**/*',
+        'examples/**/*',
         '.eslintrc.js',
+        'postinstall.js',
         'commitlint.config.js'
     ],
 
@@ -50,6 +54,8 @@ module.exports = {
             'warn',
             'never'
         ],
+
+        '@typescript-eslint/no-extra-semi': 'warn',
 
         'no-plusplus': 'off',
         'implicit-arrow-linebreak': 'off',
