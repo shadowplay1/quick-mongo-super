@@ -34,7 +34,3 @@ export class Emitter<E extends Record<string, any[]>> {
     }
 }
 
-const a = new Emitter<{test: [param1: string, param2: number]}>()
-a.on('test', (x, y) => {
-    y
-})
