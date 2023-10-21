@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events'
 const emitter = new EventEmitter()
 
-export class Emitter<E extends Record<string, any[]>> {
+export class Emitter<E extends Record<string, any>> {
 
     /**
      * Listens to the event.
@@ -30,7 +30,7 @@ export class Emitter<E extends Record<string, any[]>> {
      * @returns {boolean} `true` if the event had listeners, `false` otherwise.
      */
     public emit<K extends Exclude<keyof E, number>>(event: K, ...args: E[K]): boolean {
-        return emitter.emit(event, ...args)
+        return emitter.emit(event, ...args as any[])
     }
 }
 

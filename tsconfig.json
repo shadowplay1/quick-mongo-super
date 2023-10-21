@@ -19,7 +19,8 @@
 		"declarationDir": "./typings"
 	},
 	"include": [
-		"src/**/*"
+		"src/**/*",
+		"test"
 	],
 	"exclude": [
 		"node_modules"
