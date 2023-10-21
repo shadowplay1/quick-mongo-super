@@ -4,3 +4,6 @@ node_modules/
 # compiled source code & types
 dist/
 typings/
+
+# testing
+test/

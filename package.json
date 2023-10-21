@@ -14,7 +14,7 @@
   "author": "shadowplay1 <shadowplay483@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "^7.6.3",
+    "mongoose": "5.13",
     "node-fetch": "^2.7.0"
   },
   "directories": {
