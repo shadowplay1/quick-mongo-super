@@ -1,26 +1,44 @@
 import { Model, model, models } from 'mongoose'
 
-import { IDatabaseConfiguration, IDatabaseInternalStructure } from '../types/QuickMongo'
+import { IDatabaseConfiguration, IDatabaseInternalStructure, IMongoLatency } from '../types/QuickMongo'
 import { QuickMongoClient } from './QuickMongoClient'
 
 import { internalDatabaseSchema } from '../schemas/internal.schema'
 import { CacheManager } from './managers/CacheManager'
+
 import { isObject } from './utils/functions/isObject.function'
+import { QuickMongoError } from './utils/QuickMongoError'
+
+import { If, IsObject, Maybe } from '../types/utils'
+import { typeOf } from './utils/functions/typeOf.function'
 
 /**
  * QuickMongo class.
  * @extends {Emitter}
  */
 export class QuickMongo<K extends string = string, V = any> {
-    private _cache: CacheManager<any, IDatabaseInternalStructure<any>> = new CacheManager()
+    private _cache: CacheManager<any, IDatabaseInternalStructure<any>>
 
-    private _client: QuickMongoClient
+    /**
+     * Quick Mongo client to work with.
+     * @type {QuickMongoClient<any>}
+     * @private
+     */
+    private _client: QuickMongoClient<any>
     private _model: Model<IDatabaseInternalStructure>
 
     public name: string
     public collectionName: string
 
-    public constructor(client: QuickMongoClient, options: IDatabaseConfiguration) {
+    readonly [Symbol.toStringTag] = 'QuickMongoDatabase'
+
+    /**
+     * Quick Mongo database constructor.
+     * @param client Quick Mongo client to work with.
+     * @param options Database configuration object.
+     */
+    public constructor(client: QuickMongoClient<any>, options: IDatabaseConfiguration) {
+        this._cache = new CacheManager(client)
         this._client = client
 
         this._model = models[options.name] || model<IDatabaseInternalStructure>(
@@ -33,33 +51,66 @@ export class QuickMongo<K extends string = string, V = any> {
         this._loadCache()
     }
 
-    public get<TValue = V>(key: K): TValue {
+    /**
+     * Sends a read, write and delete requests to the database.
+     * and returns the request latencies.
+     * @returns {Promise<IMongoLatency>} Database latency object.
+     */
+    public async ping(): Promise<IMongoLatency> {
+        const pingDatabaseKey = '___PING___' as K
+
+        let readLatency = -1
+        let writeLatency = -1
+        let deleteLatency = -1
+
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
+        const writeStartDate = Date.now()
+
+        await this.set(pingDatabaseKey, 1)
+        writeLatency = Date.now() - writeStartDate
+
+        const readStartDate = Date.now()
+
+        await this._allFromDatabase()
+        readLatency = Date.now() - readStartDate
+
+        const deleteStartDate = Date.now()
+
+        await this.delete(pingDatabaseKey)
+        deleteLatency = Date.now() - deleteStartDate
+
+        return {
+            readLatency,
+            writeLatency,
+            deleteLatency
+        }
+    }
+
+    public get<TValue = V>(key: K): Maybe<TValue> {
         return this._cache.get<TValue>(key)
     }
 
-    public fetch<TValue = V>(key: K): TValue {
+    public fetch<TValue = V>(key: K): Maybe<TValue> {
         return this.get<TValue>(key)
-    }
-
-    public keys(key?: K): string[] {
-        if (!key) {
-            const allData = this.all()
-            return Object.keys(allData)
-        }
-
-        const data = this.get(key)
-
-        return Object.keys(data)
-            .filter(key => data[key] !== undefined && data[key] !== null)
     }
 
     public has(key: K): boolean {
         return !!this.get(key)
     }
 
-    public async set<TValue = V>(key: K, value: TValue): Promise<any> {
-        this._cache.set<TValue>(key, value)
+    public async set<
+        TValue = V,
+        TReturnValue = any
+    >(key: K, value: TValue): Promise<If<IsObject<TValue>, TReturnValue, TValue>> {
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
         const fetched = this.all()
+        this._cache.set<TValue>(key, value)
 
         const keys = key.split('.')
         let database = fetched as any
@@ -67,7 +118,6 @@ export class QuickMongo<K extends string = string, V = any> {
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
                 database[keys[i]] = value
-
             } else if (!isObject(database[keys[i]])) {
                 database[keys[i]] = {}
             }
@@ -88,14 +138,18 @@ export class QuickMongo<K extends string = string, V = any> {
             await this._model.updateOne({
                 __KEY: keys[0]
             }, {
-                $set: {
-                    __VALUE: fetched[keys[0]]
-                }
+                __VALUE: fetched[keys[0]]
             })
         }
+
+        return typeof value == 'object' && value !== null ? this._cache.get(keys[0]) : value as any
     }
 
-    public async delete(key: K): Promise<any> {
+    public async delete<TReturnValue = any>(key: K): Promise<Maybe<TReturnValue>> {
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
         this._cache.delete(key)
         const fetched = this.all()
 
@@ -121,11 +175,42 @@ export class QuickMongo<K extends string = string, V = any> {
             await this._model.updateOne({
                 __KEY: keys[0]
             }, {
-                $set: {
-                    __VALUE: fetched[keys[0]]
-                }
+                __VALUE: fetched[keys[0]]
             })
         }
+
+        return this._cache.get(keys[0])
+    }
+
+    // public async add(key: K): Promise<number> {
+
+    // }
+
+    // public async subtract(key: K): Promise<number> {
+
+    // }
+
+    // public async push<TValue = V, TReturnValue = any>(key: K, value: TValue): Promise<TReturnValue> {
+
+    // }
+
+    // public async pull<TValue = V, TReturnValue = any>(key: K, index: number, value: TValue): Promise<TReturnValue> {
+
+    // }
+
+    // public async pop<TValue = V, TReturnValue = any>(key: K, index: number): Promise<TReturnValue> {
+
+    // }
+
+    public keys(key?: K): string[] {
+        if (!key) {
+            return Object.keys(this.all())
+        }
+
+        const data = this.get(key)
+
+        return Object.keys(data || {})
+            .filter(key => data[key] !== undefined && data[key] !== null)
     }
 
     /**
@@ -141,16 +226,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * @returns {T} The random element in the array.
      */
     public random<T>(key: K): T {
-        const array = this.fetch<T[]>(key)
-
-        if (!key) {
-            // throw new DatabaseError(
-            //     errors.requiredParameterMissing('key')
-            // )
-        }
+        const array = this.get<T[]>(key)
 
         if (!Array.isArray(array)) {
-            // throw new DatabaseError(errors.target.notArray + typeof array)
+            throw new QuickMongoError('INVALID_TARGET', 'array', typeOf(array))
         }
 
         return array[Math.floor(Math.random() * array.length)]
@@ -164,17 +243,24 @@ export class QuickMongo<K extends string = string, V = any> {
         return this.clear()
     }
 
-
     /**
      * Loads the database into cache.
      * @returns {Promise<void>}
      */
     private async _loadCache(): Promise<void> {
         const database = await this._allFromDatabase<Record<K, any>>()
+        const initialDatabaseData = this._client.initialDatabaseData
+
+        if (this._client.initialDatabaseData && !Object.keys(database).length) {
+            for (const key of Object.keys(initialDatabaseData)) {
+                this.set(key as K, initialDatabaseData[key])
+                this._cache.set(key as K, initialDatabaseData[key])
+            }
+        }
 
         for (const key in database) {
-            const guildDatabase = database[key]
-            this._cache.set(key, guildDatabase)
+            const dataObject = database[key]
+            this._cache.set(key, dataObject)
         }
     }
 
@@ -183,14 +269,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * @returns {any} Database contents.
      */
     private async _allFromDatabase<TValue extends Record<string, any> = V>(): Promise<TValue> {
-        if (!this._client.connected) {
-            // throw new DatabaseError_1.DatabaseError(errors_1.default.connection.noConnection)
-        }
-
         const obj = {}
-        const elements = await this.raw() || {}
+        const elements = await this.raw() || []
 
-        for (const element of Object.values<IDatabaseInternalStructure>(elements)) {
+        for (const element of elements) {
             obj[element.__KEY] = element.__VALUE
         }
 
@@ -207,13 +289,9 @@ export class QuickMongo<K extends string = string, V = any> {
 
     /**
      * Fetches the raw database contents.
-     * @returns {Promise<IDatabaseInternalStructure<any>>} Raw database contents.
+     * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>} Raw database contents.
      */
-    public async raw(): Promise<IDatabaseInternalStructure<any>> {
-        if (!this._client.connected) {
-            // throw new DatabaseError_1.DatabaseError(errors_1.default.connection.noConnection)
-        }
-
+    public async raw<TInternalDataValue>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
         const data = await this._model.find()
         return data as any
     }
