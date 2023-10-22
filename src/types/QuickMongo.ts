@@ -1,5 +1,6 @@
 export interface IQuickMongoEvents {
-    connected: [voidParam: void]
+    connect: [voidParam: void]
+    disconnect: [voidParam: void]
 }
 
 export interface IDatabaseConfiguration {
