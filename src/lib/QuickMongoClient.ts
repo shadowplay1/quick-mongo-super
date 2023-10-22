@@ -1,16 +1,14 @@
-import { connect } from 'mongoose'
+import { connect, disconnect } from 'mongoose'
 
 import { IQuickMongoEvents } from '../types/QuickMongo'
 import { Emitter } from './utils/Emitter'
 
 export class QuickMongoClient extends Emitter<IQuickMongoEvents> {
     private _connectionURI: string
-
     public connected = false
 
     public constructor(connectionURI: string) {
         super()
-
         this._connectionURI = connectionURI
     }
 
@@ -20,6 +18,11 @@ export class QuickMongoClient extends Emitter<IQuickMongoEvents> {
             useUnifiedTopology: true,
         })
 
-        this.emit('connected')
+        this.emit('connect')
+    }
+
+    public async disconnect(): Promise<void> {
+        await disconnect()
+        this.emit('disconnect')
     }
 }

@@ -38,7 +38,23 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     public fetch<TValue = V>(key: K): TValue {
-        return this._cache.get<TValue>(key)
+        return this.get<TValue>(key)
+    }
+
+    public keys(key?: K): string[] {
+        if (!key) {
+            const allData = this.all()
+            return Object.keys(allData)
+        }
+
+        const data = this.get(key)
+
+        return Object.keys(data)
+            .filter(key => data[key] !== undefined && data[key] !== null)
+    }
+
+    public has(key: K): boolean {
+        return !!this.get(key)
     }
 
     public async set<TValue = V>(key: K, value: TValue): Promise<any> {
@@ -113,6 +129,43 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
+     * Gets the random element of array in database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * - T: The type of random element in the array.
+     *
+     * @param {K} key The key in database.
+     * @returns {T} The random element in the array.
+     */
+    public random<T>(key: K): T {
+        const array = this.fetch<T[]>(key)
+
+        if (!key) {
+            // throw new DatabaseError(
+            //     errors.requiredParameterMissing('key')
+            // )
+        }
+
+        if (!Array.isArray(array)) {
+            // throw new DatabaseError(errors.target.notArray + typeof array)
+        }
+
+        return array[Math.floor(Math.random() * array.length)]
+    }
+
+    public async clear(): Promise<void> {
+        await this._model.deleteMany()
+    }
+
+    public async deleteAll(): Promise<void> {
+        return this.clear()
+    }
+
+
+    /**
      * Loads the database into cache.
      * @returns {Promise<void>}
      */
@@ -148,12 +201,12 @@ export class QuickMongo<K extends string = string, V = any> {
      * Gets the database contents from cache.
      * @returns {any} Database contents.
      */
-    public all<TValue extends Record<string, any> = V>(): TValue {
+    public all<TValue extends Record<string, any>>(): TValue {
         return this._cache.getCacheObject<TValue>()
     }
 
     /**
-     * Fetches the raw databas contents.
+     * Fetches the raw database contents.
      * @returns {Promise<IDatabaseInternalStructure<any>>} Raw database contents.
      */
     public async raw(): Promise<IDatabaseInternalStructure<any>> {

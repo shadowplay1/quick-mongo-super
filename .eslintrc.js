@@ -44,7 +44,7 @@ module.exports = {
         'types/**/*',
         'dist/**/*',
         'examples/**/*',
-        'test',
+        'test/**/*',
         '.eslintrc.js',
         'postinstall.js',
         'commitlint.config.js'
