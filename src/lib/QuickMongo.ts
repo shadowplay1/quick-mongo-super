@@ -1,6 +1,6 @@
 import { Model, model, models } from 'mongoose'
 
-import { IDatabaseConfiguration, IDatabaseInternalStructure, IMongoLatency } from '../types/QuickMongo'
+import { IDatabaseConfiguration, IDatabaseInternalStructure, IDatabaseRequestsLatencies } from '../types/QuickMongo'
 import { QuickMongoClient } from './QuickMongoClient'
 
 import { internalDatabaseSchema } from '../schemas/internal.schema'
@@ -13,10 +13,15 @@ import { If, IsObject, Maybe } from '../types/utils'
 import { typeOf } from './utils/functions/typeOf.function'
 
 /**
- * QuickMongo class.
- * @extends {Emitter}
+ * Quick Mongo database class.
  */
 export class QuickMongo<K extends string = string, V = any> {
+
+    /**
+     * Cache Manager.
+     * @type {CacheManager<any, IDatabaseInternalStructure<any>>}
+     * @private
+     */
     private _cache: CacheManager<any, IDatabaseInternalStructure<any>>
 
     /**
@@ -25,23 +30,52 @@ export class QuickMongo<K extends string = string, V = any> {
      * @private
      */
     private _client: QuickMongoClient<any>
-    private _model: Model<IDatabaseInternalStructure>
 
+    /**
+     * Internal Mongoose model to work with.
+     * @type {Model<IDatabaseInternalStructure<any>>}
+     * @private
+     */
+    private _model: Model<IDatabaseInternalStructure<any>>
+
+    /**
+     * Database name.
+     * @type {string}
+     */
     public name: string
+
+    /**
+     * Collection name.
+     * @type {string}
+     */
     public collectionName: string
 
     readonly [Symbol.toStringTag] = 'QuickMongoDatabase'
 
     /**
      * Quick Mongo database constructor.
-     * @param client Quick Mongo client to work with.
-     * @param options Database configuration object.
+     * @param {QuickMongoClient<any>} client Quick Mongo client to work with.
+     * @param {IDatabaseConfiguration} options Database configuration object.
+     * @example
+     * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+     *
+     * // Create a normal Quick Mongo client.
+     * const quickMongoClient = new QuickMongoClient(connectionURI)
+     *
+     * // You can also specify the initial data that will be put in database
+     * // on successful connection and if the database is empty.
+     * const quickMongoClient = new QuickMongoClient(connectionURI)
+     *
+     * const mongo = new QuickMongo(quickMongoClient, {
+     *     name: 'databaseName',
+     *     collectionName: 'collectionName' // optional
+     * })
      */
     public constructor(client: QuickMongoClient<any>, options: IDatabaseConfiguration) {
         this._cache = new CacheManager(client)
         this._client = client
 
-        this._model = models[options.name] || model<IDatabaseInternalStructure>(
+        this._model = models[options.name] || model<IDatabaseInternalStructure<any>>(
             options.name, internalDatabaseSchema, options.collectionName
         )
 
@@ -52,11 +86,13 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * Sends a read, write and delete requests to the database.
-     * and returns the request latencies.
-     * @returns {Promise<IMongoLatency>} Database latency object.
+     * Sends a read, write and delete requests to the remote database and returns the request latencies.
+     * @returns {Promise<IDatabaseRequestsLatencies>} Database requests latencies object.
+     * @example
+     * const ping = mongo.ping()
+     * console.log(ping) // -> { readLatency: 123, writeLatency: 124, deleteLatency: 125 }
      */
-    public async ping(): Promise<IMongoLatency> {
+    public async ping(): Promise<IDatabaseRequestsLatencies> {
         const pingDatabaseKey = '___PING___' as K
 
         let readLatency = -1
@@ -67,15 +103,15 @@ export class QuickMongo<K extends string = string, V = any> {
             throw new QuickMongoError('NOT_CONNECTED')
         }
 
+        const readStartDate = Date.now()
+
+        await this.raw()
+        readLatency = Date.now() - readStartDate
+
         const writeStartDate = Date.now()
 
         await this.set(pingDatabaseKey, 1)
         writeLatency = Date.now() - writeStartDate
-
-        const readStartDate = Date.now()
-
-        await this._allFromDatabase()
-        readLatency = Date.now() - readStartDate
 
         const deleteStartDate = Date.now()
 
@@ -89,26 +125,92 @@ export class QuickMongo<K extends string = string, V = any> {
         }
     }
 
+    /**
+     * Retrieves a value from database by a key.
+     * @param {K} key The key to access the data by.
+     * @returns {Maybe<TValue>} The value from database.
+     * @example
+     * const simpleValue = quickMongo.get('simpleValue')
+     * console.log(simpleValue) // -> 123
+     *
+     * const databaseObjectPropertyAccessed = quickMongo.get('youCanAlso.accessDatabaseObjectProperties.likeThat')
+     * console.log(databaseObjectPropertyAccessed) // -> 'hello world!'
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    simpleValue: 123,
+     * //    youCanAlso: {
+     * //        accessDatabaseObjectProperties: {
+     * //            likeThat: 'hello world!'
+     * //        }
+     * //    }
+     * // }
+     */
     public get<TValue = V>(key: K): Maybe<TValue> {
         return this._cache.get<TValue>(key)
     }
 
+    /**
+     * Retrieves a value from database by a key.
+     *
+     * - This method is an alias for {@link QuickMongo.get()} method.
+     * @param {K} key The key to access the data by.
+     * @returns {Maybe<TValue>} The value from database.
+     * @example
+     * const simpleValue = quickMongo.get('simpleValue')
+     * console.log(simpleValue) // -> 123
+     *
+     * // You can use the dot notation to access the database object properties:
+     * const objectPropertyAccessed = quickMongo.get('youCanAlso.accessObjectProperties.likeThat')
+     * console.log(objectPropertyAccessed) // -> 'hello world!'
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    simpleValue: 123,
+     * //    youCanAlso: {
+     * //        accessObjectProperties: {
+     * //            likeThat: 'hello world!'
+     * //        }
+     * //    }
+     * // }
+     */
     public fetch<TValue = V>(key: K): Maybe<TValue> {
         return this.get<TValue>(key)
     }
 
+    /**
+     * Determines if the data is stored in database.
+     * @param {key} key The key to access the data by.
+     * @returns {boolean} Whether the data is stored in database.
+     * @example
+     * const isSimpleValueInDatabase = mongo.has('simpleValue')
+     * console.log(isSimpleValueInDatabase) // -> true
+     *
+     * const somethingElse = quickMongo.has('somethingElse')
+     * console.log(somethingElse) // -> false
+     *
+     * // You can use the dot notation to check the database object properties:
+     * const isObjectInDatabase = quickMongo.has('youCanAlso.accessObjectProperties.likeThat')
+     * console.log(isObjectInDatabase) // -> true
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    simpleValue: 123,
+     * //    youCanAlso: {
+     * //        accessObjectProperties: {
+     * //            likeThat: 'hello world!'
+     * //        }
+     * //    }
+     * // }
+     */
     public has(key: K): boolean {
-        return !!this.get(key)
+        return this.get(key) !== null
     }
 
     public async set<
         TValue = V,
         TReturnValue = any
     >(key: K, value: TValue): Promise<If<IsObject<TValue>, TReturnValue, TValue>> {
-        if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
-        }
-
         const fetched = this.all()
         this._cache.set(key, value)
 
@@ -145,11 +247,30 @@ export class QuickMongo<K extends string = string, V = any> {
         return typeof value == 'object' && value !== null ? this._cache.get(keys[0]) : value as any
     }
 
-    public async delete<TReturnValue = any>(key: K): Promise<Maybe<TReturnValue>> {
-        if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
-        }
-
+    /**
+     * Deletes the data from database by key.
+     * @param {K} key The key to access the data by.
+     * @returns {Promise<void>}
+     * @example
+     * const databaseBefore = mongo.all()
+     * console.log(databaseBefore) // -> { prop1: 123, prop2: { prop3: 456, prop4: 789 } }
+     *
+     * await mongo.delete('prop1') // deleting `prop1` from the database
+     * await mongo.delete('prop2.prop3') // deleting `prop3` property from `prop2` object in database
+     *
+     * const databaseAfter = mongo.all()
+     * console.log(databaseAfter) // -> { prop2: { prop4: 789 } }
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //     prop1: 123,
+     * //     prop2: {
+     * //         prop3: 456,
+     * //         prop4: 789
+     * //     }
+     * // }
+     */
+    public async delete(key: K): Promise<void> {
         this._cache.delete(key)
         const fetched = this.all()
 
@@ -178,10 +299,30 @@ export class QuickMongo<K extends string = string, V = any> {
                 __VALUE: fetched[keys[0]]
             })
         }
-
-        return this._cache.get(keys[0])
     }
 
+    /**
+     * Performs an arithmetical addition to a target number in database.
+     *
+     * [!!!] The target must be a number.
+     * @param {string} key The key to access the data by.
+     * @param {number} numberToAdd The number to add to the target number in database.
+     * @returns {Promise<number>} Addition operation result.
+     * @example
+     * const additionResult = await mongo.add('points', 5)
+     * console.log(operationResult) // -> 10 (5 + 5 = 10)
+     *
+     * // Notice that we don't need to assign a value to unexistent properties in database
+     * // before performing an addition since the initial target value is 0 and will be used
+     * // as the value of the unexistent property:
+     * const unexistentAdditionResult = await mongo.add('somethingElse', 3)
+     * console.log(operationResult) // -> 3 (0 +  = 3); the property didn't exist in database, that's why 0 is added to 3
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    points: 5
+     * // }
+     */
     public async add(key: K, numberToAdd: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
@@ -201,6 +342,28 @@ export class QuickMongo<K extends string = string, V = any> {
         return result
     }
 
+    /**
+     * Performs an arithmetical subtraction to a target number in database.
+     *
+     * [!!!] The target must be a number.
+     * @param {string} key The key to access the data by.
+     * @param {number} numberToSubtract The number to subtract from the target number in database.
+     * @returns {Promise<number>} Subtraction operation result.
+     * @example
+     * const subtractionResult = await mongo.subtract('points', 5)
+     * console.log(operationResult) // -> 5 (10 - 5 = 5)
+     *
+     * // Notice that we don't need to assign a value to unexistent properties in database
+     * // before performing a subtraction since the initial target value is 0 and will be used
+     * // as the value of the unexistent property:
+     * const unexistentSubtractionitionResult = await mongo.subtract('somethingElse', 3)
+     * console.log(operationResult) // -> 3 (0 - 3 = -3); the property didn't exist in database, so 3 is subtracted from 0
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    points: 10
+     * // }
+     */
     public async subtract(key: K, numberToSubtract: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
@@ -287,6 +450,35 @@ export class QuickMongo<K extends string = string, V = any> {
         return targetArray
     }
 
+    /**
+     * Returns an array of object keys by specified database key.
+     *
+     * If `key` parameter is omitted, then an array of object keys of database root object will be returned.
+     * @param {K} [key] The key to access the data by.
+     * @returns {string[]} Database object keys array.
+     * @example
+     * const prop3Keys = mongo.keys('prop3')
+     * console.log(prop3Keys) // -> ['prop4', 'prop5']
+     *
+     * const prop5Keys = mongo.keys('prop3.prop5')
+     * console.log(prop5Keys) // -> ['prop6']
+     *
+     * const prop6Keys = mongo.keys('prop3.prop5.prop6')
+     * console.log(prop6Keys) // -> [] (empty since the value in `prop6`, 111 a primitive value and not an actual object)
+     *
+     * const databaseKeys = mongo.keys() // `key` parameter is omitted - object keys of database object are being returned
+     * console.log(databaseKeys) // -> ['prop1', 'prop2', 'prop3']
+     *
+     * const unexistentKeys = mongo.keys('somethingElse')
+     * console.log(unexistentKeys) // -> [] (empty since the key `somethingElse` does not exist in database)
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    prop1: 123,
+     * //    prop2: 456,
+     * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
+     * // }
+     */
     public keys(key?: K): string[] {
         if (!key) {
             return Object.keys(this.all())
@@ -299,16 +491,23 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * Gets the random element of array in database.
+     * Picks a random element of array in database and returns the picked array element.
      *
-     * [!!!] The target must be an array.
+     * [!!!] The target in database must be an array.
      *
      * Type parameters:
      *
-     * - T: The type of random element in the array.
+     * - `T` (any): The type of random element in the array to be returned.
      *
      * @param {K} key The key in database.
-     * @returns {T} The random element in the array.
+     * @returns {T} The randomly picked element in the array.
+     *
+     * @example
+     * const array = mongo.get('exampleArray') // assuming that the array is ['example1', 'example2', 'example3']
+     * console.log(array) // -> ['example1', 'example2', 'example3']
+     *
+     * const randomArrayElement = mongo.random('exampleArray')
+     * console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
      */
     public random<T>(key: K): T {
         const array = this.get(key)
@@ -320,10 +519,24 @@ export class QuickMongo<K extends string = string, V = any> {
         return array[Math.floor(Math.random() * array.length)]
     }
 
+    /**
+     * Deletes everything from the database.
+     * @returns {Promise<void>}
+     * @example
+     * await mongo.clear() // this will clear the database
+     */
     public async clear(): Promise<void> {
         await this._model.deleteMany()
     }
 
+    /**
+     * Deletes everything from the database.
+     *
+     * - This method is an alias for {@link QuickMongo.clear()} method.
+     * @returns {Promise<void>}
+     * @example
+     * await mongo.deleteAll() // this will clear the database
+     */
     public async deleteAll(): Promise<void> {
         return this.clear()
     }
@@ -331,6 +544,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Loads the database into cache.
      * @returns {Promise<void>}
+     * @private
      */
     private async _loadCache(): Promise<void> {
         const database = await this._allFromDatabase<Record<K, any>>()
@@ -350,8 +564,14 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * Fetches the database contents from database.
-     * @returns {any} Database contents.
+     * Makes a request and fetches the database contents from remote cluster.
+     *
+     * Type parameters:
+     *
+     * - `TValue` (object) - The type of object of all the database object to be returned.
+     *
+     * @returns {Promise<TValue>} Fetched database contents.
+     * @private
      */
     private async _allFromDatabase<TValue extends Record<string, any> = V>(): Promise<TValue> {
         const obj = {}
@@ -366,17 +586,37 @@ export class QuickMongo<K extends string = string, V = any> {
 
     /**
      * Gets the database contents from cache.
-     * @returns {any} Database contents.
+     *
+     * Type parameters:
+     *
+     * - `TValue` (object) - The type of object of all the database object to be returned.
+     *
+     * @returns {TValue} Cached database contents.
+     * @example
+     * const database = mongo.all()
+     * console.log(database) // -> { ... (the object of all the data stored in database) }
      */
-    public all<TValue extends Record<string, any>>(): TValue {
+    public all<TValue extends Record<string, any> = any>(): TValue {
         return this._cache.getCacheObject<TValue>()
     }
 
     /**
-     * Fetches the raw database contents.
-     * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>} Raw database contents.
+     * Makes a database request and fetches the raw database content - the data as it is stored in
+     * internal [__KEY]-[__VALUE] storage format that was made to achieve better data accessibility across the module.
+     *
+     * Type parameters:
+     *
+     * - `TInternalDataValue` (any) - The type of `__VALUE` property in each raw data object.
+     *
+     * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>}
+     * Raw database content - the data as it is stored in internal [__KEY]-[__VALUE] storage format that was made
+     * to achieve better data accessibility across the module.
+     *
+     * @example
+     * const rawData = await mongo.raw()
+     * console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
      */
-    public async raw<TInternalDataValue>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
+    public async raw<TInternalDataValue = any>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
         const data = await this._model.find()
         return data as any
     }

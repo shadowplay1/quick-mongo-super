@@ -8,8 +8,8 @@ import { typeOf } from '../utils/functions/typeOf.function'
  *
  * Type parameters:
  *
- * - `K` ({@link any}) - The cache map key type.
- * - `V` ({@link any}) - The cache map value type.
+ * - `K` (any) - The cache map key type.
+ * - `V` (any) - The cache map value type.
  *
  * @template K The cache map key type.
  * @template V The cache map value type.
@@ -50,7 +50,7 @@ export class CacheManager<K extends string, V> {
      *
      * Type parameters:
      *
-     * - `V` ({@link any}) - The type of cache object to return.
+     * - `V` (any) - The type of cache object to return.
      *
      * @returns {any} Object representation of the cache map.
      * @template V The type of cache object to return.
@@ -70,7 +70,7 @@ export class CacheManager<K extends string, V> {
      *
      * Type parameters:
      *
-     * - `V` ({@link any}) - The type of data being returned.
+     * - `V` (any) - The type of data being returned.
      *
      * @param {K} key The key in cache map.
      * @returns {V} The data from cache map.
@@ -97,7 +97,7 @@ export class CacheManager<K extends string, V> {
 
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
-                data = parsedData?.[keys[i]] || null
+                data = parsedData?.[keys[i]] ?? null
             }
 
             parsedData = parsedData?.[keys[i]]
@@ -111,8 +111,8 @@ export class CacheManager<K extends string, V> {
      *
      * Type parameters:
      *
-     * - `TValue` ({@link any}) - The type of data being set.
-     * - `R` ({@link any}) - The type of data being returned.
+     * - `TValue` (any) - The type of data being set.
+     * - `R` (any) - The type of data being returned.
      *
      * @param {K} key The key in cache map.
      * @returns {R} The data from cache map.
