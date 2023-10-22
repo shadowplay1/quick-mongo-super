@@ -1,4 +1,7 @@
+import { QuickMongoClient } from '../QuickMongoClient'
+import { QuickMongoError } from '../utils/QuickMongoError'
 import { isObject } from '../utils/functions/isObject.function'
+import { typeOf } from '../utils/functions/typeOf.function'
 
 /**
  * Cache manager class.
@@ -12,6 +15,7 @@ import { isObject } from '../utils/functions/isObject.function'
  * @template V The cache map value type.
  */
 export class CacheManager<K extends string, V> {
+    private _client: QuickMongoClient<any>
 
     /**
      * Database cache.
@@ -22,8 +26,16 @@ export class CacheManager<K extends string, V> {
 
     /**
      * Cache manager constructor.
+     * @param {QuickMongoClient} client Quick Mongo client to work with.
      */
-    public constructor() {
+    public constructor(client: QuickMongoClient<any>) {
+
+        /**
+         * Quick Mongo client to work with.
+         * @type {QuickMongoClient<any>}
+         * @private
+         */
+        this._client = client
 
         /**
          * Database cache.
@@ -68,6 +80,18 @@ export class CacheManager<K extends string, V> {
     public get<TValue = V>(key: K): TValue {
         let data = this.getCacheObject()
 
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
+        if (!key) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'key')
+        }
+
+        if (typeof key !== 'string') {
+            throw new QuickMongoError('INVALID_TYPE', 'key', 'string', typeOf(key))
+        }
+
         let parsedData = data
         const keys = key.split('.')
 
@@ -99,6 +123,22 @@ export class CacheManager<K extends string, V> {
     public set<TValue = V, R = any>(key: K, value: TValue): R {
         const data = this.getCacheObject()
 
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
+        if (!key) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'key')
+        }
+
+        if (typeof key !== 'string') {
+            throw new QuickMongoError('INVALID_TYPE', 'key', 'string', typeOf(key))
+        }
+
+        if (value == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
+        }
+
         let updatedData = data
         const keys = key.split('.')
 
@@ -124,6 +164,18 @@ export class CacheManager<K extends string, V> {
      */
     public delete(key: K): boolean {
         const data = this.getCacheObject()
+
+        if (!this._client.connected) {
+            throw new QuickMongoError('NOT_CONNECTED')
+        }
+
+        if (!key) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'key')
+        }
+
+        if (typeof key !== 'string') {
+            throw new QuickMongoError('INVALID_TYPE', 'key', 'string', typeOf(key))
+        }
 
         let updatedData = data
         const keys = key.split('.')
