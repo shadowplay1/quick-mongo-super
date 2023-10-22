@@ -13,4 +13,4 @@ export interface IDatabaseInternalStructure<T = any> {
     __VALUE: T
 }
 
-export type IMongoLatency = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
+export type IDatabaseRequestsLatencies = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
