@@ -14,4 +14,4 @@ export interface IErrorParams extends Record<keyof typeof errors, any[]> {
     INVALID_TARGET: [targetType: TargetParamType, receivedType: string]
 }
 
-export type TargetParamType = 'string' | 'number' | 'boolean' | 'array'
+export type TargetParamType = 'string' | 'number' | 'array'

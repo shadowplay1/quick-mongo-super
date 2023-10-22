@@ -110,7 +110,7 @@ export class QuickMongo<K extends string = string, V = any> {
         }
 
         const fetched = this.all()
-        this._cache.set<TValue>(key, value)
+        this._cache.set(key, value)
 
         const keys = key.split('.')
         let database = fetched as any
@@ -182,25 +182,110 @@ export class QuickMongo<K extends string = string, V = any> {
         return this._cache.get(keys[0])
     }
 
-    // public async add(key: K): Promise<number> {
+    public async add(key: K, numberToAdd: number): Promise<number> {
+        const targetNumber = this.get<number>(key) ?? 0
 
-    // }
+        if (isNaN(targetNumber)) {
+            throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
+        }
 
-    // public async subtract(key: K): Promise<number> {
+        if (numberToAdd == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToAdd')
+        }
 
-    // }
+        if (isNaN(numberToAdd)) {
+            throw new QuickMongoError('INVALID_TYPE', 'numberToAdd', 'number', typeOf(numberToAdd))
+        }
 
-    // public async push<TValue = V, TReturnValue = any>(key: K, value: TValue): Promise<TReturnValue> {
+        const result = await this.set(key, targetNumber + numberToAdd)
+        return result
+    }
 
-    // }
+    public async subtract(key: K, numberToSubtract: number): Promise<number> {
+        const targetNumber = this.get<number>(key) ?? 0
 
-    // public async pull<TValue = V, TReturnValue = any>(key: K, index: number, value: TValue): Promise<TReturnValue> {
+        if (isNaN(targetNumber)) {
+            throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
+        }
 
-    // }
+        if (numberToSubtract == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToSubtract')
+        }
 
-    // public async pop<TValue = V, TReturnValue = any>(key: K, index: number): Promise<TReturnValue> {
+        if (isNaN(numberToSubtract)) {
+            throw new QuickMongoError('INVALID_TYPE', 'numberToSubtract', 'number', typeOf(numberToSubtract))
+        }
 
-    // }
+        const result = await this.set(key, targetNumber - numberToSubtract)
+        return result
+    }
+
+    public async push<TValue = V>(key: K, value: TValue): Promise<TValue[]> {
+        const targetArray = this.get<TValue[]>(key) || []
+
+        if (!Array.isArray(targetArray)) {
+            throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
+        }
+
+        if (value == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
+        }
+
+        targetArray.push(value)
+
+        await this.set<TValue[]>(key, targetArray)
+        return targetArray
+    }
+
+    public async pull<TValue = V>(key: K, index: number, value: TValue): Promise<TValue[]> {
+        const targetArray = this.get<TValue[]>(key) ?? []
+
+        if (!Array.isArray(targetArray)) {
+            throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
+        }
+
+        if (index == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'index')
+        }
+
+        if (isNaN(index)) {
+            throw new QuickMongoError('INVALID_TYPE', 'index', 'number', typeOf(index))
+        }
+
+        if (value == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
+        }
+
+        if (index < 0) {
+            targetArray[targetArray.length - index] = value
+        } else {
+            targetArray[index] = value
+        }
+
+        await this.set<TValue[]>(key, targetArray)
+        return targetArray
+    }
+
+    public async pop<TValue = V>(key: K, index: number): Promise<TValue[]> {
+        const targetArray = this.get<TValue[]>(key) ?? []
+
+        if (!Array.isArray(targetArray)) {
+            throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
+        }
+
+        if (index == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'index')
+        }
+
+        if (isNaN(index)) {
+            throw new QuickMongoError('INVALID_TYPE', 'index', 'number', typeOf(index))
+        }
+
+        targetArray.splice(index, 1)
+
+        await this.set<TValue[]>(key, targetArray)
+        return targetArray
+    }
 
     public keys(key?: K): string[] {
         if (!key) {
@@ -226,7 +311,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * @returns {T} The random element in the array.
      */
     public random<T>(key: K): T {
-        const array = this.get<T[]>(key)
+        const array = this.get(key)
 
         if (!Array.isArray(array)) {
             throw new QuickMongoError('INVALID_TARGET', 'array', typeOf(array))
