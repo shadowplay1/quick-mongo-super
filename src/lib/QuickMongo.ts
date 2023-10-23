@@ -9,13 +9,21 @@ import { CacheManager } from './managers/CacheManager'
 import { isObject } from './utils/functions/isObject.function'
 import { QuickMongoError } from './utils/QuickMongoError'
 
-import { If, IsObject, Maybe } from '../types/utils'
+import { If, IsObject, Maybe, RestOrArray } from '../types/utils'
 import { typeOf } from './utils/functions/typeOf.function'
+import { createTypesArray } from '../structures/errors'
 
 /**
  * Quick Mongo database class.
+ *
+ * Type parameters:
+ * - `K` (string) - The type of the key to access the data by.
+ * - `V` (any) - The type of the values in the database.
+ *
+ * @template K (string) - The type of the key to access the data by.
+ * @template V (any) - The type of the values in the database.
  */
-export class QuickMongo<K extends string = string, V = any> {
+export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Cache Manager.
@@ -130,9 +138,10 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TValue` (any;, defaults to `V`) - The type of the data to be returned from database.
+     * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
+     * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
      * @example
      * const simpleValue = quickMongo.get('simpleValue')
      * console.log(simpleValue) // -> 123
@@ -161,9 +170,10 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TValue` (any;, defaults to `V`) - The type of the data to be returned from database.
+     * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
+     * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
      * @example
      * const simpleValue = quickMongo.get('simpleValue')
      * console.log(simpleValue) // -> 123
@@ -215,6 +225,55 @@ export class QuickMongo<K extends string = string, V = any> {
         return this.get(key) !== null
     }
 
+    /**
+     * Writes the specified value into database under the specified key.
+     *
+     * Type parameters:
+     *
+     * `TValue` (any, defaults to `V`) - The type of value to write.
+     * `TReturnValue` (any, defaults to `any`) - Typethe return type fallbacks to if `TVa\lue` is an object.
+     *
+     * @param {string} key The key to write the data under.
+     * @param {TValue} value The value to write.
+     *
+     * @returns {Promise<If<IsObject<TValue>, TReturnValue, TValue>>}
+     * - If the `value` parameter's type is not an object (string, number, boolean, etc), then the specified
+     * `value` parameter (type of `TValue`) will be returned.
+     *
+     * - If an object is specified in the `value` parameter, then the database object will be returned.
+     * (type of `TReturnValue` - fallback to the manual typing of returned database object for specified key)
+     *
+     * @example
+     * const result = await mongo.set('something', 'hello from quick-mongo-super!')
+     * const hello = mongo.get('something')
+     *
+     * console.log(hello) // -> 'hello from quick-mongo-super!'
+     *
+     * // You can use the dot notation to write data in objects:
+     * const dotNotationSetResult = await mongo.set('thats.an.object', 123)
+     * console.log(dotNotationSetResult) // -> 123
+     *
+     * // Using objects as value will returns the object of key `thats`:
+     * const objectSetResult = await mongo.set('thats.an.object', { hello: 'world' })
+     *
+     * // ^ If you need to type the returning objects, use the 2nd type argument for this:
+     * const objectSetResult = await mongo.set<any, MyCustomObjectType>('thats.an.object', { hello: 'world' })
+     * //         ^ objectSetResult: MyCustomObjectType
+     *
+     * console.log(objectSetResult) // -> { an: { object: { hello: 'world' } } }
+     *
+     * // ^ After these manipulations, the database object will look like this:
+     * // {
+     * //     "something": "hello from quick-mongo-super!",
+     * //     "thats": {
+     * //         "an": {
+     * //             "object": {
+     * //                 hello: 'world'
+     * //             }
+     * //         }
+     * //     }
+     * // }
+     */
     public async set<
         TValue = V,
         TReturnValue = any
@@ -401,37 +460,42 @@ export class QuickMongo<K extends string = string, V = any> {
      * `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
      * @param {K} key The key to access the data by.
-     * @param {TValue} value The value to be pushed into the target array in databse.
+     * @param {RestOrArray<TValue>} values The value to be pushed into the target array in databse.
      * @returns {Promise<TValue[]>} Updated target array from database.
+     * @template TValue (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      * @example
-     * const operationResult = await mongo.push('members', 'William')
-     * console.log(operationResult) // -> ['John', 'William']
+     * const membersPushResult = await mongo.push('members', 'William')
+     * console.log(membersPushResult) // -> ['John', 'William']
+     *
+     * // You can also pass in multiple values to push into the target array:
+     * const currenciesPushResult = await mongo.push('currencies', 'Euro', 'Rupee')
+     * console.log(currenciesPushResult) // -> ['Dollar', 'Euro', 'Rupee']
      *
      * // ^ Assuming that the database object for this example is:
      * // {
-     * //    members: ['John']
+     * //    members: ['John'],
+     * //    currencies: ['Dollar']
      * // }
      */
-    public async push<TValue = V>(key: K, value: TValue): Promise<TValue[]> {
-        // TODO: multiple values support (rest or array);
-        const targetArray = this.get<TValue[]>(key) || []
+    public async push<TValue = V>(key: K, ...values: RestOrArray<TValue>): Promise<TValue[]> {
+        const targetArray = this.get(key) || []
 
         if (!Array.isArray(targetArray)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
         }
 
-        if (value == undefined) {
-            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
+        if (!values.length) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'values')
         }
 
-        targetArray.push(value)
+        targetArray.push(...values)
 
-        await this.set<TValue[]>(key, targetArray)
+        await this.set(key, targetArray)
         return targetArray
     }
 
     /**
-     * Replaces the specified element in target array with the specified value into the target array in database.
+     * Replaces the specified element in target array with the specified value in the target array in database.
      *
      * [!!!] The target must be an array.
      *
@@ -443,16 +507,16 @@ export class QuickMongo<K extends string = string, V = any> {
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
      * @param {TValue} value The value to be pushed into the target array in databse.
      * @returns {Promise<TValue[]>} Updated target array from database.
+     * @template TValue (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      * @example
-     * const operationResult = await mongo.push('members', 'William')
-     * console.log(operationResult) // -> ['John', 'William']
+     * const membersPullResult = await mongo.pull('members', 1, 'James')
+     * console.log(membersPullResult) // -> ['John', 'James', 'Tom']
      *
      * // ^ Assuming that the database object for this example is:
      * // {
-     * //    members: ['John']
+     * //    members: ['John', 'William', 'Tom']
      * // }
      */
-
     public async pull<TValue = V>(key: K, targetArrayElementIndex: number, value: TValue): Promise<TValue[]> {
         const targetArray = this.get<TValue[]>(key) ?? []
 
@@ -460,19 +524,19 @@ export class QuickMongo<K extends string = string, V = any> {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
         }
 
-        if (index == undefined) {
-            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'index')
+        if (targetArrayElementIndex == undefined) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'targetArrayElementIndex')
         }
 
-        if (isNaN(index)) {
-            throw new QuickMongoError('INVALID_TYPE', 'index', 'number', typeOf(index))
+        if (isNaN(targetArrayElementIndex)) {
+            throw new QuickMongoError('INVALID_TYPE', 'targetArrayElementIndex', 'number', typeOf(targetArrayElementIndex))
         }
 
         if (value == undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
         }
 
-        if (index < 0) {
+        if (targetArrayElementIndex < 0) {
             targetArray[targetArray.length - targetArrayElementIndex] = value
         } else {
             targetArray[targetArrayElementIndex] = value
@@ -482,24 +546,66 @@ export class QuickMongo<K extends string = string, V = any> {
         return targetArray
     }
 
-    public async pop<TValue = V>(key: K, index: number): Promise<TValue[]> {
+    /**
+     * Removes the specified element from the target array in database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * `TValue` (any, defaults to `V`) - The type of array to be returned.
+     *
+     * @param {K} key The key to access the data by.
+     * @param {RestOrArray<number>} targetArrayElementIndexes The index(es) to find the element in target array by.
+     * @returns {Promise<TValue[]>} Updated target array from database.
+     * @template TValue (any, defaults to `V`) - The type of array to be returned.
+     * @example
+     * const membersPopResult = await mongo.pop('members', 1)
+     * console.log(membersPopResult) // -> ['John', 'Tom']
+     *
+     * const currenciesPopResult = await mongo.pop('currencies', 1)
+     * console.log(currenciesPopResult) // -> ['Dollar', 'Euro']
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    members: ['John', 'William', 'Tom'],
+     * //    currencies: ['Dollar', 'Rupee', 'Euro']
+     * // }
+     */
+    public async pop<TValue = V>(key: K, ...targetArrayElementIndexes: RestOrArray<number>): Promise<TValue[]> {
         const targetArray = this.get<TValue[]>(key) ?? []
 
         if (!Array.isArray(targetArray)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
         }
 
-        if (index == undefined) {
-            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'index')
+        if (!targetArrayElementIndexes.length) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'targetArrayElementIndex')
         }
 
-        if (isNaN(index)) {
-            throw new QuickMongoError('INVALID_TYPE', 'index', 'number', typeOf(index))
+        if (targetArrayElementIndexes.length == 1 && isNaN(targetArrayElementIndexes[0] as number)) {
+            throw new QuickMongoError(
+                'INVALID_TYPE',
+                'targetArrayElementIndex',
+                'number',
+                typeOf(targetArrayElementIndexes[0])
+            )
         }
 
-        targetArray.splice(index, 1)
+        if (targetArrayElementIndexes.map(index => isNaN(index)).some(x => x)) {
+            throw new QuickMongoError(
+                'ONE_OR_MORE_TYPES_INVALID',
+                'targetArrayElementIndexes',
+                'number',
+                createTypesArray(targetArrayElementIndexes)
+            )
+        }
 
-        await this.set<TValue[]>(key, targetArray)
+        for (const targetArrayElementIndex of targetArrayElementIndexes) {
+            targetArray.splice(targetArrayElementIndex as number, 1)
+        }
+
+        await this.set(key, targetArray)
         return targetArray
     }
 
@@ -554,7 +660,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * @param {K} key The key in database.
      * @returns {T} The randomly picked element in the array.
-     *
+     * @template T (any): The type of random element in the array to be returned.
      * @example
      * const array = mongo.get('exampleArray') // assuming that the array is ['example1', 'example2', 'example3']
      * console.log(array) // -> ['example1', 'example2', 'example3']
@@ -623,6 +729,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * - `TValue` (object) - The type of object of all the database object to be returned.
      *
+     * @template TValue (object) - The type of object of all the database object to be returned.
      * @returns {Promise<TValue>} Fetched database contents.
      * @private
      */
@@ -645,6 +752,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * - `TValue` (object) - The type of object of all the database object to be returned.
      *
      * @returns {TValue} Cached database contents.
+     * @template TValue (object) - The type of object of all the database object to be returned.
      * @example
      * const database = mongo.all()
      * console.log(database) // -> { ... (the object of all the data stored in database) }
@@ -664,6 +772,8 @@ export class QuickMongo<K extends string = string, V = any> {
      * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>}
      * Raw database content - the data as it is stored in internal [__KEY]-[__VALUE] storage format that was made
      * to achieve better data accessibility across the module.
+     *
+     * @template TInternalDataValue (any) - The type of `__VALUE` property in each raw data object.
      *
      * @example
      * const rawData = await mongo.raw()
