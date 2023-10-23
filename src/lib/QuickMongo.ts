@@ -127,6 +127,10 @@ export class QuickMongo<K extends string = string, V = any> {
 
     /**
      * Retrieves a value from database by a key.
+     *
+     * Type parameters:
+     *
+     * - `TValue` (any;, defaults to `V`) - The type of the data to be returned from database.
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
      * @example
@@ -154,6 +158,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * Retrieves a value from database by a key.
      *
      * - This method is an alias for {@link QuickMongo.get()} method.
+     *
+     * Type parameters:
+     *
+     * - `TValue` (any;, defaults to `V`) - The type of the data to be returned from database.
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
      * @example
@@ -383,7 +391,29 @@ export class QuickMongo<K extends string = string, V = any> {
         return result
     }
 
+    /**
+     * Pushes the specified value into the target array in database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
+     *
+     * @param {K} key The key to access the data by.
+     * @param {TValue} value The value to be pushed into the target array in databse.
+     * @returns {Promise<TValue[]>} Updated target array from database.
+     * @example
+     * const operationResult = await mongo.push('members', 'William')
+     * console.log(operationResult) // -> ['John', 'William']
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    members: ['John']
+     * // }
+     */
     public async push<TValue = V>(key: K, value: TValue): Promise<TValue[]> {
+        // TODO: multiple values support (rest or array);
         const targetArray = this.get<TValue[]>(key) || []
 
         if (!Array.isArray(targetArray)) {
@@ -400,7 +430,30 @@ export class QuickMongo<K extends string = string, V = any> {
         return targetArray
     }
 
-    public async pull<TValue = V>(key: K, index: number, value: TValue): Promise<TValue[]> {
+    /**
+     * Replaces the specified element in target array with the specified value into the target array in database.
+     *
+     * [!!!] The target must be an array.
+     *
+     * Type parameters:
+     *
+     * `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
+     *
+     * @param {K} key The key to access the data by.
+     * @param {number} targetArrayElementIndex The index to find the element in target array by.
+     * @param {TValue} value The value to be pushed into the target array in databse.
+     * @returns {Promise<TValue[]>} Updated target array from database.
+     * @example
+     * const operationResult = await mongo.push('members', 'William')
+     * console.log(operationResult) // -> ['John', 'William']
+     *
+     * // ^ Assuming that the database object for this example is:
+     * // {
+     * //    members: ['John']
+     * // }
+     */
+
+    public async pull<TValue = V>(key: K, targetArrayElementIndex: number, value: TValue): Promise<TValue[]> {
         const targetArray = this.get<TValue[]>(key) ?? []
 
         if (!Array.isArray(targetArray)) {
@@ -420,9 +473,9 @@ export class QuickMongo<K extends string = string, V = any> {
         }
 
         if (index < 0) {
-            targetArray[targetArray.length - index] = value
+            targetArray[targetArray.length - targetArrayElementIndex] = value
         } else {
-            targetArray[index] = value
+            targetArray[targetArrayElementIndex] = value
         }
 
         await this.set<TValue[]>(key, targetArray)

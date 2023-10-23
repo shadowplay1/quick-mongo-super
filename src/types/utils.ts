@@ -10,3 +10,5 @@ export type IsObject<T> = T extends null
     : T extends undefined
     ? false
     : T extends Record<any, any> ? true : false
+
+export type RestOrArray<T> = T[] | [T[]]

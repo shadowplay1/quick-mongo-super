@@ -14,8 +14,7 @@
   "author": "shadowplay1 <shadowplay483@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "5.13",
-    "node-fetch": "^2.7.0"
+    "mongoose": "5.13"
   },
   "directories": {
     "lib": "./dist"
@@ -61,9 +60,9 @@
     "shadowplay"
   ],
   "bugs": {
-    "url": "https://github.com/shadowplay1/quick-mongo/issues"
+    "url": "https://github.com/shadowplay1/quick-mongo-super/issues"
   },
-  "homepage": "https://github.com/shadowplay1/quick-mongo#readme",
+  "homepage": "https://github.com/shadowplay1/quick-mongo-super#readme",
   "devDependencies": {
     "@types/node-fetch": "^2.6.1",
     "@typescript-eslint/eslint-plugin": "^5.60.0"
