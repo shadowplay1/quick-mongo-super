@@ -33,4 +33,3 @@ export class Emitter<E extends Record<string, any>> {
         return emitter.emit(event, ...args as any[])
     }
 }
-
