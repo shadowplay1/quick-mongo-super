@@ -11,7 +11,7 @@ export * from './lib/utils/functions/typeOf.function'
 
 export * from './schemas/internal.schema'
 
-export * from './types/QuickMongo'
+export * from './types/Database'
 export * from './types/utils'
 
 export * from './structures/errors'

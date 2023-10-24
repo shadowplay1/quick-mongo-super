@@ -1,4 +1,4 @@
-import { InferFromRestOrArray } from '../types/utils'
+import { RestOrArray } from '../types/utils'
 import { typeOf } from '../lib/utils/functions/typeOf.function'
 
 export const errors = {
@@ -20,7 +20,11 @@ export interface IErrorParams extends Record<keyof typeof errors, any[]> {
     INVALID_TARGET: [targetType: TargetParamType, receivedType: string]
 }
 
-export const createTypesArray = <T>(...elements: InferFromRestOrArray<T>): string => {
+export const createTypesArray = <T>(
+    ...elements: T extends RestOrArray<infer R>
+        ? RestOrArray<R>
+        : RestOrArray<T>
+): string => {
     return `[${elements.map(element => typeOf(element))}]`
 }
 
