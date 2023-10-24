@@ -32,13 +32,3 @@ export type IsObject<T> = T extends null
  * @template T The type to convert into rest-or-array type.
  */
 export type RestOrArray<T> = T[] | [T[]]
-
-/**
- * If `RestOrArray<T>` type is passed, then the type that was passed in is being inferred
- * and put into `RestOrArray<R>` type to avoid the `RestOrArray<RestOrArray<T>>` glitch; otherwise,
- * `T` is just being passed into `RestOrArray<T>` type.
- * @template T The type to infer from.
- */
-export type InferFromRestOrArray<T> = T extends RestOrArray<infer R>
-    ? RestOrArray<R>
-    : RestOrArray<T>

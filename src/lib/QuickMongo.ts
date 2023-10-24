@@ -1,16 +1,22 @@
 import { Model, model, models } from 'mongoose'
 
-import { IDatabaseConfiguration, IDatabaseInternalStructure, IDatabaseRequestsLatencies } from '../types/QuickMongo'
+import {
+    IDatabaseConfiguration,
+    IDatabaseInternalStructure,
+    IDatabaseRequestsLatencies
+} from '../types/Database'
+
 import { QuickMongoClient } from './QuickMongoClient'
 
 import { internalDatabaseSchema } from '../schemas/internal.schema'
 import { CacheManager } from './managers/CacheManager'
 
 import { isObject } from './utils/functions/isObject.function'
-import { QuickMongoError } from './utils/QuickMongoError'
-
-import { If, IsObject, Maybe, RestOrArray } from '../types/utils'
 import { typeOf } from './utils/functions/typeOf.function'
+
+import { QuickMongoError } from './utils/QuickMongoError'
+import { If, IsObject, Maybe, RestOrArray } from '../types/utils'
+
 import { createTypesArray } from '../structures/errors'
 
 /**
