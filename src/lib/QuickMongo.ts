@@ -23,6 +23,7 @@ import { createTypesArray } from '../structures/errors'
  * Quick Mongo database class.
  *
  * Type parameters:
+ *
  * - `K` (string) - The type of the key to access the data by.
  * - `V` (any) - The type of the values in the database.
  *
@@ -76,10 +77,11 @@ export class QuickMongo<K extends string = any, V = any> {
      * // Create a normal Quick Mongo client.
      * const quickMongoClient = new QuickMongoClient(connectionURI)
      *
-     * // You can also specify the initial data that will be put in database
-     * // on successful connection and if the database is empty.
-     * const quickMongoClient = new QuickMongoClient(connectionURI)
+     * // You can also specify the initial data that will be put
+     * // on successful connection in every database if it's empty.
+     * const quickMongoClient = new QuickMongoClient(connectionURI, {})
      *
+     * // Initialize the database.
      * const mongo = new QuickMongo(quickMongoClient, {
      *     name: 'databaseName',
      *     collectionName: 'collectionName' // optional
@@ -700,7 +702,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * - This method is an alias for {@link QuickMongo.clear()} method.
      * @returns {Promise<void>}
      * @example
-     * await mongo.deleteAll() // this will clear the database
+     * await mongo.deleteAll() // this will clear the database the method was called on
      */
     public async deleteAll(): Promise<void> {
         return this.clear()
