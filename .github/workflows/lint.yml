@@ -19,5 +19,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install eslint
+        run: npm i eslint -g
+
       - name: Check the code for linting issues
         run: bash ./scripts/lint.sh
