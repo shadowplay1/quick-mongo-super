@@ -19,6 +19,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Install TypeScript
+        run: npm i typescript -g
+
       - name: Install MongoDB
         run: bash ./scripts/mongodb-install.sh
 
