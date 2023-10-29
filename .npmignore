@@ -4,13 +4,16 @@
 # husky scripts
 .husky/
 
+# ci/cd
+.github/
+
 # dependencies
 node_modules/
 
 # utilities
 utils/
 
-# source code
+# typescript source code
 src/
 
 # usage examples
@@ -23,7 +26,6 @@ examples/
 tsconfig.json
 
 # ignore lists
-.eslintignore
 .gitignore
 .npmignore
 

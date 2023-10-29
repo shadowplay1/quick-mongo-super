@@ -1,5 +1,6 @@
 import { QuickMongoClient } from '../QuickMongoClient'
 import { QuickMongoError } from '../utils/QuickMongoError'
+
 import { isObject } from '../utils/functions/isObject.function'
 import { typeOf } from '../utils/functions/typeOf.function'
 
@@ -59,7 +60,7 @@ export class CacheManager<K extends string, V> {
         const mapData: Record<any, any> = {}
 
         for (const [key, value] of this._cache.entries()) {
-            mapData[key] = value as any
+            mapData[key] = value
         }
 
         return mapData

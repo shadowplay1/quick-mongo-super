@@ -5,6 +5,6 @@
  */
 export const isObject = (item: any): boolean => {
     return !Array.isArray(item)
-        && typeof item == 'object'
         && item !== null
+        && typeof item == 'object'
 }

@@ -5,5 +5,5 @@ node_modules/
 dist/
 typings/
 
-# testing
-test/
+# miscellaneous
+misc/

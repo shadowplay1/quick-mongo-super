@@ -1,7 +1,7 @@
 try {
-    const projectPackage = require('../../package.json')
+    const package = require('../../package.json')
 
-    if (projectPackage['quick-mongo-super']?.postinstall !== false) {
+    if (package['quick-mongo-super']?.postinstall !== false) {
         console.log()
         console.log('\x1b[32m╔══════════════════════════════════════════════════════════════════╗')
         console.log('\x1b[32m║ @ quick-mongo-super                                       - [] X ║')
@@ -13,6 +13,4 @@ try {
         console.log('\x1b[32m╚══════════════════════════════════════════════════════════════════╝\x1b[37m')
         console.log()
     }
-} catch {
-    // console.log('\x1b[91mFailed to open the project\'s `package.json` file.')
-}
+} catch { }
