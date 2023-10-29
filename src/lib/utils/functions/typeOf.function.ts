@@ -1,5 +1,5 @@
 /**
- * Returns the exact type of the specified input. Utilility function.
+ * Returns the exact type of the specified input. Utility function.
  * @param {any} input The input to check.
  * @returns {string} Input exact type.
  */

@@ -5,6 +5,29 @@ import { Emitter } from './utils/Emitter'
 
 /**
  * Quick Mongo Client class.
+ *
+ * Type parameters:
+ *
+ * - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
+ *
+ * @template TInitialDatabaseData (object) - The type of the object to be set in new empty databases.
+ *
+ * @example
+ * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+ *
+ * // Create a normal Quick Mongo client.
+ * const quickMongoClient = new QuickMongoClient(connectionURI)
+ *
+ * // You can also specify the initial data that will be put
+ * // on successful connection in every database if it's empty.
+ * const quickMongoClient = new QuickMongoClient(connectionURI, {})
+ *
+ * // Initialize the database.
+ * const mongo = new QuickMongo(quickMongoClient, {
+ *      name: 'databaseName',
+ *      collectionName: 'collectionName' // optional
+ * })
+ *
  * @extends {Emitter<IQuickMongoEvents>}
  */
 export class QuickMongoClient<
@@ -53,7 +76,9 @@ export class QuickMongoClient<
      *
      * // You can also specify the initial data that will be put
      * // on successful connection in every database if it's empty.
-     * const quickMongoClient = new QuickMongoClient(connectionURI, {})
+     * const quickMongoClient = new QuickMongoClient(connectionURI, {
+     *     somethingToSetInDatabase: 'something'
+     * })
      *
      * // Initialize the database.
      * const mongo = new QuickMongo(quickMongoClient, {

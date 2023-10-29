@@ -1,5 +1,5 @@
 import { Schema } from 'mongoose'
-import { IDatabaseInternalStructure } from '../types/QuickMongo'
+import { IDatabaseInternalStructure } from '../types/Database'
 
 export const internalDatabaseSchema = new Schema<IDatabaseInternalStructure<any>>({
     __KEY: {
