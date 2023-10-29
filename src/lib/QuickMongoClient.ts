@@ -1,13 +1,15 @@
 import { connect, disconnect } from 'mongoose'
 
-import { IQuickMongoEvents } from '../types/QuickMongo'
+import { IQuickMongoEvents } from '../types/Database'
 import { Emitter } from './utils/Emitter'
 
 /**
  * Quick Mongo Client class.
  * @extends {Emitter<IQuickMongoEvents>}
  */
-export class QuickMongoClient<TInitialDatabaseData extends Record<string, any> = any> extends Emitter<IQuickMongoEvents> {
+export class QuickMongoClient<
+    TInitialDatabaseData extends Record<string, any> = any
+> extends Emitter<IQuickMongoEvents> {
 
     /**
      * The MongoDB cluster connection URI to connect to.
@@ -32,10 +34,32 @@ export class QuickMongoClient<TInitialDatabaseData extends Record<string, any> =
 
     /**
      * Quick Mongo Client constructor.
-     * @param {string} connectionURI The MongoDB cluster connection URI to connect to.
      *
+     * Type parameters:
+     *
+     * - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
+     *
+     * @param {string} connectionURI The MongoDB cluster connection URI to connect to.
      * @param {TInitialDatabaseData} initialDatabaseData
      * The database object to set in database if the database is empty on initialation.
+     *
+     * @template TInitialDatabaseData (object) - The type of the object to be set in new empty databases.
+     *
+     * @example
+     * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+     *
+     * // Create a normal Quick Mongo client.
+     * const quickMongoClient = new QuickMongoClient(connectionURI)
+     *
+     * // You can also specify the initial data that will be put
+     * // on successful connection in every database if it's empty.
+     * const quickMongoClient = new QuickMongoClient(connectionURI, {})
+     *
+     * // Initialize the database.
+     * const mongo = new QuickMongo(quickMongoClient, {
+     *     name: 'databaseName',
+     *     collectionName: 'collectionName' // optional
+     * })
      */
     public constructor(connectionURI: string, initialDatabaseData?: TInitialDatabaseData) {
         super()

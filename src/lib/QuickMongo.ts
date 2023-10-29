@@ -29,6 +29,22 @@ import { createTypesArray } from '../structures/errors'
  *
  * @template K (string) - The type of the key to access the data by.
  * @template V (any) - The type of the values in the database.
+ *
+ * @example
+ * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+ *
+ * // Create a normal Quick Mongo client.
+ * const quickMongoClient = new QuickMongoClient(connectionURI)
+ *
+ * // You can also specify the initial data that will be put
+ * // on successful connection in every database if it's empty.
+ * const quickMongoClient = new QuickMongoClient(connectionURI, {})
+ *
+ * // Initialize the database.
+ * const mongo = new QuickMongo(quickMongoClient, {
+ *     name: 'databaseName',
+ *     collectionName: 'collectionName' // optional
+ * })
  */
 export class QuickMongo<K extends string = any, V = any> {
 
@@ -69,8 +85,18 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Quick Mongo database constructor.
+     *
+     * Type parameters:
+     *
+     * - `K` (string) - The type of the key to access the data by.
+     * - `V` (any) - The type of the values in the database.
+     *
      * @param {QuickMongoClient<any>} client Quick Mongo client to work with.
      * @param {IDatabaseConfiguration} options Database configuration object.
+     *
+     * @template K (string) - The type of the key to access the data by.
+     * @template V (any) - The type of the values in the database.
+     *
      * @example
      * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
      *
@@ -87,16 +113,16 @@ export class QuickMongo<K extends string = any, V = any> {
      *     collectionName: 'collectionName' // optional
      * })
      */
-    public constructor(client: QuickMongoClient<any>, options: IDatabaseConfiguration) {
+    public constructor(client: QuickMongoClient<any>, databaseConfiguration: IDatabaseConfiguration) {
         this._cache = new CacheManager(client)
         this._client = client
 
-        this._model = models[options.name] || model<IDatabaseInternalStructure<any>>(
-            options.name, internalDatabaseSchema, options.collectionName
+        this._model = models[databaseConfiguration.name] || model<IDatabaseInternalStructure<any>>(
+            databaseConfiguration.name, internalDatabaseSchema, databaseConfiguration.collectionName
         )
 
-        this.name = options.name
-        this.collectionName = options.collectionName
+        this.name = databaseConfiguration.name
+        this.collectionName = databaseConfiguration.collectionName
 
         this._loadCache()
     }
