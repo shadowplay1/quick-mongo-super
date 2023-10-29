@@ -7,6 +7,9 @@
 # ci/cd
 .github/
 
+# bash scripts
+scripts/
+
 # dependencies
 node_modules/
 
