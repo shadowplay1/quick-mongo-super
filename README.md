@@ -16,10 +16,10 @@
 ## 📂 | Installation
 <b>Note:</br><b>
 <b>Node.js 14.0.0 or newer is required.</b><br>
-```console
-npm i quick-mongo-super
-yarn add quick-mongo-super
-pnpm add quick-mongo-super
+```bash
+$ npm i quick-mongo-super
+$ yarn add quick-mongo-super
+$ pnpm add quick-mongo-super
 ```
 
 ## Examples
