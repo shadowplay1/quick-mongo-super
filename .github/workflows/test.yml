@@ -23,7 +23,7 @@ jobs:
         run: bash ./scripts/mongodb-install.sh
 
       - name: Start local MongoDB server
-        run: mkdir ~/db && mongod --port 27018 --dbpath ~/db
+        run: bash ./scripts/mongodb-start.sh
 
       - name: Run tests
         run: ts-node ./tests/QuickMongo.test.ts
