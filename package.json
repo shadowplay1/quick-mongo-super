@@ -8,8 +8,8 @@
     "test": "ts-node ./utils/test.ts",
     "build": "npx tsc",
     "postinstall": "node postinstall.js",
-    "lint": "eslint ./",
-    "lint:fix": "eslint ./ --fix"
+    "lint": "bash ./scripts/lint.sh",
+    "lint:fix": "bash ./scripts/lint.sh --fix"
   },
   "author": "shadowplay1 <shadowplay483@gmail.com>",
   "license": "MIT",
