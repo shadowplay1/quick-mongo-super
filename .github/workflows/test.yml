@@ -1,4 +1,4 @@
-name: Check the code for linting issues
+name: Run the tests
 
 on:
   workflow_dispatch:
@@ -7,7 +7,7 @@ on:
   push:
 
 jobs:
-  lint:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -19,8 +19,11 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Install ESLint
-        run: npm i eslint -g
+      - name: Install MongoDB
+        run: bash ./scripts/mongodb-install.sh
 
-      - name: Check the code for linting issues
-        run: bash ./scripts/lint.sh
+      - name: Start local MongoDB server
+        run: mkdir ~/db && mongod --port 27018 --dbpath ~/db
+
+      - name: Run tests
+        run: ts-node ./tests/QuickMongo.test.ts
