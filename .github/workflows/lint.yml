@@ -1,4 +1,4 @@
-name: Build the package
+name: Check the source code for linting issues
 
 on:
   workflow_dispatch:
@@ -16,5 +16,5 @@ jobs:
         with:
           node-version: 16
 
-      - name: Build the package
+      - name: Check the source code for linting issues
         run: bash ./scripts/lint.sh
