@@ -15,9 +15,12 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
-          
+
       - name: Install dependencies
         run: npm ci
+
+      - name: Install TypeScript
+        run: npm i typescript ts-node -g
 
       - name: Build the package
         run: npm run build

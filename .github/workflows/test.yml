@@ -20,7 +20,7 @@ jobs:
         run: npm ci
 
       - name: Install TypeScript
-        run: npm i typescript -g
+        run: npm i typescript ts-node -g
 
       - name: Install MongoDB
         run: bash ./scripts/mongodb-install.sh
