@@ -21,7 +21,7 @@
 	"include": [
 		"src/**/*",
 		"tests/**/*"
-	],
+, "operations.test.ts", "init.test.ts"	],
 	"exclude": [
 		"node_modules"
 	]

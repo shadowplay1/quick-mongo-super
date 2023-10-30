@@ -2,6 +2,7 @@ import { connect, disconnect } from 'mongoose'
 
 import { IQuickMongoEvents } from '../types/Database'
 import { Emitter } from './utils/Emitter'
+import { QuickMongo } from './QuickMongo'
 
 /**
  * Quick Mongo Client class.
@@ -48,6 +49,12 @@ export class QuickMongoClient<
     public connected = false
 
     /**
+     * Array of initialized databases.
+     * @type {QuickMongo<any, any>[]}
+     */
+    public databases: QuickMongo<any, any>[]
+
+    /**
      * An object to put in database on successful connection if the database is empty.
      * @type {TInitialDatabaseData}
      */
@@ -89,15 +96,17 @@ export class QuickMongoClient<
     public constructor(connectionURI: string, initialDatabaseData?: TInitialDatabaseData) {
         super()
 
+        this.databases = []
+
         this.initialDatabaseData = initialDatabaseData
         this._connectionURI = connectionURI
     }
 
     /**
      * Opens a connection to a MongoDB cluster.
-     * @returns {Promise<void>}
+     * @returns {Promise<QuickMongoClient<TInitialDatabaseData>>} QuickMongo client instance.
      */
-    public async connect(): Promise<void> {
+    public async connect(): Promise<QuickMongoClient<TInitialDatabaseData>> {
         await connect(this._connectionURI, {
             useNewUrlParser: true,
             useUnifiedTopology: true
@@ -105,6 +114,8 @@ export class QuickMongoClient<
 
         this.connected = true
         this.emit('connect')
+
+        return this
     }
 
     /**

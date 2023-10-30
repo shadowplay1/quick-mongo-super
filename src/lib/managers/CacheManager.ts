@@ -181,6 +181,10 @@ export class CacheManager<K extends string, V> {
         let updatedData = data
         const keys = key.split('.')
 
+        if (this.get(key)) {
+            return false
+        }
+
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
                 delete updatedData[keys[i]]

@@ -128,7 +128,8 @@ export class QuickMongo<K extends string = any, V = any> {
         this.name = databaseConfiguration.name
         this.collectionName = databaseConfiguration.collectionName
 
-        this._loadCache()
+        this.loadCache()
+        this._client.databases.push(this)
     }
 
     /**
@@ -260,7 +261,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * // }
      */
     public has(key: K): boolean {
-        return this.get(key) !== null
+        return this.get(key) !== null && this.get(key) !== undefined
     }
 
     /**
@@ -328,11 +329,11 @@ export class QuickMongo<K extends string = any, V = any> {
         TValue = V,
         TReturnValue = any
     >(key: K, value: TValue): Promise<If<IsObject<TValue>, TReturnValue, TValue>> {
-        const fetched = this.all()
+        const allDatabase = this.all()
         this._cache.set(key, value)
 
         const keys = key.split('.')
-        let database = fetched as any
+        let database = allDatabase as any
 
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
@@ -351,13 +352,13 @@ export class QuickMongo<K extends string = any, V = any> {
         if (!data) {
             this._model.insertMany({
                 __KEY: keys[0],
-                __VALUE: fetched[keys[0]]
+                __VALUE: allDatabase[keys[0]]
             })
         } else {
             await this._model.updateOne({
                 __KEY: keys[0]
             }, {
-                __VALUE: fetched[keys[0]]
+                __VALUE: allDatabase[keys[0]]
             })
         }
 
@@ -387,12 +388,16 @@ export class QuickMongo<K extends string = any, V = any> {
      * //     }
      * // }
      */
-    public async delete(key: K): Promise<void> {
+    public async delete(key: K): Promise<boolean> {
         this._cache.delete(key)
-        const fetched = this.all()
+        const allDatabase = this.all()
+
+        if (!this.has(key)) {
+            return false
+        }
 
         const keys = key.split('.')
-        let database = fetched as any
+        let database = allDatabase as any
 
         for (let i = 0; i < keys.length; i++) {
             if (keys.length - 1 == i) {
@@ -413,9 +418,11 @@ export class QuickMongo<K extends string = any, V = any> {
             await this._model.updateOne({
                 __KEY: keys[0]
             }, {
-                __VALUE: fetched[keys[0]]
+                __VALUE: allDatabase[keys[0]]
             })
         }
+
+        return true
     }
 
     /**
@@ -735,6 +742,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * await mongo.clear() // this will clear the database
      */
     public async clear(): Promise<void> {
+        this._cache.clear()
         await this._model.deleteMany()
     }
 
@@ -753,9 +761,8 @@ export class QuickMongo<K extends string = any, V = any> {
     /**
      * Loads the database into cache.
      * @returns {Promise<void>}
-     * @private
      */
-    private async _loadCache(): Promise<void> {
+    public async loadCache(): Promise<void> {
         const database = await this._allFromDatabase<Record<K, any>>()
         const initialDatabaseData = this._client.initialDatabaseData
 

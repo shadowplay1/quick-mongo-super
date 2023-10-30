@@ -47,7 +47,8 @@ module.exports = {
         'misc/**/*',
         '.eslintrc.js',
         'postinstall.js',
-        'commitlint.config.js'
+        'commitlint.config.js',
+        'jest.config.js'
     ],
 
     rules: {

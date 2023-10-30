@@ -5,7 +5,7 @@
   "main": "./dist/index.js",
   "types": "./typings/index.d.ts",
   "scripts": {
-    "test": "ts-node ./utils/test.ts",
+    "test": "jest",
     "build": "npx tsc",
     "postinstall": "node postinstall.js",
     "lint": "bash ./scripts/lint.sh",
@@ -64,7 +64,9 @@
   },
   "homepage": "https://github.com/shadowplay1/quick-mongo-super#readme",
   "devDependencies": {
+    "@jest/globals": "^29.7.0",
     "@types/node-fetch": "^2.6.1",
-    "@typescript-eslint/eslint-plugin": "^5.60.0"
+    "@typescript-eslint/eslint-plugin": "^5.60.0",
+    "ts-jest": "^29.1.1"
   }
 }
