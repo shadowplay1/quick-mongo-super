@@ -65,6 +65,7 @@
   "homepage": "https://github.com/shadowplay1/quick-mongo-super#readme",
   "devDependencies": {
     "@jest/globals": "^29.7.0",
+    "@types/jest": "^29.5.7",
     "@types/node-fetch": "^2.6.1",
     "@typescript-eslint/eslint-plugin": "^5.60.0",
     "ts-jest": "^29.1.1"
