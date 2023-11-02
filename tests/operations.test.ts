@@ -107,13 +107,23 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('delete data', async () => {
         await database.loadCache()
+        await sleep(1000)
 
         const hasResult = await database.delete('someString123')
         return expect(hasResult).toEqual(true)
     })
 
+    test.concurrent('attempt to get deleted data', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const deletedResult = database.get('someString123')
+        return expect(deletedResult).toBeNull()
+    })
+
     test.concurrent('delete unexistent data', async () => {
         await database.loadCache()
+        await sleep(1000)
 
         const hasResult = await database.delete('somethingElse')
         return expect(hasResult).toEqual(false)
