@@ -31,14 +31,19 @@ describe('get, set, delete operations', () => {
             await database.set<number>('someNumber', 1)
         ]
 
+
         return expect(setResults).toEqual(['hello', 'hello123', 1])
     })
 
     test.concurrent('set objects data', async () => {
         await quickMongoClient.connect()
 
-        const setResult = await database.set('someObject.someProperty.hello', 'hi')
-        return expect(setResult).toEqual('hi')
+        const setResults = [
+            await database.set('someObject.someProperty.hello', 'hi'),
+            await database.set('someObject.someProperty.hi', 'hello')
+        ]
+
+        return expect(setResults).toEqual(['hi', 'hello'])
     })
 
 
@@ -60,8 +65,12 @@ describe('get, set, delete operations', () => {
         await database.loadCache()
         await sleep(1000)
 
-        const getResult = database.get<string>('someObject.someProperty.hello')
-        return expect(getResult).toEqual('hi')
+        const getResults = [
+            database.get<string>('someObject.someProperty.hello'),
+            database.get<string>('someObject.someProperty.hi')
+        ]
+
+        return expect(getResults).toEqual(['hi', 'hello'])
     })
 
     test.concurrent('get unexistent value', async () => {
@@ -91,15 +100,19 @@ describe('get, set, delete operations', () => {
     test.concurrent('has objects data', async () => {
         await database.loadCache()
 
-        const hasResult = database.has('someObject.someProperty.hello')
-        return expect(hasResult).toEqual(true)
+        const hasResults = [
+            database.has('someObject.someProperty.hello'),
+            database.has('someObject.someProperty.hi')
+        ]
+
+        return expect(hasResults).toEqual([true, true])
     })
 
     test.concurrent('has unexistent value', async () => {
         await database.loadCache()
 
         const hasResult = database.has('somethingElse')
-        return expect(hasResult).toEqual(false)
+        return expect(hasResult).toBeFalsy()
     })
 
 
@@ -109,24 +122,36 @@ describe('get, set, delete operations', () => {
         await database.loadCache()
         await sleep(1000)
 
-        const hasResult = await database.delete('someString123')
-        return expect(hasResult).toEqual(true)
+        const deleteResults = [
+            await database.delete('someString123'),
+            await database.delete('someObject.someProperty.hi')
+        ]
+
+        return expect(deleteResults).toEqual([true, true])
     })
 
     test.concurrent('attempt to get deleted data', async () => {
         await database.loadCache()
         await sleep(1000)
 
-        const deletedResult = database.get('someString123')
-        return expect(deletedResult).toBeNull()
+        const deletedGetResults = [
+            database.get('someString123'),
+            database.get('someObject.someProperty.hi')
+        ]
+
+        return expect(deletedGetResults).toEqual([null, null])
     })
 
     test.concurrent('delete unexistent data', async () => {
         await database.loadCache()
         await sleep(1000)
 
-        const hasResult = await database.delete('somethingElse')
-        return expect(hasResult).toEqual(false)
+        const unexistentDeleteResults = [
+            await database.delete('somethingElse'),
+            await database.delete('someObject.someProperty.hi')
+        ]
+
+        return expect(unexistentDeleteResults).toEqual([false, false])
     })
 })
 

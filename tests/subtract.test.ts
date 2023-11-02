@@ -47,7 +47,7 @@ describe('subtraction operation', () => {
         return expect(subtractionResult).toEqual(-4)
     })
 
-    test.concurrent('subtract -5 to number in object', async () => {
+    test.concurrent('subtract -5 from number in object', async () => {
         await database.loadCache()
         await sleep(1000)
 
@@ -55,7 +55,7 @@ describe('subtraction operation', () => {
         return expect(subtractionResult).toBeDefined()
     })
 
-    test.concurrent('subtract -5 to unexistent number', async () => {
+    test.concurrent('subtract -5 from unexistent number', async () => {
         await database.loadCache()
         await sleep(1000)
 
