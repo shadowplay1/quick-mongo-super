@@ -196,7 +196,12 @@ export class CacheManager<K extends string, V> {
             updatedData = updatedData?.[keys[i]]
         }
 
-        this._cache.set(keys[0] as K, data[keys[0]])
+        if (keys.length == 1) {
+            this._cache.delete(keys[0] as K)
+        } else {
+            this._cache.set(keys[0] as K, updatedData[keys[0]])
+        }
+
         return true
     }
 
