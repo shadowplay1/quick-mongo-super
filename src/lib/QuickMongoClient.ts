@@ -63,7 +63,7 @@ export class QuickMongoClient<
     readonly [Symbol.toStringTag] = 'QuickMongoClient'
 
     /**
-     * Quick Mongo Client constructor.
+     * Creates a new instance of Quick Mongo Client.
      *
      * Type parameters:
      *
