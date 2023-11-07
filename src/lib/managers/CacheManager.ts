@@ -108,6 +108,15 @@ export class CacheManager<K extends string, V> {
     }
 
     /**
+     * Determines if the data is stored in database.
+     * @param {K} key The key to access the data by.
+     * @returns {boolean} Whether the data is stored in database.
+     */
+    public has(key: K): boolean {
+        return this.get(key) !== null && this.get(key) !== undefined
+    }
+
+    /**
      * Parses the key and sets the value in cache map.
      *
      * Type parameters:
@@ -119,9 +128,9 @@ export class CacheManager<K extends string, V> {
      * @returns {R} The data from cache map.
      *
      * @template TValue The type of data being set.
-     * @template R The type of data being returned.
+     * @template TReturnType The type of data being returned.
      */
-    public set<TValue = V, R = any>(key: K, value: TValue): R {
+    public set<TValue = V, TReturnType = any>(key: K, value: TValue): TReturnType {
         const data = this.getCacheObject()
 
         if (!this._client.connected) {
@@ -136,25 +145,28 @@ export class CacheManager<K extends string, V> {
             throw new QuickMongoError('INVALID_TYPE', 'key', 'string', typeOf(key))
         }
 
-        if (value == undefined) {
+        if (value === undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
         }
 
-        let updatedData = data
         const keys = key.split('.')
 
         for (let i = 0; i < keys.length; i++) {
-            if (keys.length - 1 == i) {
-                updatedData[keys[i]] = value
+            if (keys.length > 1) {
+                if (!isObject(data[keys[i]])) {
+                    data[keys[i]] = {}
+                }
 
-            } else if (!isObject(data[keys[i]])) {
-                updatedData[keys[i]] = {}
+                data[keys[i]] = {
+                    ...data?.[keys[i]],
+                    [keys.at(-1)]: value
+                }
+            } else {
+                data[keys[0]] = value
             }
-
-            updatedData = updatedData?.[keys[i]]
         }
 
-        this._cache.set(keys[0] as K, data[keys[0]])
+        this._cache.set(keys[0] as K, data?.[keys[0]] || null)
         return data
     }
 
@@ -181,7 +193,7 @@ export class CacheManager<K extends string, V> {
         let updatedData = data
         const keys = key.split('.')
 
-        if (this.get(key)) {
+        if (!this.has(key)) {
             return false
         }
 
@@ -199,7 +211,7 @@ export class CacheManager<K extends string, V> {
         if (keys.length == 1) {
             this._cache.delete(keys[0] as K)
         } else {
-            this._cache.set(keys[0] as K, updatedData[keys[0]])
+            this._cache.set(keys[0] as K, data?.[keys[0]])
         }
 
         return true

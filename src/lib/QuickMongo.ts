@@ -86,7 +86,7 @@ export class QuickMongo<K extends string = any, V = any> {
     readonly [Symbol.toStringTag] = 'QuickMongoDatabase'
 
     /**
-     * Quick Mongo database constructor.
+     * Creates a new instance of Quick Mongo database.
      *
      * Type parameters:
      *
@@ -237,7 +237,7 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Determines if the data is stored in database.
-     * @param {key} key The key to access the data by.
+     * @param {K} key The key to access the data by.
      * @returns {boolean} Whether the data is stored in database.
      * @example
      * const isSimpleValueInDatabase = mongo.has('simpleValue')
@@ -333,16 +333,20 @@ export class QuickMongo<K extends string = any, V = any> {
         this._cache.set(key, value)
 
         const keys = key.split('.')
-        let database = allDatabase as any
 
         for (let i = 0; i < keys.length; i++) {
-            if (keys.length - 1 == i) {
-                database[keys[i]] = value
-            } else if (!isObject(database[keys[i]])) {
-                database[keys[i]] = {}
-            }
+            if (keys.length > 1) {
+                if (!isObject(allDatabase[keys[i]])) {
+                    allDatabase[keys[i]] = {}
+                }
 
-            database = database?.[keys[i]]
+                allDatabase[keys[i]] = {
+                    ...allDatabase?.[keys[i]],
+                    [keys.at(-1)]: value
+                }
+            } else {
+                allDatabase[keys[0]] = value
+            }
         }
 
         const data = await this._model.findOne({
@@ -389,12 +393,13 @@ export class QuickMongo<K extends string = any, V = any> {
      * // }
      */
     public async delete(key: K): Promise<boolean> {
-        this._cache.delete(key)
         const allDatabase = this.all()
 
         if (!this.has(key)) {
             return false
         }
+
+        this._cache.delete(key)
 
         const keys = key.split('.')
         let database = allDatabase as any
@@ -454,7 +459,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 
-        if (numberToAdd == undefined) {
+        if (numberToAdd === undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToAdd')
         }
 
@@ -495,7 +500,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 
-        if (numberToSubtract == undefined) {
+        if (numberToSubtract === undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToSubtract')
         }
 
@@ -581,7 +586,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetArray))
         }
 
-        if (targetArrayElementIndex == undefined) {
+        if (targetArrayElementIndex === undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'targetArrayElementIndex')
         }
 
@@ -589,7 +594,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('INVALID_TYPE', 'targetArrayElementIndex', 'number', typeOf(targetArrayElementIndex))
         }
 
-        if (value == undefined) {
+        if (value === undefined) {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'value')
         }
 
@@ -737,24 +742,32 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Deletes everything from the database.
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>} `true` if cleared successfully, `false` otherwise.
      * @example
      * await mongo.clear() // this will clear the database
      */
-    public async clear(): Promise<void> {
+    public async clear(): Promise<boolean> {
+        const databaseKeys = this.keys()
+
+        if (!databaseKeys.length) {
+            return false
+        }
+
         this._cache.clear()
         await this._model.deleteMany()
+
+        return true
     }
 
     /**
      * Deletes everything from the database.
      *
      * - This method is an alias for {@link QuickMongo.clear()} method.
-     * @returns {Promise<void>}
+     * @returns {Promise<boolean>} `true` if cleared successfully, `false` otherwise.
      * @example
      * await mongo.deleteAll() // this will clear the database the method was called on
      */
-    public async deleteAll(): Promise<void> {
+    public async deleteAll(): Promise<boolean> {
         return this.clear()
     }
 
@@ -769,13 +782,13 @@ export class QuickMongo<K extends string = any, V = any> {
         if (this._client.initialDatabaseData && !Object.keys(database).length) {
             for (const key of Object.keys(initialDatabaseData)) {
                 this.set(key as K, initialDatabaseData[key])
-                this._cache.set(key as K, initialDatabaseData[key])
+                this._cache.set(key as K, initialDatabaseData[key] ?? null)
             }
         }
 
         for (const key in database) {
             const dataObject = database[key]
-            this._cache.set(key, dataObject)
+            this._cache.set(key, dataObject ?? null)
         }
     }
 

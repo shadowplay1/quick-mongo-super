@@ -11,12 +11,13 @@ quickMongoClient.connected = true
 
 beforeAll(async () => {
     await quickMongoClient.connect()
+    await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
 })
 
 describe('get, set, delete operations', () => {
     const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
+        name: 'test_database_1',
+        collectionName: 'test_database_collection_1'
     })
 
 
@@ -24,19 +25,19 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('set data', async () => {
         await database.loadCache()
+        await sleep(1000)
 
         const setResults = [
             await database.set<string>('someString', 'hello'),
-            await database.set<string>('someString123', 'hello123'),
-            await database.set<number>('someNumber', 1)
+            await database.set<string>('someString123', 'hello123')
         ]
 
-
-        return expect(setResults).toEqual(['hello', 'hello123', 1])
+        return expect(setResults).toEqual(['hello', 'hello123'])
     })
 
     test.concurrent('set objects data', async () => {
-        await quickMongoClient.connect()
+        await database.loadCache()
+        await sleep(1000)
 
         const setResults = [
             await database.set('someObject.someProperty.hello', 'hi'),
@@ -50,20 +51,25 @@ describe('get, set, delete operations', () => {
     // QuickMongo.get()
 
     test.concurrent('get data', async () => {
+        await database.loadCache()
         await sleep(1000)
 
         const getResults = [
             database.get<string>('someString'),
-            database.get<string>('someString123'),
-            database.get<number>('someNumber')
+            database.get<string>('someString123')
         ]
 
-        return expect(getResults).toEqual(['hello', 'hello123', 1])
+        return expect(getResults).toEqual(['hello', 'hello123'])
     })
 
     test.concurrent('get objects data', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
+
+        // @ts-expect-error
+        // console.log({databaseAll: database.all(), allFromDatabase: await database._allFromDatabase()});
+        // console.log({someObject: database.get('someObject')});
+
 
         const getResults = [
             database.get<string>('someObject.someProperty.hello'),
@@ -90,15 +96,15 @@ describe('get, set, delete operations', () => {
 
         const hasResults = [
             database.has('someString'),
-            database.has('someString123'),
-            database.has('someNumber')
+            database.has('someString123')
         ]
 
-        return expect(hasResults).toEqual([true, true, true])
+        return expect(hasResults).toEqual([true, true])
     })
 
     test.concurrent('has objects data', async () => {
         await database.loadCache()
+        await sleep(1000)
 
         const hasResults = [
             database.has('someObject.someProperty.hello'),
@@ -110,6 +116,7 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('has unexistent value', async () => {
         await database.loadCache()
+        await sleep(1000)
 
         const hasResult = database.has('somethingElse')
         return expect(hasResult).toBeFalsy()

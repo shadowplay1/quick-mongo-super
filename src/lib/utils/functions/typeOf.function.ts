@@ -8,7 +8,7 @@ export const typeOf = (input: any): string => {
         return input.name
     }
 
-    if (input == null || input == undefined || (typeof input == 'number' && isNaN(input))) {
+    if (input === null || input === undefined || (typeof input == 'number' && isNaN(input))) {
         return `${input}`
     }
 
