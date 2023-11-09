@@ -5,10 +5,10 @@ export const errors = {
     NOT_CONNECTED: 'No connection to MongoDB.',
     UNKNOWN_ERROR: 'Unknown error.',
     REQUIRED_PARAMETER_MISSING: '\'{1}\' parameter is required but is missing.',
-    INVALID_TYPE: '\'{1}\' must be a type of {2}. Received type: {3}',
+    INVALID_TYPE: '\'{1}\' must be a type of {2}. Received type: {3}.',
     ONE_OR_MORE_TYPES_INVALID: 'All the specified elements from the array in \'{1}\' parameter ' +
-        'must be a type of {2}. Received types array: {3}',
-    INVALID_TARGET: 'The target must be a type of {1}. Received type: {2}.'
+        'must be a type of {2}. Received array of types: {3}.',
+    INVALID_TARGET: 'The target in database must be a type of {1}. Received target type: {2}.'
 }
 
 export interface IErrorParams extends Record<keyof typeof errors, any[]> {
