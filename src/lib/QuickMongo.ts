@@ -14,6 +14,8 @@ import { CacheManager } from './managers/CacheManager'
 import { isObject } from './utils/functions/isObject.function'
 import { typeOf } from './utils/functions/typeOf.function'
 
+import { isNumber } from './utils/functions/isNumber.function'
+
 import { QuickMongoError } from './utils/QuickMongoError'
 import { If, IsObject, Maybe, RestOrArray } from '../types/utils'
 
@@ -469,7 +471,7 @@ export class QuickMongo<K extends string = any, V = any> {
     public async add(key: K, numberToAdd: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
-        if (isNaN(targetNumber)) {
+        if (!isNumber(targetNumber) || !Array.isArray(targetNumber)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 
@@ -477,7 +479,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToAdd')
         }
 
-        if (isNaN(numberToAdd)) {
+        if (!isNumber(numberToAdd)) {
             throw new QuickMongoError('INVALID_TYPE', 'numberToAdd', 'number', typeOf(numberToAdd))
         }
 
@@ -510,7 +512,7 @@ export class QuickMongo<K extends string = any, V = any> {
     public async subtract(key: K, numberToSubtract: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
-        if (isNaN(targetNumber)) {
+        if (!isNumber(targetNumber) || !Array.isArray(targetNumber)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 
@@ -518,7 +520,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'numberToSubtract')
         }
 
-        if (isNaN(numberToSubtract)) {
+        if (!isNumber(numberToSubtract)) {
             throw new QuickMongoError('INVALID_TYPE', 'numberToSubtract', 'number', typeOf(numberToSubtract))
         }
 
@@ -604,7 +606,7 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'targetArrayElementIndex')
         }
 
-        if (isNaN(targetArrayElementIndex)) {
+        if (!isNumber(targetArrayElementIndex)) {
             throw new QuickMongoError('INVALID_TYPE', 'targetArrayElementIndex', 'number', typeOf(targetArrayElementIndex))
         }
 
@@ -659,7 +661,11 @@ export class QuickMongo<K extends string = any, V = any> {
             throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'targetArrayElementIndex')
         }
 
-        if (targetArrayElementIndexes.length == 1 && isNaN(targetArrayElementIndexes[0] as number)) {
+        if (
+            targetArrayElementIndexes.length == 1 &&
+            !isNumber(targetArrayElementIndexes[0] as number) &&
+            !Array.isArray(targetArrayElementIndexes[0])
+        ) {
             throw new QuickMongoError(
                 'INVALID_TYPE',
                 'targetArrayElementIndex',
@@ -668,7 +674,11 @@ export class QuickMongo<K extends string = any, V = any> {
             )
         }
 
-        if (targetArrayElementIndexes.map(index => isNaN(index)).some(x => x)) {
+        if (
+            targetArrayElementIndexes
+                .map(index => !isNumber(index))
+                .some(x => x)
+        ) {
             throw new QuickMongoError(
                 'ONE_OR_MORE_TYPES_INVALID',
                 'targetArrayElementIndexes',

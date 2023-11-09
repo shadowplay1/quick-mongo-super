@@ -80,6 +80,73 @@ describe('addition operation', () => {
     })
 })
 
+describe('subtraction operation', () => {
+    const database = new QuickMongo<string, any>(quickMongoClient, {
+        name: 'test_database_2',
+        collectionName: 'test_database_collection_2'
+    })
+
+    // setting initial values
+
+    test.concurrent('set number', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const setResult = await database.set<number>('number', 1)
+        return expect(setResult).toEqual(1)
+    })
+
+    test.concurrent('set number in object', async () => {
+        await quickMongoClient.connect()
+
+        const setResult = await database.set('numbers.number', 5)
+        return expect(setResult).toEqual(5)
+    })
+
+
+    // QuickMongo.subtract()
+
+    test.concurrent('subtract -5', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const subtractionResult = await database.subtract('number', 5)
+        return expect(subtractionResult).toEqual(-4)
+    })
+
+    test.concurrent('subtract -5 from number in object', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const subtractionResult = await database.subtract('numbers.number', 5)
+        return expect(subtractionResult).toBeDefined()
+    })
+
+    test.concurrent('subtract -5 from unexistent number', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const subtractResult = await database.subtract('unexistentNumber', 15)
+        return expect(subtractResult).toEqual(-15)
+    })
+
+
+    // getting subtraction results
+
+    test.concurrent('get subtraction results', async () => {
+        await database.loadCache()
+        await sleep(1000)
+
+        const subtractionResults = [
+            database.get<number>('number'),
+            database.get<number>('numbers.number'),
+            database.get<number>('unexistentNumber')
+        ]
+
+        return expect(subtractionResults).toEqual([-4, 0, -15])
+    })
+})
+
 
 // post-testing cleanup
 afterAll(async () => {
