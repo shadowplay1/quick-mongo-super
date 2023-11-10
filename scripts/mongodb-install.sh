@@ -1,6 +1,6 @@
 #!/bin/bash
 
-apt-get install -y gnupg curl
+sudo apt-get install -y gnupg curl
 
 curl -fsSL https://pgp.mongodb.com/server-7.0.asc | \
    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
