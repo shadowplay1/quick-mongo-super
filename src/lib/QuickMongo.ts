@@ -471,7 +471,7 @@ export class QuickMongo<K extends string = any, V = any> {
     public async add(key: K, numberToAdd: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
-        if (!isNumber(targetNumber) || !Array.isArray(targetNumber)) {
+        if (!isNumber(targetNumber)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 
@@ -512,7 +512,7 @@ export class QuickMongo<K extends string = any, V = any> {
     public async subtract(key: K, numberToSubtract: number): Promise<number> {
         const targetNumber = this.get<number>(key) ?? 0
 
-        if (!isNumber(targetNumber) || !Array.isArray(targetNumber)) {
+        if (!isNumber(targetNumber)) {
             throw new QuickMongoError('INVALID_TARGET', 'number', typeOf(targetNumber))
         }
 

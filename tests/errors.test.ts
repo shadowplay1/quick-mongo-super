@@ -9,7 +9,7 @@ beforeAll(async () => {
     await quickMongoClient.connect()
 })
 
-const isPromiseResolved = async (promise: Promise<any>): Promise<boolean> => {
+const resolvePromise = async (promise: Promise<any>): Promise<boolean> => {
     try {
         await promise
         return true
@@ -29,19 +29,19 @@ describe('errors throwing: fetch()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.fetch()
+        const errorTest = database.fetch()
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.fetch(123)
+        const errorTest = database.fetch(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.fetch('test')
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = database.fetch('test')
+        return expect(resolvePromise(errorTest())).resolves.toBeTruthy()
     })
 })
 
@@ -53,19 +53,19 @@ describe('errors throwing: has()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.has()
+        const errorTest = async() => await (database.has())
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.has(123)
+        const errorTest = database.has(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.has('test')
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = database.has('test')
+        return expect(errorTest).toBeTruthy()
     })
 })
 
@@ -77,18 +77,18 @@ describe('errors throwing: keys()', () => {
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.keys(123)
+        const errorTest = database.keys(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('success case: \'key\' parameter is missing (return database root keys)', async () => {
-        const errorTest = (): any => database.keys()
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = database.keys()
+        return expect(errorTest).toBeTruthy()
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.keys('test')
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = database.keys('test')
+        return expect(errorTest).toBeTruthy()
     })
 })
 
@@ -103,19 +103,19 @@ describe('errors throwing: set()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.set()
+        const errorTest = async() => await (database.set())
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.set(123)
+        const errorTest = async() => await (database.set(123))
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('\'value\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.set('test')
+        const errorTest = async() => await (database.set('test'))
         return expect(errorTest).toThrowError('\'value\' parameter is required but is missing.')
     })
 
@@ -123,8 +123,8 @@ describe('errors throwing: set()', () => {
         // for further array methods testing
         await database.set('arr', [])
 
-        const errorTest = (): any => database.set('test', 123)
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = async() => await (database.set('test', 123))
+        return expect(resolvePromise(errorTest())).resolves.toBeTruthy()
     })
 })
 
@@ -136,19 +136,19 @@ describe('errors throwing: delete()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.delete()
+        const errorTest = async() => await (database.delete())
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.delete(123)
+        const errorTest = async() => await (database.delete(123))
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.delete('test')
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = async() => await (database.delete('test'))
+        return expect(resolvePromise(errorTest())).resolves.toBeTruthy()
     })
 })
 
@@ -163,30 +163,30 @@ describe('errors throwing: add()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.add()
+        const errorTest = async() => await (database.add())
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.add(123)
+        const errorTest = async() => await (database.add(123))
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('\'numberToAdd\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.add('test')
+        const errorTest = async() => await (database.add('test'))
         return expect(errorTest).toThrowError('\'numberToAdd\' parameter is required but is missing.')
     })
 
     test.concurrent('\'numberToAdd\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.add('test', 'test')
+        const errorTest = async() => await (database.add('test', 'test'))
         return expect(errorTest).toThrowError('\'numberToAdd\' must be a type of number. Received type: string.')
     })
 
     test.concurrent('target is not a number', async () => {
-        const errorTest = (): any => database.add('arr', 123)
+        const errorTest = async() => await (database.add('arr', 123))
 
         return expect(errorTest).toThrowError(
             'The target in database must be a type of number. Received target type: Array.'
@@ -194,8 +194,8 @@ describe('errors throwing: add()', () => {
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.add('test', 123)
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = async() => await (database.add('test', 123))
+        return expect(resolvePromise(errorTest())).resolves.toBeTruthy()
     })
 })
 
@@ -207,30 +207,30 @@ describe('errors throwing: subtract()', () => {
 
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.subtract()
+        const errorTest = async() => await (database.subtract())
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.subtract(123)
+        const errorTest = async() => await (database.subtract(123))
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: number.')
     })
 
     test.concurrent('\'numberToSubtract\' parameter is missing', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.subtract('test')
+        const errorTest = async() => await (database.subtract('test'))
         return expect(errorTest).toThrowError('\'numberToSubtract\' parameter is required but is missing.')
     })
 
     test.concurrent('\'numberToSubtract\' parameter type is incorrect', async () => {
         // @ts-expect-error
-        const errorTest = (): any => database.subtract('test', 'test')
+        const errorTest = async() => await (database.subtract('test', 'test'))
         return expect(errorTest).toThrowError('\'numberToSubtract\' must be a type of number. Received type: string.')
     })
 
     test.concurrent('target is not a number', async () => {
-        const errorTest = (): any => database.subtract('arr', 123)
+        const errorTest = async() => await (database.subtract('arr', 123))
 
         return expect(errorTest).toThrowError(
             'The target in database must be a type of number. Received target type: Array.'
@@ -238,8 +238,8 @@ describe('errors throwing: subtract()', () => {
     })
 
     test.concurrent('success case', async () => {
-        const errorTest = (): any => database.subtract('test', 123)
-        return expect(isPromiseResolved(errorTest())).resolves.toBeTruthy()
+        const errorTest = async() => await (database.subtract('test', 123))
+        return expect(resolvePromise(errorTest())).resolves.toBeTruthy()
     })
 })
 
