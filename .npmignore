@@ -16,8 +16,10 @@ node_modules/
 # utilities
 utils/
 
-# tests
+# testing
 test/
+misc/
+dist/misc/
 dist/test
 dist/tests
 
