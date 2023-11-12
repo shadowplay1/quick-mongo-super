@@ -25,27 +25,27 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('set data', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const setResults = [
             await database.set<string>('someString', 'hello'),
             await database.set<string>('someString123', 'hello123')
         ]
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(setResults).toEqual(['hello', 'hello123'])
     })
 
     test.concurrent('set objects data', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const setResults = [
             await database.set('someObject.someProperty.hello', 'hi'),
             await database.set('someObject.someProperty.hi', 'hello')
         ]
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(setResults).toEqual(['hi', 'hello'])
     })
 
@@ -54,14 +54,14 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('get data', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const getResults = [
             database.get<string>('someString'),
             database.get<string>('someString123')
         ]
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(getResults).toEqual(['hello', 'hello123'])
     })
 
@@ -80,11 +80,11 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('get unexistent value', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const getResult = database.get('somethingElse')
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(getResult).toBeNull()
     })
 
@@ -93,14 +93,14 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('has data', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const hasResults = [
             database.has('someString'),
             database.has('someString123')
         ]
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(hasResults).toEqual([true, true])
     })
 
@@ -119,11 +119,11 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('has unexistent value', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const hasResult = database.has('somethingElse')
 
-        await sleep(3000)
+        await sleep(1000)
         return expect(hasResult).toBeFalsy()
     })
 
