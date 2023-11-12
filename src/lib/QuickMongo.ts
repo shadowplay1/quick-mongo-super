@@ -180,6 +180,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * Type parameters:
      *
      * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
+     *
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
      * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
@@ -212,6 +213,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * Type parameters:
      *
      * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
+     *
      * @param {K} key The key to access the data by.
      * @returns {Maybe<TValue>} The value from database.
      * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
@@ -271,8 +273,8 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * `TValue` (any, defaults to `V`) - The type of value to write.
-     * `TReturnValue` (any, defaults to `any`) - Typethe return type fallbacks to if `TVa\lue` is an object.
+     * - `TValue` (any, defaults to `V`) - The type of value to write.
+     * - `TReturnValue` (any, defaults to `any`) - Typethe return type fallbacks to if `TVa\lue` is an object.
      *
      * @param {string} key The key to write the data under.
      * @param {TValue} value The value to write.
@@ -535,7 +537,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
+     * - `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
      * @param {K} key The key to access the data by.
      * @param {RestOrArray<TValue>} values The value to be pushed into the target array in databse.
@@ -579,7 +581,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
+     * - `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
      * @param {K} key The key to access the data by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
@@ -631,7 +633,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * `TValue` (any, defaults to `V`) - The type of array to be returned.
+     * - `TValue` (any, defaults to `V`) - The type of array to be returned.
      *
      * @param {K} key The key to access the data by.
      * @param {RestOrArray<number>} targetArrayElementIndexes The index(es) to find the element in target array by.

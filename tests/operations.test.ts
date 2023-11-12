@@ -38,14 +38,14 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('set objects data', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const setResults = [
             await database.set('someObject.someProperty.hello', 'hi'),
             await database.set('someObject.someProperty.hi', 'hello')
         ]
 
-        await sleep(1000)
+        await sleep(3000)
         return expect(setResults).toEqual(['hi', 'hello'])
     })
 
@@ -54,14 +54,14 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('get data', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const getResults = [
             database.get<string>('someString'),
             database.get<string>('someString123')
         ]
 
-        await sleep(1000)
+        await sleep(3000)
         return expect(getResults).toEqual(['hello', 'hello123'])
     })
 

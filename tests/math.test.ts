@@ -23,14 +23,15 @@ describe('addition operation', () => {
 
     test.concurrent('set number', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const setResult = await database.set<number>('number', 1)
         return expect(setResult).toEqual(1)
     })
 
     test.concurrent('set number in object', async () => {
-        await quickMongoClient.connect()
+        await database.loadCache()
+        await sleep(3000)
 
         const setResult = await database.set('numbers.number', 5)
         return expect(setResult).toEqual(5)
@@ -41,7 +42,7 @@ describe('addition operation', () => {
 
     test.concurrent('add +5', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const addResult = await database.add('number', 5)
         return expect(addResult).toEqual(6)
@@ -49,7 +50,7 @@ describe('addition operation', () => {
 
     test.concurrent('add +5 to number in object', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const addResult = await database.add('numbers.number', 5)
         return expect(addResult).toBeDefined()
@@ -57,7 +58,7 @@ describe('addition operation', () => {
 
     test.concurrent('add +5 to unexistent number', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const addResult = await database.add('unexistentNumber', 15)
         return expect(addResult).toEqual(15)
@@ -68,7 +69,7 @@ describe('addition operation', () => {
 
     test.concurrent('get addition results', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const additionResults = [
             database.get<number>('number'),
@@ -90,14 +91,15 @@ describe('subtraction operation', () => {
 
     test.concurrent('set number', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const setResult = await database.set<number>('number', 1)
         return expect(setResult).toEqual(1)
     })
 
     test.concurrent('set number in object', async () => {
-        await quickMongoClient.connect()
+        await database.loadCache()
+        await sleep(3000)
 
         const setResult = await database.set('numbers.number', 5)
         return expect(setResult).toEqual(5)
@@ -108,7 +110,7 @@ describe('subtraction operation', () => {
 
     test.concurrent('subtract -5', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const subtractionResult = await database.subtract('number', 5)
         return expect(subtractionResult).toEqual(-4)
@@ -116,7 +118,7 @@ describe('subtraction operation', () => {
 
     test.concurrent('subtract -5 from number in object', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const subtractionResult = await database.subtract('numbers.number', 5)
         return expect(subtractionResult).toBeDefined()
@@ -124,7 +126,7 @@ describe('subtraction operation', () => {
 
     test.concurrent('subtract -5 from unexistent number', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const subtractResult = await database.subtract('unexistentNumber', 15)
         return expect(subtractResult).toEqual(-15)
@@ -135,7 +137,7 @@ describe('subtraction operation', () => {
 
     test.concurrent('get subtraction results', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const subtractionResults = [
             database.get<number>('number'),
