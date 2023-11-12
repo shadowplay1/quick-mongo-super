@@ -3,7 +3,7 @@
   "version": "2.0.0",
   "description": "Quick Mongo Super is a light-weight and easy-to-use Node.js module written in TypeScript to work with MongoDB.",
   "main": "./dist/index.js",
-  "types": "./typings/index.d.ts",
+  "types": "./dist/typings/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "npx tsc",
@@ -17,7 +17,8 @@
     "mongoose": "5.13"
   },
   "directories": {
-    "lib": "./dist"
+    "lib": "./dist",
+	"test": "./tests"
   },
   "repository": {
     "type": "git",
@@ -45,6 +46,15 @@
     "lightweight",
     "clouddata",
     "data",
+    "cache",
+    "cached",
+    "caching",
+    "cache-data",
+    "cached-data",
+    "caching-data",
+    "cache-database",
+    "cached-database",
+    "caching-database",
     "cloud-data",
     "wrapper",
     "mongo.js",
