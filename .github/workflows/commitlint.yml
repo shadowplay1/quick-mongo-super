@@ -20,4 +20,4 @@ jobs:
         run: npm i
 
       - name: Check the commit message to match the conventions
-        run: npx commitlint --from=HEAD^
+        run: npx commitlint
