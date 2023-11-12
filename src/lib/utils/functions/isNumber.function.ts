@@ -9,5 +9,5 @@ import { typeOf } from './typeOf.function'
  * @returns {boolean} Whether the specified input is a number.
  */
 export const isNumber = (input: any): boolean => {
-    return !isNaN(input as number) && input !== '' && typeOf(input) !== 'Array'
+    return !isNaN(input as number) && input !== '' && input !== null && typeOf(input) !== 'Array'
 }

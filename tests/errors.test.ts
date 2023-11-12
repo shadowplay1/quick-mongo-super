@@ -7,6 +7,7 @@ import { QuickMongo, QuickMongoClient } from '../src'
 
 const sleep = promisify(setTimeout)
 
+
 // eslint-disable-next-line
 const quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018')
 quickMongoClient.connected = true
@@ -42,18 +43,12 @@ describe('errors throwing: fetch()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = (): any => database.fetch()
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = (): any => database.fetch(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: Number.')
@@ -61,7 +56,7 @@ describe('errors throwing: fetch()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successTest = (): any => database.fetch('test')
         return expect(resolveFunction(successTest)).toBeTruthy()
@@ -75,18 +70,12 @@ describe('errors throwing: has()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = (): any => database.has()
         return expect(errorTest).toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = (): any => database.has(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: Number.')
@@ -94,7 +83,7 @@ describe('errors throwing: has()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successCase = (): any => database.has('test')
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -108,9 +97,6 @@ describe('errors throwing: keys()', () => {
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = (): any => database.keys(123)
         return expect(errorTest).toThrowError('\'key\' must be a type of string. Received type: Number.')
@@ -118,7 +104,7 @@ describe('errors throwing: keys()', () => {
 
     test.concurrent('success case: \'key\' parameter is missing (return database root keys)', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successCase = (): any => database.keys()
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -126,7 +112,7 @@ describe('errors throwing: keys()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successCase = (): any => database.keys('test')
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -143,27 +129,18 @@ describe('errors throwing: set()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.set()
         return expect(errorTest()).rejects.toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.set(123)
         return expect(errorTest).rejects.toThrowError('\'key\' must be a type of string. Received type: Number.')
     })
 
     test.concurrent('\'value\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.set('test')
         return expect(errorTest).rejects.toThrowError('\'value\' parameter is required but is missing.')
@@ -171,7 +148,7 @@ describe('errors throwing: set()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successCase = async (): Promise<any> => await database.set('test', 123)
         return expect(resolvePromise(successCase())).resolves.toBeTruthy()
@@ -185,18 +162,12 @@ describe('errors throwing: delete()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.delete()
         return expect(errorTest).rejects.toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.delete(123)
         return expect(errorTest).rejects.toThrowError('\'key\' must be a type of string. Received type: Number.')
@@ -204,7 +175,7 @@ describe('errors throwing: delete()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successCase = async (): Promise<any> => await database.delete('test')
         return expect(resolvePromise(successCase())).resolves.toBeTruthy()
@@ -221,45 +192,30 @@ describe('errors throwing: add()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.add()
         return expect(errorTest).rejects.toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.add(123)
         return expect(errorTest).rejects.toThrowError('\'key\' must be a type of string. Received type: Number.')
     })
 
     test.concurrent('\'numberToAdd\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.add('test')
         return expect(errorTest).rejects.toThrowError('\'numberToAdd\' parameter is required but is missing.')
     })
 
     test.concurrent('\'numberToAdd\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.add('test', 'test')
         return expect(errorTest).rejects.toThrowError('\'numberToAdd\' must be a type of number. Received type: String.')
     })
 
     test.concurrent('target is not a number', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         await database.set('arr', [])
 
         const errorTest = async (): Promise<any> => await database.add('arr', 123)
@@ -271,7 +227,7 @@ describe('errors throwing: add()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         await database.set('arr', [])
 
@@ -287,36 +243,24 @@ describe('errors throwing: subtract()', () => {
     })
 
     test.concurrent('\'key\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.subtract()
         return expect(errorTest).rejects.toThrowError('\'key\' parameter is required but is missing.')
     })
 
     test.concurrent('\'key\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.subtract(123)
         return expect(errorTest).rejects.toThrowError('\'key\' must be a type of string. Received type: Number.')
     })
 
     test.concurrent('\'numberToSubtract\' parameter is missing', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.subtract('test')
         return expect(errorTest).rejects.toThrowError('\'numberToSubtract\' parameter is required but is missing.')
     })
 
     test.concurrent('\'numberToSubtract\' parameter type is incorrect', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.subtract('test', 'test')
 
@@ -326,9 +270,6 @@ describe('errors throwing: subtract()', () => {
     })
 
     test.concurrent('target is not a number', async () => {
-        await database.loadCache()
-        await sleep(3000)
-
         await database.set('arr', [])
 
         const errorTest = async (): Promise<any> => await database.subtract('arr', 123)
@@ -340,7 +281,7 @@ describe('errors throwing: subtract()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(1000)
 
         const successTest = async (): Promise<any> => await database.subtract('test', 123)
         return expect(resolvePromise(successTest())).resolves.toBeTruthy()
