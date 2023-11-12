@@ -1,5 +1,9 @@
-export interface IQuickMongoEvents {
-    connect: [voidParam: void]
+import { QuickMongoClient } from '../lib/QuickMongoClient'
+
+export interface IQuickMongoEvents<
+    TInitialDatabaseData extends Record<string, any> = any
+> {
+    connect: [connectedQuickMongoClient: QuickMongoClient<TInitialDatabaseData>]
     disconnect: [voidParam: void]
 }
 
