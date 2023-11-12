@@ -16,6 +16,11 @@ node_modules/
 # utilities
 utils/
 
+# tests
+test/
+dist/test
+dist/tests
+
 # typescript source code
 src/
 
