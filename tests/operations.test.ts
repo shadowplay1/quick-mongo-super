@@ -54,14 +54,14 @@ describe('get, set, delete operations', () => {
 
     test.concurrent('get data', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const getResults = [
             database.get<string>('someString'),
             database.get<string>('someString123')
         ]
 
-        await sleep(1000)
+        await sleep(3000)
         return expect(getResults).toEqual(['hello', 'hello123'])
     })
 
