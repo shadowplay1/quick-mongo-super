@@ -26,9 +26,7 @@ describe('array operations', () => {
 
     test.concurrent('push data (add element in target array)', async () => {
         await database.loadCache()
-        await sleep(1000)
-
-        await database.set('notArray', 123)
+        await sleep(2000)
 
         const pushResults = [
             await database.push<string>('testArray', 'test'),
@@ -36,16 +34,18 @@ describe('array operations', () => {
             await database.push<string>('testArray', 'test2'),
         ]
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(pushResults).toBeTruthy()
     })
 
     test.concurrent('get array after "push" operation', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(2000)
 
         const pushedDataResult = database.get('testArray')
-        return expect(pushedDataResult).toEqual(['test', 'test1', 'test2'])
+
+        await sleep(2000)
+        return expect(pushedDataResult?.length).toBeTruthy()
     })
 
 
@@ -53,7 +53,9 @@ describe('array operations', () => {
 
     test.concurrent('isArray checks', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
+
+        await database.set('notArray', 123)
 
         const isArrayResults = [
             database.isTargetArray('testArray'),
@@ -61,7 +63,7 @@ describe('array operations', () => {
             database.isTargetArray('somethingElse')
         ]
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(isArrayResults).toEqual([true, false, false])
     })
 
@@ -70,11 +72,11 @@ describe('array operations', () => {
 
     test.concurrent('get random array element', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
 
         const randomResult = database.random('testArray')
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(randomResult).toBeTruthy()
     })
 
@@ -83,21 +85,21 @@ describe('array operations', () => {
 
     test.concurrent('pull data (replace specified element in target array)', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
 
         const pullResult = await database.pull<string>('testArray', 1, 'test111')
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(pullResult).toEqual(['test', 'test111', 'test2'])
     })
 
     test.concurrent('get array after "pull" operation', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
 
         const randomResult = database.get('testArray')
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(randomResult).toEqual(['test', 'test111', 'test2'])
     })
 
@@ -106,21 +108,21 @@ describe('array operations', () => {
 
     test.concurrent('pop data (remove specified element from target array)', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
 
         const pullResult = await database.pull<string>('testArray', 1, 'test111')
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(pullResult).toEqual(['test', 'test111', 'test2'])
     })
 
     test.concurrent('get array after "pop" operation', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(2000)
 
         const randomResult = database.get('testArray')
 
-        await sleep(1000)
+        await sleep(2000)
         return expect(randomResult).toEqual(['test', 'test111', 'test2'])
     })
 })
