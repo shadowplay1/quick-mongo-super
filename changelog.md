@@ -6,6 +6,13 @@
 
 ## 🕘 | Changelog
 
+**v2.0.0**
+- Completely rewritten the whole module and changed the file structure.
+-
+
+**v1.0.19**
+- Bumped `mongodb` dependency from `v4.3.1` to `v4.17.0`
+
 **v1.0.18**
 - Fixed typing bug in all methods requiring to specify a value.
 
