@@ -17,7 +17,7 @@ jobs:
           node-version: 16
 
       - name: Install dependencies
-        run: npm i
+        run: npm ci
 
       - name: Check the commit message to match the conventions
-        run: npx commitlint --edit "${1}"
+        run: npx commitlint --edit
