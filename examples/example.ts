@@ -5,52 +5,69 @@ import { QuickMongoClient, QuickMongo } from 'quick-mongo-super'
 // In this example, localhost URI will be used.
 const connectionURI = 'mongodb://127.0.0.1:27018'
 
-// Create a normal Quick Mongo client.
 
-// QuickMongoClient's type parameters:
+// QuickMongoClient type parameters:
 //
 // - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
 
-const quickMongoClient = new QuickMongoClient<any>(connectionURI)
+// ------------------ Initialation Examples ------------------ \\
+
+// === 1. Create a normal Quick Mongo client. ===
+const quickMongoClient = new QuickMongoClient(connectionURI)
+
+// Initialize the normal database:
+const mongo = new QuickMongo(quickMongoClient, {
+    name: 'databaseName',
+    collectionName: 'collectionName' // (optional)
+})
+
+// === 2. Alternatively, you can specify the initial data that will be ===
+// === inserted on successful connection in every database if it's empty: ===
+const quickMongoClientWithInitialData = new QuickMongoClient<IDatabaseInitialObject>(connectionURI, {
+    somethingToSetInDatabase: 'something'
+})
+
+// Initialize the database with initial data being set:
+const mongoWithInitialData = new QuickMongo(quickMongoClientWithInitialData, {
+    name: 'databaseName',
+    collectionName: 'collectionName' // (optional)
+})
+
+// Initial data will be available as soon as the database instance was created
+// and initialized from the QuickMongoClient with the initial data being set, and the
+// connection to your cluster is established (assuming that the connection is established):
+console.log(mongoWithInitialData.all()) // -> { somethingToSetInDatabase: 'something' }
+
+// Assuming that we have this initial data object type for this initialation example:
+interface IDatabaseInitialObject {
+    somethingToSetInDatabase: string
+}
 
 const main = async () => {
-
     // Connect to MongoDB.
     await quickMongoClient.connect()
 
-    // You can also specify the initial data that will be put
-    // on successful connection in every database if it's empty.
 
-    // const quickMongoClient = new QuickMongoClient<InitialDatabaseObject>(connectionURI, {
-    //     somethingToSetInDatabase: 'something'
-    // })
-
-    // interface InitialDatabaseObject {
-    //     somethingToSetInDatabase: 'something'
-    // }
-
-
-    // Initialize the database.
-
-    // QuickMongo's type parameters:
+    // QuickMongo type parameters:
     //
     // - `K` (string) - The type of the key to access the data by.
     // - `V` (any) - The type of the values in the database.
 
+    // Initialize the database.
     const quickMongo = new QuickMongo<string, any>(quickMongoClient, {
         name: 'databaseName',
         collectionName: 'collectionName' // (optional)
     })
 
 
-    // ------------------ quickMongo.ping() ------------------
+    // ------------------ QuickMongo.ping() ------------------ \\
 
     // Sends a read, write and delete requests to the remote database and returns the request latencies in milliseconds.
     const ping = await quickMongo.ping()
     console.log(ping) // -> { readLatency: 123, writeLatency: 124, deleteLatency: 125 }
 
 
-    // ------------------ quickMongo.get(key: string) | quickMongo.fetch(key: string) ------------------
+    // ------------------ QuickMongo.get(key: string) | quickMongo.fetch(key: string) ------------------ \\
 
     // Retrieves a value from database by a key.
     const simpleValue = quickMongo.get('simpleValue')
@@ -70,7 +87,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.has(key: string) ------------------
+    // ------------------ QuickMongo.has(key: string) ------------------ \\
 
     // Determines if the data is stored in database.
 
@@ -95,7 +112,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.set(key: string, value: TValue) ------------------
+    // ------------------ QuickMongo.set(key: string, value: TValue) ------------------ \\
     // Writes the specified value into database under the specified key.
 
     // Assuming that the initial database object for this example is empty.
@@ -114,7 +131,7 @@ const main = async () => {
 
     // ^ If you need to type the returning objects, use the 2nd type argument for this:
 
-    // Assume we have the following returning object structure:
+    // Assuming that we have the following returning object structure:
     interface MyCustomObjectType {
         an: {
             object: {
@@ -143,7 +160,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.delete(key: string) ------------------
+    // ------------------ QuickMongo.delete(key: string) ------------------ \\
     // Deletes the data from database by key.
 
     const databaseBefore = quickMongo.all()
@@ -165,7 +182,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.add(key: string, numberToAdd: number) ------------------
+    // ------------------ QuickMongo.add(key: string, numberToAdd: number) ------------------ \\
     // Performs an arithmetical addition on a target number in database.
 
     // [!!!] The type of target value must be a number.
@@ -185,7 +202,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.subtract(key: string, numberToSubtract: number) ------------------
+    // ------------------ QuickMongo.subtract(key: string, numberToSubtract: number) ------------------ \\
     // Performs an arithmetical subtraction on a target number in database.
 
     // [!!!] The type of target value must be a number.
@@ -205,7 +222,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.isTargetArray(key: string) ------------------
+    // ------------------ QuickMongo.isTargetArray(key: string) ------------------ \\
 
     const isArray = quickMongo.isTargetArray('array')
     console.log(isArray) // -> true
@@ -220,7 +237,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.isTargetNumber(key: string) ------------------
+    // ------------------ QuickMongo.isTargetNumber(key: string) ------------------ \\
     // Determines whether the specified target is a number.
 
     const isNumber = quickMongo.isTargetNumber('number')
@@ -236,7 +253,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.push(key: string, ...values: RestOrArray<TValue>) ------------------
+    // ------------------ QuickMongo.push(key: string, ...values: RestOrArray<TValue>) ------------------ \\
     // Pushes the specified value into the target array in database.
 
     // [!!!] The type of target value must be an array.
@@ -255,7 +272,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.pull(key: string, targetArrayElementIndex: number, value: TValue) ------------------
+    // ------------------ QuickMongo.pull(key: string, targetArrayElementIndex: number, value: TValue) ------------------ \\
     // Replaces the specified element in target array with the specified value in the target array in database.
 
     // [!!!] The type of target value must be an array.
@@ -269,7 +286,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.pop(key: string, ...targetArrayElementIndexes: RestOrArray<number>) ------------------
+    // ------------------ QuickMongo.pop(key: string, ...targetArrayElementIndexes: RestOrArray<number>) ------------------ \\
     // Removes the specified element from the target array in database.
 
     // [!!!] The type of target value must be an array.
@@ -287,7 +304,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.keys(key?: string) ------------------
+    // ------------------ QuickMongo.keys(key?: string) ------------------ \\
     // Returns an array of object keys by specified database key.
 
     // If `key` parameter is omitted, then an array of object keys of database root object will be returned.
@@ -317,7 +334,7 @@ const main = async () => {
     // }
 
 
-    // ------------------ quickMongo.random(key: string) ------------------
+    // ------------------ QuickMongo.random(key: string) ------------------ \\
     // Picks a random element of array in database and returns the picked array element.
 
     // [!!!] The type of target value must be an array.
@@ -329,26 +346,26 @@ const main = async () => {
     console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
 
 
-    // ------------------ quickMongo.deleteAll() | quickMongo.clear() ------------------
+    // ------------------ QuickMongo.deleteAll() | quickMongo.clear() ------------------ \\
     // Deletes everything from the database.
 
     await quickMongo.clear() // this will delete all the data from the database
 
 
-    // ------------------ quickMongo.all() ------------------
+    // ------------------ QuickMongo.all() ------------------ \\
     // Gets all the database contents from the cache.
 
     const database = quickMongo.all()
     console.log(database) // -> { ... (the object of all the data stored in database) }
 
 
-    // ------------------ quickMongo.loadCache() ------------------
+    // ------------------ QuickMongo.loadCache() ------------------ \\
     // Loads the database into cache.
 
     await quickMongo.loadCache() // this will download all the database contents into the cache
 
 
-    // ------------------ quickMongo.raw() ------------------
+    // ------------------ QuickMongo.raw() ------------------ \\
 
     // Makes a database request and fetches the raw database content - the data as it is
     // stored in internal [__KEY]-[__VALUE] storage format that was made
@@ -358,7 +375,7 @@ const main = async () => {
     console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
 
 
-    // ------------------ quickMongo.allFromDatabase() ------------------
+    // ------------------ QuickMongo.allFromDatabase() ------------------ \\
     // Makes a request and fetches the database contents from remote cluster.
 
     const allDatabase = quickMongo.allFromDatabase()

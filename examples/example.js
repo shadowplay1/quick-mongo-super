@@ -4,26 +4,47 @@ const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
 // Replace it with your own connection URI to your cluster.
 // In this example, localhost URI will be used.
 const connectionURI = 'mongodb://127.0.0.1:27018'
+// QuickMongoClient type parameters:
+//
+// - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
 
-// Create a normal Quick Mongo client.
+// ------------------ Initialation Examples ------------------ \\
+
+// === 1. Create a normal Quick Mongo client. ===
 const quickMongoClient = new QuickMongoClient(connectionURI)
 
-const main = async () => {
+// Initialize the normal database:
+const mongo = new QuickMongo(quickMongoClient, {
+    name: 'databaseName',
+    collectionName: 'collectionName' // (optional)
+})
 
+// === 2. Alternatively, you can specify the initial data that will ===
+// === be inserted on successful connection in every database if it's empty: ===
+const quickMongoClientWithInitialData = new QuickMongoClient(connectionURI, {
+    somethingToSetInDatabase: 'something'
+})
+
+// Initialize the database with initial data being set:
+const mongoWithInitialData = new QuickMongo(quickMongoClientWithInitialData, {
+    name: 'databaseName',
+    collectionName: 'collectionName' // (optional)
+})
+
+// Initial data will be available as soon as the database instance was created
+// and initialized from the QuickMongoClient with the initial data being set, and the
+// connection to your cluster is established (assuming that the connection is established):
+console.log(mongoWithInitialData.all()) // -> { somethingToSetInDatabase: 'something' }
+
+const main = async () => {
     // Connect to MongoDB.
     await quickMongoClient.connect()
 
-    // You can also specify the initial data that will be put
-    // on successful connection in every database if it's empty.
 
-    // const quickMongoClient = new QuickMongoClient<InitialDatabaseObject>(connectionURI, {
-    //     somethingToSetInDatabase: 'something'
-    // })
-
-    // interface InitialDatabaseObject {
-    //     somethingToSetInDatabase: 'something'
-    // }
-
+    // QuickMongo type parameters:
+    //
+    // - `K` (string) - The type of the key to access the data by.
+    // - `V` (any) - The type of the values in the database.
 
     // Initialize the database.
     const quickMongo = new QuickMongo(quickMongoClient, {
