@@ -26,7 +26,7 @@ dist/tests
 # typescript source code
 src/
 
-# usage examples
+# examples
 examples/
 
 # configuration files

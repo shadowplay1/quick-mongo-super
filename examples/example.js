@@ -1,4 +1,4 @@
-import { QuickMongoClient, QuickMongo } from 'quick-mongo-super'
+const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
 
 // Your MongoDB connection URI to connect to.
 // Replace it with your own connection URI to your cluster.
