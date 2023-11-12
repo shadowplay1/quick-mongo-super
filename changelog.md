@@ -7,11 +7,41 @@
 ## 🕘 | Changelog
 
 **v2.0.0**
-- Completely rewritten the whole module and changed the file structure.
--
+- Completely rewritten the module and changed its entire structure.
+- Code optimization.
+- Typings improvements.
+- Bug fixes.
+- Migrated from `mongodb` to `mongoose` package.
+- `Emitter` minor improvements.
+- Added database caching system, allowing to improve the performance of the module by far.
+- Removed the unnecessary `MongoItems` files and changed the way of importing the module's objects.
+- Added testing files.
+- Added CI/CD workflows to check the build status, linting and tests passing.
+- Rewritten, optimized and improved the erroring system.
+- Changed the approach of database connection and how the databases are created:
+- - Added the new `QuickMongoClient` and `QuickMongo` classes.
+- - Now, in order to create a database, you need to create an instance of `QuickMongoClient` first:
+```ts
+import { QuickMongoClient, QuickMongo } from 'quick-mongo-super'
+
+const connectionURI = 'mongodb://127.0.0.1:27018'
+
+const quickMongoClient = new QuickMongoClient(connectionURI)
+quickMongoClient.connect()
+```
+
+- - And then you want to create a new instance of `QuickMongo` database:
+```ts
+const mongo = new QuickMongo(quickMongoClient, {
+    name: 'databaseName',
+    collectionName: 'collectionName'
+})
+```
+- - This approach will allow you to create **multiple database instances** in different cluster locations (database/collection) under a **single** cluster connection - **without** having to create separated connections to your cluster to create different database instances!
+- Rewritten and improved [examples](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples) for both **TypeScript** and **JavaScript**.
 
 **v1.0.19**
-- Bumped `mongodb` dependency from `v4.3.1` to `v4.17.0`
+- Bumped `mongodb` dependency from `v4.3.1` to `v4.17.0`.
 
 **v1.0.18**
 - Fixed typing bug in all methods requiring to specify a value.
