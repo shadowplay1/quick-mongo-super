@@ -13,4 +13,7 @@ export interface IDatabaseInternalStructure<T = any> {
     __VALUE: T
 }
 
-export type IDatabaseRequestsLatencies = Record<'readLatency' | 'writeLatency' | 'deleteLatency', number>
+export type IDatabaseRequestsLatencies = Record<
+    'readLatency' | 'writeLatency' | 'deleteLatency',
+    number
+>
