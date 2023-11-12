@@ -33,7 +33,7 @@ import { QuickMongo } from './QuickMongo'
  */
 export class QuickMongoClient<
     TInitialDatabaseData extends Record<string, any> = any
-> extends Emitter<IQuickMongoEvents> {
+> extends Emitter<IQuickMongoEvents<TInitialDatabaseData>> {
 
     /**
      * The MongoDB cluster connection URI to connect to.
@@ -113,7 +113,7 @@ export class QuickMongoClient<
         })
 
         this.connected = true
-        this.emit('connect')
+        this.emit('connect', this)
 
         return this
     }
