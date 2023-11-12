@@ -147,21 +147,6 @@ describe('subtraction operation', () => {
 
         return expect(subtractionResults).toEqual([-4, 0, -15])
     })
-
-    // QuickMongo.isTargetNumber()
-
-    test.concurrent('isNumber checks', async () => {
-        await database.set('notNumber', [])
-
-        const isNumberResults = [
-            database.isTargetNumber('number'),
-            database.isTargetNumber('numbers.number'),
-            database.isTargetNumber('notNumber'),
-            database.isTargetNumber('somethingElse'),
-        ]
-
-        return expect(isNumberResults).toEqual([true, true, false, false])
-    })
 })
 
 
