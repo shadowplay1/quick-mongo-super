@@ -121,10 +121,6 @@ describe('errors throwing: keys()', () => {
         await sleep(3000)
 
         const successCase = (): any => database.keys()
-
-        console.log('keys success case', successCase())
-        console.log('keys success case', resolveFunction(successCase))
-
         return expect(resolveFunction(successCase)).toBeTruthy()
     })
 
