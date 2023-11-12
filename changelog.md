@@ -39,6 +39,9 @@ const mongo = new QuickMongo(quickMongoClient, {
 ```
 - - This approach will allow you to create **multiple database instances** in different cluster locations (database/collection) under a **single** cluster connection - **without** having to create separated connections to your cluster to create different database instances!
 - Rewritten and improved [examples](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples) for both **TypeScript** and **JavaScript**.
+- Removed the legacy `changeElement` and `removeElement` methods in favor newer of `pull` and `pop` methods.
+- Removed the `checkUpdates` method due to it being unused anywhere.
+- Removed `node-fetch` from dependencies.
 
 **v1.0.19**
 - Bumped `mongodb` dependency from `v4.3.1` to `v4.17.0`.

@@ -107,24 +107,37 @@ export class QuickMongo<K extends string = any, V = any> {
      * // Create a normal Quick Mongo client.
      * const quickMongoClient = new QuickMongoClient(connectionURI)
      *
-     * // You can also specify the initial data that will be put
-     * // on successful connection in every database if it's empty.
-     * const quickMongoClient = new QuickMongoClient(connectionURI, {
-     *     somethingToSetInDatabase: 'something'
-     * })
-     *
-     * // Initialize the database.
+     * // Initialize the normal database:
      * const mongo = new QuickMongo(quickMongoClient, {
      *     name: 'databaseName',
      *     collectionName: 'collectionName' // (optional)
      * })
+     *
+     * // Alternatively, you can also specify the initial data that will be inserted
+     * // on successful connection in every database if it's empty:
+     * const quickMongoClientWithInitialData = new QuickMongoClient(connectionURI, {
+     *     somethingToSetInDatabase: 'something'
+     * })
+     *
+     * // Initialize the database with initial data being set:
+     * const mongoWithInitialData = new QuickMongo(quickMongoClientWithInitialData, {
+     *     name: 'databaseName',
+     *     collectionName: 'collectionName' // (optional)
+     * })
+     *
+     * // Initial data will be available as soon as the database instance was created
+     * // and initialized from the QuickMongoClient with the initial data being set, and the
+     * // connection to your cluster is established:
+     * console.log(mongoWithInitialData.all()) // -> { somethingToSetInDatabase: 'something' }
      */
     public constructor(client: QuickMongoClient<any>, databaseConfiguration: IDatabaseConfiguration) {
         this._cache = new CacheManager(client)
         this._client = client
 
         this._model = models[databaseConfiguration.name] || model<IDatabaseInternalStructure<any>>(
-            databaseConfiguration.name, internalDatabaseSchema, databaseConfiguration.collectionName
+            databaseConfiguration.name,
+            internalDatabaseSchema,
+            databaseConfiguration.collectionName
         )
 
         this.name = databaseConfiguration.name
@@ -307,7 +320,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * // ^ If you need to type the returning objects, use the 2nd type argument for this:
      *
-     * // Assume we have the following returning object structure:
+     * // Assuming that we have the following returning object structure:
      * interface MyCustomObjectType {
      *     an: {
      *         object: {
