@@ -20,4 +20,4 @@ jobs:
         run: npm ci
 
       - name: Check the commit message to match the conventions
-        run: --from=$GITHUB_SHA~1 --to=$GITHUB_SHA
+        run: npx commitlint --from=$(git rev-parse $GITHUB_SHA~1) --to=$(git rev-parse $GITHUB_SHA)
