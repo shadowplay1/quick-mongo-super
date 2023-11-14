@@ -1,4 +1,4 @@
-name: Commit messages validation
+name: Commit message validation
 
 on:
   workflow_dispatch:
