@@ -1,3 +1,6 @@
+<!-- Make sure to read the Contribution Guidelines before submitting a pull request! -->
+<!-- Contribution Guidelines are in .github/CONTRIBUTING.md file. -->
+
 # Please shortly describe the purpose or shortly describe this PR here.
 
 Please describe here exactly what was made in this PR. (1 blank line here = newline)

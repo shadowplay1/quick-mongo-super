@@ -1,0 +1,3 @@
+# `IDatabaseConfiguration` interface
+
+coming soon

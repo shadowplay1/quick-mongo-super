@@ -27,12 +27,12 @@ export class CacheManager<K extends string, V> {
 
     /**
      * Cache manager constructor.
-     * @param {QuickMongoClient} client Quick Mongo client to work with.
+     * @param {QuickMongoClient} client Quick Mongo client to get attached to.
      */
     public constructor(client: QuickMongoClient<any>) {
 
         /**
-         * Quick Mongo client to work with.
+         * Quick Mongo client to get attached to.
          * @type {QuickMongoClient<any>}
          * @private
          */
@@ -109,7 +109,7 @@ export class CacheManager<K extends string, V> {
 
     /**
      * Determines if the data is stored in database.
-     * @param {K} key The key to access the data by.
+     * @param {K} key The key to access the target in database by.
      * @returns {boolean} Whether the data is stored in database.
      */
     public has(key: K): boolean {

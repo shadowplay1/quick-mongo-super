@@ -3,7 +3,7 @@ import { Model, model, models } from 'mongoose'
 import {
     IDatabaseConfiguration,
     IDatabaseInternalStructure,
-    IDatabaseRequestsLatencies
+    IDatabaseRequestsLatencyData
 } from '../types/Database'
 
 import { QuickMongoClient } from './QuickMongoClient'
@@ -26,10 +26,10 @@ import { createTypesArray } from '../structures/errors'
  *
  * Type parameters:
  *
- * - `K` (string) - The type of the key to access the data by.
+ * - `K` (string) - The type of The key to access the target in database by.
  * - `V` (any) - The type of the values in the database.
  *
- * @template K (string) - The type of the key to access the data by.
+ * @template K (string) - The type of The key to access the target in database by.
  * @template V (any) - The type of the values in the database.
  *
  * @example
@@ -60,7 +60,7 @@ export class QuickMongo<K extends string = any, V = any> {
     private _cache: CacheManager<any, IDatabaseInternalStructure<any>>
 
     /**
-     * Quick Mongo client to work with.
+     * Quick Mongo client to get attached to.
      * @type {QuickMongoClient<any>}
      * @private
      */
@@ -92,13 +92,13 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * - `K` (string) - The type of the key to access the data by.
+     * - `K` (string) - The type of The key to access the target in database by.
      * - `V` (any) - The type of the values in the database.
      *
-     * @param {QuickMongoClient<any>} client Quick Mongo client to work with.
+     * @param {QuickMongoClient<any>} client Quick Mongo client to get attached to.
      * @param {IDatabaseConfiguration} databaseConfiguration Database configuration object.
      *
-     * @template K (string) - The type of the key to access the data by.
+     * @template K (string) - The type of The key to access the target in database by.
      * @template V (any) - The type of the values in the database.
      *
      * @example
@@ -149,13 +149,13 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Sends a read, write and delete requests to the remote database and returns the request latencies in milliseconds.
-     * @returns {Promise<IDatabaseRequestsLatencies>} Database requests latencies object.
+     * @returns {Promise<IDatabaseRequestsLatencyData>} Database requests latencies object.
      *
      * @example
      * const ping = await quickMongo.ping()
      * console.log(ping) // -> { readLatency: 123, writeLatency: 124, deleteLatency: 125 }
      */
-    public async ping(): Promise<IDatabaseRequestsLatencies> {
+    public async ping(): Promise<IDatabaseRequestsLatencyData> {
         const pingDatabaseKey = '___PING___' as K
 
         let readLatency = -1
@@ -195,8 +195,8 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
      *
-     * @param {K} key The key to access the data by.
-     * @returns {Maybe<TValue>} The value from database.
+     * @param {K} key The key to access the target in database by.
+     * @returns {Maybe<TValue>} The value of the target in database.
      * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
      *
      * @example
@@ -229,7 +229,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * - `TValue` (any, defaults to `V`) - The type of the data to be returned from database.
      *
-     * @param {K} key The key to access the data by.
+     * @param {K} key The key to access the target in database by.
      * @returns {Maybe<TValue>} The value from database.
      * @template TValue (any, defaults to `V`) - The type of the data to be returned from database.
      *
@@ -238,16 +238,14 @@ export class QuickMongo<K extends string = any, V = any> {
      * console.log(simpleValue) // -> 123
      *
      * // You can use the dot notation to access the database object properties:
-     * const objectPropertyAccessed = quickMongo.fetch('youCanAlso.accessObjectProperties.likeThat')
-     * console.log(objectPropertyAccessed) // -> 'hello world!'
+     * const playerInventory = quickMongo.fetch('player.inventory')
+     * console.log(playerInventory) // -> []
      *
      * // ^ Assuming that the initial database object for this example is:
      * // {
      * //    simpleValue: 123,
-     * //    youCanAlso: {
-     * //        accessObjectProperties: {
-     * //            likeThat: 'hello world!'
-     * //        }
+     * //    player: {
+     * //        inventory: []
      * //    }
      * // }
      */
@@ -257,7 +255,7 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Determines if the data is stored in database.
-     * @param {K} key The key to access the data by.
+     * @param {K} key The key to access the target in database by.
      * @returns {boolean} Whether the data is stored in database.
      *
      * @example
@@ -274,6 +272,9 @@ export class QuickMongo<K extends string = any, V = any> {
      * // ^ Assuming that the initial database object for this example is:
      * // {
      * //    simpleValue: 123,
+     * //    player: {
+     * //        inventory: []
+     * //    },
      * //    youCanAlso: {
      * //        accessObjectProperties: {
      * //            likeThat: 'hello world!'
@@ -291,9 +292,9 @@ export class QuickMongo<K extends string = any, V = any> {
      * Type parameters:
      *
      * - `TValue` (any, defaults to `V`) - The type of value to write.
-     * - `TReturnValue` (any, defaults to `any`) - Typethe return type fallbacks to if `TVa\lue` is an object.
+     * - `TReturnValue` (any, defaults to `any`) - Type the return type fallbacks to if `TVa\lue` is an object.
      *
-     * @param {string} key The key to write the data under.
+     * @param {string} key The key to write in the target.
      * @param {TValue} value The value to write.
      *
      * @returns {Promise<If<IsObject<TValue>, TReturnValue, TValue>>}
@@ -315,8 +316,13 @@ export class QuickMongo<K extends string = any, V = any> {
      * const dotNotationSetResult = await quickMongo.set('thats.an.object', 123)
      * console.log(dotNotationSetResult) // -> 123
      *
-     * // Using objects as value will returns the object of key `thats`:
-     * await quickMongo.set('thats.an.object', { hello: 'world' })
+     * await quickMongo.set('player.inventory', [])
+     * const inventory = quickMongo.get('player')
+     *
+     * console.log(inventory) // -> { inventory: [] }
+     *
+     * // Using objects as value will return the object of key `thats`:
+     * await quickMongo.set('thats.an.object', { hello: 'world' }) // -> { an: { object: { hello: 'world' } } }
      *
      * // ^ If you need to type the returning objects, use the 2nd type argument for this:
      *
@@ -337,6 +343,9 @@ export class QuickMongo<K extends string = any, V = any> {
      * // ^ After these manipulations, the database object will look like this:
      * // {
      * //     "something": "hello from quick-mongo-super!",
+     * //     "player": {
+     * //         "inventory": []
+     * //     },
      * //     "thats": {
      * //         "an": {
      * //             "object": {
@@ -389,8 +398,8 @@ export class QuickMongo<K extends string = any, V = any> {
 
     /**
      * Deletes the data from database by key.
-     * @param {K} key The key to access the data by.
-     * @returns {Promise<void>}
+     * @param {K} key The key to access the target in database by.
+     * @returns {Promise<boolean>} Whether the deletition was successful.
      *
      * @example
      * const databaseBefore = quickMongo.all()
@@ -454,7 +463,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {string} key The key to access the data by.
+     * @param {string} key The key to access the target in database by.
      * @param {number} numberToAdd The number to add to the target number in database.
      * @returns {Promise<number>} Addition operation result.
      *
@@ -499,7 +508,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {string} key The key to access the data by.
+     * @param {string} key The key to access the target in database by.
      * @param {number} numberToSubtract The number to subtract from the target number in database.
      * @returns {Promise<number>} Subtraction operation result.
      *
@@ -542,7 +551,7 @@ export class QuickMongo<K extends string = any, V = any> {
     /**
      * Determines whether the specified target is an array.
      *
-     * @param {string} key The key to access the target by.
+     * @param {string} key The key to access the target in database by.
      * @returns {boolean} Whether the target is an array.
      *
      * @example
@@ -566,7 +575,7 @@ export class QuickMongo<K extends string = any, V = any> {
     /**
      * Determines whether the specified target is a number.
      *
-     * @param {string} key The key to access the target by.
+     * @param {string} key The key to access the target in database by.
      * @returns {boolean} Whether the target is a number.
      *
      * @example
@@ -588,7 +597,7 @@ export class QuickMongo<K extends string = any, V = any> {
     }
 
     /**
-     * Pushes the specified value into the target array in database.
+     * Pushes the specified value(s) into the target array in database.
      *
      * [!!!] The type of target value must be an array.
      *
@@ -596,8 +605,8 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * - `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
-     * @param {K} key The key to access the data by.
-     * @param {RestOrArray<TValue>} values The value to be pushed into the target array in databse.
+     * @param {K} key The key to access the target in database by.
+     * @param {RestOrArray<TValue>} values The value(s) to be pushed into the target array in databse.
      * @returns {Promise<TValue[]>} Updated target array from database.
      * @template TValue (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
@@ -641,7 +650,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * - `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
-     * @param {K} key The key to access the data by.
+     * @param {K} key The key to access the target in database by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
      * @param {TValue} value The value to be pushed into the target array in databse.
      * @returns {Promise<TValue[]>} Updated target array from database.
@@ -686,7 +695,7 @@ export class QuickMongo<K extends string = any, V = any> {
     }
 
     /**
-     * Removes the specified element from the target array in database.
+     * Removes the specified element(s) from the target array in database.
      *
      * [!!!] The type of target value must be an array.
      *
@@ -694,8 +703,8 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * - `TValue` (any, defaults to `V`) - The type of array to be returned.
      *
-     * @param {K} key The key to access the data by.
-     * @param {RestOrArray<number>} targetArrayElementIndexes The index(es) to find the element in target array by.
+     * @param {K} key The key to access the target in database by.
+     * @param {RestOrArray<number>} targetArrayElementIndexes The index(es) to find the element(s) in target array by.
      * @returns {Promise<TValue[]>} Updated target array from database.
      * @template TValue (any, defaults to `V`) - The type of array to be returned.
      *
@@ -762,7 +771,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * If `key` parameter is omitted, then an array of object keys of database root object will be returned.
      *
-     * @param {K} [key] The key to access the data by.
+     * @param {K} [key] The key to access the target in database by.
      * @returns {string[]} Database object keys array.
      *
      * @example
@@ -821,7 +830,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * const randomArrayElement = quickMongo.random('exampleArray')
      * console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
      */
-    public random<T>(key: K): T {
+    public random<TValue = V>(key: K): TValue {
         const array = this.get(key)
 
         if (!Array.isArray(array)) {
@@ -869,21 +878,25 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * Type parameters:
      *
-     * - `TValue` (object) - The type of object of all the database object to be returned.
+     * - `T` (object) - The type of object of all the database object to be returned.
      *
-     * @returns {TValue} Cached database contents.
-     * @template TValue (object) - The type of object of all the database object to be returned.
+     * @returns {T} Cached database contents.
+     * @template T (object) - The type of object of all the database object to be returned.
      *
      * @example
      * const database = quickMongo.all()
      * console.log(database) // -> { ... (the object of all the data stored in database) }
      */
-    public all<TValue extends Record<string, any> = any>(): TValue {
-        return this._cache.getCacheObject<TValue>()
+    public all<T extends Record<string, any> = any>(): T {
+        return this._cache.getCacheObject<T>()
     }
 
     /**
      * Loads the database into cache.
+     *
+     * It's **not required** to run this method on starting or after any database operations -
+     * cache management is performed automatically.
+     *
      * @returns {Promise<void>}
      *
      * @example

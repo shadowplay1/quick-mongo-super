@@ -1,4 +1,4 @@
-# Contributing to `quick-mongo-super`
+# Contribution Guidelines
 
 Thank you for your interest in contributing to `quick-mongo-super`!
 
@@ -7,7 +7,7 @@ We value the effort and time put in by our contributors to make this package bet
 This document outlines the guidelines and instructions for contributing to our project.
 
 ## Table of Contents
-- [Contributing to `quick-mongo-super`](#contributing-to-quick-mongo-super)
+- [Contribution Guidelines](#contribution-guidelines)
 	- [Table of Contents](#table-of-contents)
 	- [Code of Conduct](#code-of-conduct)
 	- [How Can I Contribute?](#how-can-i-contribute)
