@@ -103,9 +103,9 @@ Please follow these coding guidelines when contributing to `quick-mongo-super`:
 - Avoid unnecessary code changes unrelated to the purpose of your contribution.
 
 ## Running Your Changes
-There are 2 possible ways of you to run your changes:
-1. Locally in any file in `misc/` directory (which is in `.gitignore` and shouldn't be committed). You can run and test your changes
-2. Straightly in the test file(s) -
+There are 2 possible ways of you to run and test your changes:
+1. Locally in any file in `misc/` directory (which is in `.gitignore` and shouldn't be committed). You can run and test your changes using the `ts-node misc/<file-name>.ts` command.
+2. Straightly make your changes in the test file(s) - you can run the tests using the `npm test` command.
 
 ## Testing
 We strive to maintain a high test coverage for `quick-mongo-super`. When contributing, please ensure that your changes are covered by tests. To run the tests, use the command `npm test`.
