@@ -3,19 +3,19 @@
 <!-- todo: add links to the documentation of each class/type -->
 
 ## Classes
-- `QuickMongo<K, V>`
-- `QuickMongoClient<TInitialDatabaseData>`
+- [`QuickMongo<K, V>`](classes/QuickMongo.md)
+- [`QuickMongoClient<TInitialDatabaseData>`](classes/QuickMongoClient.md)
 
 ## Types
-- `If<T, IfTrue, IfFalse>`
-- `IsObject<T>`
-- `Maybe<T>`
-- `RestOrArray<T>`
+- [`If<T, IfTrue, IfFalse>`](types/If.md)
+- [`IsObject<T>`](types/IsObject.md)
+- [`Maybe<T>`](types/Maybe.md)
+- [`RestOrArray<T>`](types/RestOrArray.md)
 
 ## Interfaces
-- `IDatabaseConfiguration`
-- `IDatabaseInternalStructure<T>`
-- `IDatabaseRequestsLatencyData`
+- [`IDatabaseConfiguration`](interfaces/IDatabaseConfiguration.md)
+- [`IDatabaseInternalStructure<T>`](interfaces/IDatabaseInternalStructure.md)
+- [`IDatabaseRequestsLatencyData`](interfaces/IDatabaseRequestsLatencyData.md)
 
 
 ## Examples
