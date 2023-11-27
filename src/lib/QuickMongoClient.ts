@@ -120,6 +120,8 @@ export class QuickMongoClient<
 
     /**
      * Closes the connection to a MongoDB cluster.
+     *
+     * This will also disconnect all the instances of `QuickMongo` database class from the MongoDB cluster.
      * @returns {Promise<void>}
      */
     public async disconnect(): Promise<void> {
