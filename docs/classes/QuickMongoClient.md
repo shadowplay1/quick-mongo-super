@@ -16,7 +16,7 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
 ## Properties
 - **Public:**
   - `connected` (`boolean`): Determines if the MongoDB cluster connection is established.
-  - `databases` (`QuickMongo<any, any>[]`): Array of initialized QuickMongo database instances.
+  - `databases` (`QuickMongo<any, any>[]`): Array of initialized `QuickMongo` database instances.
   - `initialDatabaseData` (`TInitialDatabaseData`): An object to put in database on successful connection if the database is empty.
 
 - **Private:**
@@ -28,7 +28,7 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
 ## `connect(): Promise<QuickMongoClient<TInitialDatabaseData>>`
 Opens a connection to a MongoDB cluster.
 
-- **Returns:** `Promise<QuickMongoClient<TInitialDatabaseData>>` - Connected QuickMongoClient instance.
+- **Returns:** `Promise<QuickMongoClient<TInitialDatabaseData>>` - Connected `QuickMongoClient` instance.
 - **Example:**
 ```ts
   await quickMongo.connect()

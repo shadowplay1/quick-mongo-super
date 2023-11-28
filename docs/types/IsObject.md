@@ -1,4 +1,4 @@
-# `IsObject<T>` type
+# **`IsObject<T>` Type**
 
 Determines if the specified type is object and returns the checking result as boolean.
 
