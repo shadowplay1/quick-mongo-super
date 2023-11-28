@@ -104,7 +104,7 @@ export class QuickMongoClient<
 
     /**
      * Opens a connection to a MongoDB cluster.
-     * @returns {Promise<QuickMongoClient<TInitialDatabaseData>>} QuickMongo client instance.
+     * @returns {Promise<QuickMongoClient<TInitialDatabaseData>>} Connected QuickMongoClient instance.
      */
     public async connect(): Promise<QuickMongoClient<TInitialDatabaseData>> {
         await connect(this._connectionURI, {
