@@ -1,3 +1,9 @@
 # `IDatabaseConfiguration` interface
 
-coming soon
+## Implemenatation
+```ts
+export interface IDatabaseConfiguration {
+    name: string
+    collectionName?: string
+}
+```
