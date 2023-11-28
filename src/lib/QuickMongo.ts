@@ -60,7 +60,7 @@ export class QuickMongo<K extends string = any, V = any> {
     private _cache: CacheManager<any, IDatabaseInternalStructure<any>>
 
     /**
-     * Quick Mongo client to get attached to.
+     * Quick Mongo client the database instance is attached to.
      * @type {QuickMongoClient<any>}
      * @private
      */

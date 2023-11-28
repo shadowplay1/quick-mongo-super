@@ -49,7 +49,7 @@ export class QuickMongoClient<
     public connected = false
 
     /**
-     * Array of initialized databases.
+     * Array of initialized QuickMongo database instances.
      * @type {QuickMongo<any, any>[]}
      */
     public databases: QuickMongo<any, any>[]

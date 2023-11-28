@@ -12,6 +12,19 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
   - `connectionURI` (`string`): The MongoDB cluster connection URI to connect to.
   - `initialDatabaseData` (`TInitialDatabaseData`): The database object to set in database if the database is empty on initialation.
 
+
+## Properties
+- **Public:**
+  - `connected` (`boolean`): Determines if the MongoDB cluster connection is established.
+  - `databases` (`QuickMongo<any, any>[]`): Array of initialized QuickMongo database instances.
+  - `initialDatabaseData` (`TInitialDatabaseData`): An object to put in database on successful connection if the database is empty.
+
+- **Private:**
+  - `_connectionURI` (`string`): The MongoDB cluster connection URI to connect to.
+
+
+## Methods
+
 ## `connect(): Promise<QuickMongoClient<TInitialDatabaseData>>`
 Opens a connection to a MongoDB cluster.
 
