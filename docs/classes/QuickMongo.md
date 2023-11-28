@@ -21,6 +21,19 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
   - `V` (`any`): The type of the values in the database.
 
 
+## Properties
+- **Public:**
+  - `name` (`string`): Database name.
+  - `collectionName` (`string`): Collection name.
+
+- **Private:**
+  - `_cache` (`CacheManager<any, IDatabaseInternalStructure<any>>`): Cache Manager.
+  - `_client` (`QuickMongoClient<any>`): Quick Mongo client the database instance is attached to.
+  - `_model` (`Model<IDatabaseInternalStructure<any>>`): Internal Mongoose model to work with.
+
+
+## Methods
+
 ## `get<TValue = V>(key: K): Maybe<TValue>`
 Retrieves a value from database by a key.
 
