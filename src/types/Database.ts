@@ -7,6 +7,9 @@ export interface IQuickMongoEvents<
     disconnect: [voidParam: void]
 }
 
+/**
+ * Represents the configuration object of the `QuickMongo` database instance.
+ */
 export interface IDatabaseConfiguration {
     name: string
     collectionName?: string
