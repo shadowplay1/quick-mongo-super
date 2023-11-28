@@ -7,6 +7,9 @@
 # ci/cd
 .github/
 
+# documentation
+docs/
+
 # bash scripts
 scripts/
 
@@ -16,7 +19,7 @@ node_modules/
 # utilities
 utils/
 
-# testing
+# local testing
 test/
 misc/
 dist/misc/
@@ -25,9 +28,6 @@ dist/tests
 
 # typescript source code
 src/
-
-# examples
-examples/
 
 # configuration files
 .editorconfig
@@ -41,3 +41,4 @@ tsconfig.json
 
 # to reduce the final package size
 package-lock.json
+examples/
