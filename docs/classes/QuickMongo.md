@@ -20,6 +20,25 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
   - `K` (`string`): The type of The key to access the target in database by.
   - `V` (`any`): The type of the values in the database.
 
+- **Example:**
+```ts
+  const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+
+  // Create a normal Quick Mongo client.
+  const quickMongoClient = new QuickMongoClient(connectionURI)
+
+  // You can also specify the initial data that will be put
+  // on successful connection in every database if it's empty.
+  const quickMongoClient = new QuickMongoClient(connectionURI, {
+      somethingToSetInDatabase: 'something'
+  })
+
+  // Initialize the database.
+  const mongo = new QuickMongo(quickMongoClient, {
+      name: 'databaseName',
+      collectionName: 'collectionName' // optional
+  })
+```
 
 ## Properties
 - **Public:**
