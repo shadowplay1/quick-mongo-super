@@ -7,7 +7,7 @@
 ## ❓ | Why?
 <ul>
 <li><b>TypeScript Support 📘</b></li>
-<li><b>100% Promise-based 📜</b></li>
+<li><b>Caching System 📜</b></li>
 <li><b>Flexible ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
@@ -22,9 +22,10 @@ $ yarn add quick-mongo-super
 $ pnpm add quick-mongo-super
 ```
 
-See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
+# [Module Documentation](docs/README.md)
 
-See the full changelog [here](https://github.com/shadowplay1/quick-mongo-super/blob/main/changelog.md).
+- See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
+- See the full changelog [here](changelog.md).
 
 
 ## 🤔 | Help
@@ -34,12 +35,15 @@ See the full changelog [here](https://github.com/shadowplay1/quick-mongo-super/b
 <ul>
 <li><b><a href="https://www.npmjs.com/package/discord-economy-super">discord-economy-super</a></b></li>
 <li><b><a href="https://www.npmjs.com/package/discord-leveling-super">discord-leveling-super</a></b></li>
+<li><b><a href="https://www.npmjs.com/package/discord-giveaways-super">discord-giveaways-super</a></b></li>
+<li><b><a href="https://www.npmjs.com/package/discord-achievements">discord-achievements</a></b></li>
 </ul>
 
 ## ❗ | Useful Links
 <ul>
 <li><b><a href="https://www.npmjs.com/package/quick-mongo-super">NPM</a></b></li>
 <li><b><a href="https://github.com/shadowplay1/quick-mongo-super">GitHub</a></b></li>
+<li><b><a href="https://github.com/shadowplay1/quick-mongo-super/tree/main/docs">Documentation</a></b></li>
 <li><b><a href="https://github.com/shadowplay1/quick-mongo-super/tree/main/examples">Examples</a></b></li>
 <li><b><a href="https://github.com/shadowplay1/quick-mongo-super/blob/main/changelog.md">Changelog</a></b></li>
 <li><b><a href="https://discord.gg/4pWKq8vUnb">Discord Server</a></b></li>
