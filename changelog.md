@@ -19,8 +19,8 @@
 - Added CI/CD workflows to check the build status, linting and tests passing.
 - Rewritten, optimized and improved the erroring system.
 - Changed the approach of database connection and how the databases are created:
-- - Added the new `QuickMongoClient` and `QuickMongo` classes.
-- - Now, in order to create a database, you need to create an instance of `QuickMongoClient` first:
+ - Added the new `QuickMongoClient` and `QuickMongo` classes.
+ - Now, in order to create a database, you need to create an instance of `QuickMongoClient` first:
 ```ts
 import { QuickMongoClient, QuickMongo } from 'quick-mongo-super'
 
