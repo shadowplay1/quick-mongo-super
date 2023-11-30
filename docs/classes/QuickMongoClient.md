@@ -12,6 +12,25 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
   - `connectionURI` (`string`): The MongoDB cluster connection URI to connect to.
   - `initialDatabaseData` (`TInitialDatabaseData`): The database object to set in database if the database is empty on initialation.
 
+- **Example:**
+```ts
+  const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
+
+  // Create a normal Quick Mongo client.
+  const quickMongoClient = new QuickMongoClient(connectionURI)
+
+  // You can also specify the initial data that will be put
+  // on successful connection in every database if it's empty.
+  const quickMongoClient = new QuickMongoClient(connectionURI, {
+      somethingToSetInDatabase: 'something'
+  })
+
+  // Initialize the database.
+  const mongo = new QuickMongo(quickMongoClient, {
+      name: 'databaseName',
+      collectionName: 'collectionName' // optional
+  })
+```
 
 ## Properties
 - **Public:**

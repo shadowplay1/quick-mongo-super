@@ -1,7 +1,5 @@
 # `quick-mongo-super` documentation
 
-<!-- todo: add links to the documentation of each class/type -->
-
 ## Classes
 - [`QuickMongo<K, V>`](classes/QuickMongo.md)
 - [`QuickMongoClient<TInitialDatabaseData>`](classes/QuickMongoClient.md)
