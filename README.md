@@ -8,13 +8,14 @@
 <ul>
 <li><b>TypeScript Support 📘</b></li>
 <li><b>Caching System 📜</b></li>
+<li><b>Multiple Databases 💻</b></li>
 <li><b>Flexible ⚙️</b></li>
 <li><b>Easy to use 👍</b></li>
 <li><b>Beginner Friendly 😄</b></li>
 </ul>
 
 ## 📂 | Installation
-<b>Note:</br><b>
+<b>Please note:</br><b>
 <b>Node.js 14.0.0 or newer is required.</b><br>
 ```bash
 $ npm i quick-mongo-super
@@ -24,7 +25,7 @@ $ pnpm add quick-mongo-super
 
 # [Module Documentation](docs/README.md)
 
-- See the full examples for JavaScript and TypeScript [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
+- See the full examples in both **JavaScript** and **TypeScript** [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
 - See the full changelog [here](changelog.md).
 
 
