@@ -42,6 +42,11 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
   - `_connectionURI` (`string`): The MongoDB cluster connection URI to connect to.
 
 
+## Events
+- [`connect`](../events/QuickMongoClient/connect.md)
+- [`disconnect`](../events/QuickMongoClient/disconnect.md)
+
+
 ## Methods
 
 ## `connect(): Promise<QuickMongoClient<TInitialDatabaseData>>`
