@@ -378,3 +378,34 @@ It's **not required** to run this method on starting or after any database opera
 ```ts
   await quickMongo.loadCache(); // Downloads all the database contents into the cache
 ```
+
+
+## `raw<TInternalDataValue = any>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]>`
+Makes a database request and fetches the raw database content - the data as it is stored in the internal `[__KEY]-[__VALUE]` storage format that was made to achieve better data accessibility across the module.
+
+- **Type parameters:**
+  - `TInternalDataValue` (`any`): The type of `__VALUE` property in each raw data object.
+
+- **Returns:** `Promise<IDatabaseInternalStructure<TInternalDataValue>[]>` - Raw database content - the data as it is stored in internal `[__KEY]-[__VALUE]` storage format that was made to achieve better data accessibility across the module.
+
+
+- **Example:**
+```ts
+  const rawData = await quickMongo.raw()
+  console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
+```
+
+
+## `allFromDatabase<TValue extends Record<string, any> = V>(): Promise<TValue>`
+Makes a direct request to the remote cluster and fetches all its contents.
+
+- **Type parameters:**
+  - `TValue` (`object`): The type of object of all the database object to be returned.
+
+- **Returns:** `Promise<TValue>` - Fetched database contents.
+
+- **Eaxmple:**
+```ts
+  const allDatabase = quickMongo.allFromDatabase()
+  console.log(allDatabase) // -> { ... (the object of all the data stored in database) }
+```
