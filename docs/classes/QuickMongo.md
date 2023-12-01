@@ -51,6 +51,10 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
   - `_model` (`Model<IDatabaseInternalStructure<any>>`): Internal Mongoose model to work with.
 
 
+# Events
+*none.*
+
+
 ## Methods
 
 ## `get<TValue = V>(key: K): Maybe<TValue>`
