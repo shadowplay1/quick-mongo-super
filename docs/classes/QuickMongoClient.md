@@ -43,8 +43,8 @@ new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabas
 
 
 ## Events
-- [`connect`](../events/QuickMongoClient/connect.md)
-- [`disconnect`](../events/QuickMongoClient/disconnect.md)
+- [`QuickMongoClient#connect`](../events/QuickMongoClient/connect.md)
+- [`QuickMongoClient#disconnect`](../events/QuickMongoClient/disconnect.md)
 
 
 ## Methods
