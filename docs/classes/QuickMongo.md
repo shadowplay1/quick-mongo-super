@@ -52,7 +52,7 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 
 
 # Events
-*none.*
+*none*
 
 
 ## Methods
