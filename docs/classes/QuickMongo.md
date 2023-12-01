@@ -57,7 +57,7 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 Retrieves a value from database by a key.
 
 - **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`) - The type of the data to be returned from database.
+  - `TValue` (`any`, defaults to `V`): The type of the data to be returned from database.
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
@@ -80,7 +80,7 @@ Retrieves a value from database by a key.
 This method is an alias for `QuickMongo.get()` method.
 
 - **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`) - The type of the data to be returned from database.
+  - `TValue` (`any`, defaults to `V`): The type of the data to be returned from database.
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
@@ -122,8 +122,8 @@ Determines if the data is stored in database.
 Writes the specified value into database under the specified key.
 
 - **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`) - The type of value to write.
-  - `TReturnValue` (`any`, defaults to `any`) - Type the return type fallbacks to if `TVa\lue` is an object.
+  - `TValue` (`any`, defaults to `V`): The type of value to write.
+  - `TReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TVa\lue` is an object.
 
 - **Parameters:**
   - `key` (`string`): The key to write in the target.
