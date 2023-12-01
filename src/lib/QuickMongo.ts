@@ -606,7 +606,7 @@ export class QuickMongo<K extends string = any, V = any> {
      * - `TValue` (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
      * @param {K} key The key to access the target in database by.
-     * @param {RestOrArray<TValue>} values The value(s) to be pushed into the target array in databse.
+     * @param {RestOrArray<TValue>} values The value(s) to be pushed into the target array in database.
      * @returns {Promise<TValue[]>} Updated target array from database.
      * @template TValue (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
@@ -652,7 +652,7 @@ export class QuickMongo<K extends string = any, V = any> {
      *
      * @param {K} key The key to access the target in database by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
-     * @param {TValue} value The value to be pushed into the target array in databse.
+     * @param {TValue} value The value to be pushed into the target array in database.
      * @returns {Promise<TValue[]>} Updated target array from database.
      * @template TValue (any, defaults to `V`) - The type of value to be set and type of array to be returned.
      *
@@ -944,7 +944,7 @@ export class QuickMongo<K extends string = any, V = any> {
     }
 
     /**
-     * Makes a request and fetches the database contents from remote cluster.
+     * Makes a direct request to the remote cluster and fetches all its contents.
      *
      * Type parameters:
      *
