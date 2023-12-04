@@ -5,12 +5,12 @@ output=""
 
 lint() {
     if [[ $1 == '--fix' ]]; then
-        echo 'Fixing all the fixable linting issues...'
+        echo 'Fixing all fixable linting issues...'
         echo
 
         eslint ./src --fix & output=$(eslint ./src --fix)
     else
-        echo 'Checking the code for linting issues...'
+        echo 'Checking code for linting issues...'
         echo
 
         eslint ./src & output=$(eslint ./src)
