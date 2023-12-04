@@ -25,6 +25,7 @@ misc/
 dist/misc/
 dist/test
 dist/tests
+dist/typings/tests
 
 # typescript source code
 src/
