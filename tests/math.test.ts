@@ -25,7 +25,7 @@ describe('addition operation', () => {
         await database.loadCache()
         await sleep(3000)
 
-        const setResult = await database.set<number>('number', 1)
+        const setResult = await database.set('number', 1)
         return expect(setResult).toEqual(1)
     })
 
@@ -72,9 +72,9 @@ describe('addition operation', () => {
         await sleep(3000)
 
         const additionResults = [
-            database.get<number>('number'),
-            database.get<number>('numbers.number'),
-            database.get<number>('unexistentNumber')
+            database.get('number'),
+            database.get('numbers.number'),
+            database.get('unexistentNumber')
         ]
 
         return expect(additionResults).toEqual([6, 10, 15])
@@ -93,7 +93,7 @@ describe('subtraction operation', () => {
         await database.loadCache()
         await sleep(3000)
 
-        const setResult = await database.set<number>('number', 1)
+        const setResult = await database.set('number', 1)
         return expect(setResult).toEqual(1)
     })
 
@@ -140,9 +140,9 @@ describe('subtraction operation', () => {
         await sleep(3000)
 
         const subtractionResults = [
-            database.get<number>('number'),
-            database.get<number>('numbers.number'),
-            database.get<number>('unexistentNumber')
+            database.get('number'),
+            database.get('numbers.number'),
+            database.get('unexistentNumber')
         ]
 
         return expect(subtractionResults).toEqual([-4, 0, -15])

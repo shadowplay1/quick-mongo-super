@@ -28,8 +28,8 @@ describe('get, set, delete operations', () => {
         await sleep(1000)
 
         const setResults = [
-            await database.set<string>('someString', 'hello'),
-            await database.set<string>('someString123', 'hello123')
+            await database.set('someString', 'hello'),
+            await database.set('someString123', 'hello123')
         ]
 
         await sleep(1000)
@@ -57,8 +57,8 @@ describe('get, set, delete operations', () => {
         await sleep(3000)
 
         const getResults = [
-            database.get<string>('someString'),
-            database.get<string>('someString123')
+            database.get('someString'),
+            database.get('someString123')
         ]
 
         await sleep(3000)
@@ -70,8 +70,8 @@ describe('get, set, delete operations', () => {
         await sleep(3000)
 
         const getResults = [
-            database.get<string>('someObject.someProperty.hello'),
-            database.get<string>('someObject.someProperty.hi')
+            database.get('someObject.someProperty.hello'),
+            database.get('someObject.someProperty.hi')
         ]
 
         await sleep(3000)

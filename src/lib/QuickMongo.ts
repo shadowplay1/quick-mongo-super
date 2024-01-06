@@ -173,7 +173,7 @@ export class QuickMongo<K extends string = string, V = any> {
 
         const writeStartDate = Date.now()
 
-        await this.set(pingDatabaseKey, 1 as V)
+        await this.set(pingDatabaseKey, 1 as any)
         writeLatency = Date.now() - writeStartDate
 
         const deleteStartDate = Date.now()
@@ -530,7 +530,7 @@ export class QuickMongo<K extends string = string, V = any> {
             throw new QuickMongoError('INVALID_TYPE', 'numberToSubtract', 'number', typeOf(numberToSubtract))
         }
 
-        const result = await this.set(key, targetNumber - numberToSubtract as V)
+        const result = await this.set(key, targetNumber - numberToSubtract as any)
         return result as any
     }
 
