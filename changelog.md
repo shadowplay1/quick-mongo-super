@@ -6,6 +6,11 @@
 
 ## 🕘 | Changelog
 
+**v2.0.1**
+- Removed the `TValue` type parameter from all database operations methods due to it breaking the type of the specifying value.
+- Changed the default value of type parameter `K` of `QuickMongo` class from `any` to `string`.
+- Fixed the incorrect documentation for `QuickMongo.random()` method.
+
 **v2.0.0**
 - Completely rewritten the module and changed its entire structure.
 - Code optimization.

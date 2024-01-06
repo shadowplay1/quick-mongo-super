@@ -57,16 +57,13 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 
 ## Methods
 
-## `get<TValue = V>(key: K): Maybe<TValue>`
+## `get(key: K): Maybe<V>`
 Retrieves a value from database by a key.
-
-- **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`): The type of the data to be returned from database.
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
 
-- **Returns:** `Maybe<TValue>` - The value of the target in database.
+- **Returns:** `Maybe<V>` - The value of the target in database.
 - **Example:**
 ```ts
   const simpleValue = quickMongo.fetch('simpleValue')
@@ -78,18 +75,15 @@ Retrieves a value from database by a key.
 ```
 
 
-## `fetch<TValue = V>(key: K): Maybe<TValue>`
+## `fetch(key: K): Maybe<V>`
 Retrieves a value from database by a key.
 
 This method is an alias for `QuickMongo.get()` method.
 
-- **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`): The type of the data to be returned from database.
-
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
 
-- **Returns:** `Maybe<TValue>` - The value of the target in database.
+- **Returns:** `Maybe<V>` - The value of the target in database.
 - **Example:**
 ```ts
   const simpleValue = quickMongo.fetch('simpleValue')
@@ -122,20 +116,19 @@ Determines if the data is stored in database.
 ```
 
 
-## `set<TValue = V, TReturnValue = any>(key: K, value: TValue): Promise<If<IsObject<TValue>, TReturnValue, TValue>>`
+## `set<TObjectReturnValue = any>(key: K, value: V): Promise<If<IsObject<V>, TObjectReturnValue, V>>`
 Writes the specified value into database under the specified key.
 
 - **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`): The type of value to write.
-  - `TReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TVa\lue` is an object.
+  - `TObjectReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TVa\lue` is an object.
 
 - **Parameters:**
   - `key` (`string`): The key to write in the target.
-  - `value` (`TValue`): The value to write.
+  - `value` (`V`): The value to write.
 
-- **Returns:** `Promise<If<IsObject<TValue>, TReturnValue, TValue>>`:
+- **Returns:** `Promise<If<IsObject<V>, TReturnValue, V>>`:
   - If the `value` parameter's type is not an object (string, number, boolean, etc), then the specified
-  `value` parameter (type of `TValue`) will be returned.
+  `value` parameter (type of `V`) will be returned.
 
   - If an object is specified in the `value` parameter, then the database object will be returned.
   (type of `TReturnValue` - fallback to the manual typing of returned database object for specified key)
@@ -244,19 +237,16 @@ Determines whether the specified target is a number.
 ```
 
 
-## `push<TValue = V>(key: K, ...values: RestOrArray<TValue>): Promise<TValue[]>`
+## `push(key: K, ...values: RestOrArray<V>): Promise<V[]>`
 Pushes the specified value(s) into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
-- **Type Parameters:**
-- - `TValue` (`any`, defaults to `V`): The type of value to be set and type of array to be returned.
-
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
-  - `values` (`RestOrArray<TValue>`): The value(s) to be pushed into the target array.
+  - `values` (`RestOrArray<V>`): The value(s) to be pushed into the target array.
 
-- **Returns:** `Promise<TValue[]>` - Updated target array from the database.
+- **Returns:** `Promise<V[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPushResult = await quickMongo.push('members', 'William');
@@ -264,20 +254,17 @@ Pushes the specified value(s) into the target array in the database.
 ```
 
 
-## `pull<TValue = V>(key: K, targetArrayElementIndex: number, value: TValue): Promise<TValue[]>`
+## `pull(key: K, targetArrayElementIndex: number, value: V): Promise<V[]>`
 Pushes the specified value into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
-- **Type Parameters:**
-- - `TValue` (`any`, defaults to `V`): The type of value to be set and type of array to be returned.
-
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
   - `targetArrayElementIndex` (`number`): The index to find the element in target array.
-  - `value` (`TValue`): The value to be pushed into the target array.
+  - `value` (`V`): The value to be pushed into the target array.
 
-- **Returns:** `Promise<TValue[]>` - Updated target array from the database.
+- **Returns:** `Promise<V[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPullResult = await quickMongo.pull('members', 1, 'James');
@@ -285,19 +272,16 @@ Pushes the specified value into the target array in the database.
 ```
 
 
-## `pop<TValue = V>(key: K, targetArrayElementIndex: number, value: TValue): Promise<TValue[]>`
+## `pop(key: K, targetArrayElementIndex: number, value: V): Promise<V[]>`
 Removes the specified element(s) from the target array in the database.
 
 **[!!!] The type of target value must be an array.**
-
-- **Type Parameters:**
-- - `TValue` (`any`, defaults to `V`): The type of value to be set and type of array to be returned.
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
   - `targetArrayElementIndexes ` (`RestOrArray<number>`): The index(es) to find the element(s) in target array.
 
-- **Returns:** `Promise<TValue[]>` - Updated target array from the database.
+- **Returns:** `Promise<V[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPopResult = await quickMongo.pop('members', 1);
@@ -309,7 +293,7 @@ Removes the specified element(s) from the target array in the database.
 Returns an array of object keys by specified database key.
 
 - **Parameters:**
-  - `key` (`K`, **optional**): The key to access the data. If omitted, returns object keys of the database root.
+  - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object keys of the database root.
 
 - **Returns:** `string[]` - Database object keys array.
 - **Example:**
@@ -319,20 +303,20 @@ Returns an array of object keys by specified database key.
 ```
 
 
-## `random<TValue = V>(key: K): TValue`
+## `random(key: K): V`
 Picks a random element of array in the database and returns the picked array element.
 
-- **Type Parameters:**
-  - `TValue` (`any`, defaults to `V`): The type of value to be returned.
-
 - **Parameters:**
-  - `key` (`K`, **optional**): The key to access the data. If omitted, returns object keys of the database root.
+  - `key` (`K`): The key to access the target in database by.
 
-- **Returns:** `string[]` - Database object keys array.
+- **Returns:** `V` - The randomly picked element in the array.
 - **Example:**
 ```ts
-  const prop3Keys = quickMongo.keys('prop3');
-  console.log(prop3Keys); // -> ['prop4', 'prop5']
+  const array = quickMongo.get('exampleArray') // assuming that the array is ['example1', 'example2', 'example3']
+  console.log(array) // -> ['example1', 'example2', 'example3']
+
+  const randomArrayElement = quickMongo.random('exampleArray')
+  console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
 ```
 
 
