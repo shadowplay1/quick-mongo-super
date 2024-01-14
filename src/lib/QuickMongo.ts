@@ -583,6 +583,31 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
+     * Pushes the specified value into the target array in database.
+     *
+     * [!!!] The type of target value must be an array.
+     *
+     * @param {K} key The key to access the target in database by.
+     * @param {V} value The value to be pushed into the target array in database.
+     * @returns {Promise<V[]>} Updated target array from database.
+     *
+     * @example
+     * const membersPushResult = await quickMongo.push('members', 'William')
+     * console.log(membersPushResult) // -> ['John', 'William']
+     *
+     * // You can also pass in multiple values to push into the target array:
+     * const currenciesPushResult = await quickMongo.push('currencies', 'Euro', 'Rupee')
+     * console.log(currenciesPushResult) // -> ['Dollar', 'Euro', 'Rupee']
+     *
+     * // ^ Assuming that the initial database object for this example is:
+     * // {
+     * //    members: ['John'],
+     * //    currencies: ['Dollar']
+     * // }
+     */
+    public async push(key: K, value: V): Promise<V[]>
+
+    /**
      * Pushes the specified value(s) into the target array in database.
      *
      * [!!!] The type of target value must be an array.
@@ -669,6 +694,30 @@ export class QuickMongo<K extends string = string, V = any> {
         await this.set(key, targetArray as any)
         return targetArray
     }
+
+    /**
+     * Removes the specified element from the target array in database.
+     *
+     * [!!!] The type of target value must be an array.
+     *
+     * @param {K} key The key to access the target in database by.
+     * @param {number} targetArrayElementIndex The index to find the element in target array by.
+     * @returns {Promise<V[]>} Updated target array from database.
+     *
+     * @example
+     * const membersPopResult = await quickMongo.pop('members', 1)
+     * console.log(membersPopResult) // -> ['John', 'Tom']
+     *
+     * const currenciesPopResult = await quickMongo.pop('currencies', 1)
+     * console.log(currenciesPopResult) // -> ['Dollar', 'Euro']
+     *
+     * // ^ Assuming that the initial database object for this example is:
+     * // {
+     * //    members: ['John', 'William', 'Tom'],
+     * //    currencies: ['Dollar', 'Rupee', 'Euro']
+     * // }
+     */
+    public async pop(key: K, targetArrayElementIndex: number): Promise<V[]>
 
     /**
      * Removes the specified element(s) from the target array in database.
