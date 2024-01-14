@@ -28,7 +28,7 @@ export type IsObject<T> = T extends null
     : T extends Record<any, any> ? true : false
 
 /**
- * Represents a type that works as an array of specified type or ...spread of specified type.
+ * Represents a type that works as an array of specified type or `...spread` of specified type.
  * @template T The type to convert into rest-or-array type.
  */
 export type RestOrArray<T> = T[] | [T[]]
