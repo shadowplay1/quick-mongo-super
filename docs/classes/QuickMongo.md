@@ -237,16 +237,16 @@ Determines whether the specified target is a number.
 ```
 
 
-## `push(key: K, ...values: RestOrArray<V>): Promise<V[]>`
+## `push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]>`
 Pushes the specified value(s) into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
-  - `values` (`RestOrArray<V>`): The value(s) to be pushed into the target array.
+  - `values` (`RestOrArray<ExtractFromArray<V>>`): The value(s) to be pushed into the target array.
 
-- **Returns:** `Promise<V[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPushResult = await quickMongo.push('members', 'William');
@@ -254,7 +254,7 @@ Pushes the specified value(s) into the target array in the database.
 ```
 
 
-## `pull(key: K, targetArrayElementIndex: number, value: V): Promise<V[]>`
+## `pull(key: K, targetArrayElementIndex: number, value: V): Promise<ExtractFromArray<V>[]>`
 Pushes the specified value into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
@@ -264,7 +264,7 @@ Pushes the specified value into the target array in the database.
   - `targetArrayElementIndex` (`number`): The index to find the element in target array.
   - `value` (`V`): The value to be pushed into the target array.
 
-- **Returns:** `Promise<V[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPullResult = await quickMongo.pull('members', 1, 'James');
@@ -272,22 +272,21 @@ Pushes the specified value into the target array in the database.
 ```
 
 
-## `pop(key: K, targetArrayElementIndex: number, value: V): Promise<V[]>`
+## `pop(key: K, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<V>[]>`
 Removes the specified element(s) from the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
   - `key` (`K`): The key to access the target in database by.
-  - `targetArrayElementIndexes ` (`RestOrArray<number>`): The index(es) to find the element(s) in target array.
+  - `targetArrayElementIndexes` (`RestOrArray<ExtractFromArray<number>>`): The index(es) to find the element(s) in target array by.
 
-- **Returns:** `Promise<V[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPopResult = await quickMongo.pop('members', 1);
   console.log(membersPopResult); // -> ['John', 'Tom']
 ```
-
 
 ## `keys(key?: K): string[]`
 Returns an array of object keys by specified database key.

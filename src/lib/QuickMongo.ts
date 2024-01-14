@@ -17,7 +17,7 @@ import { typeOf } from './utils/functions/typeOf.function'
 import { isNumber } from './utils/functions/isNumber.function'
 
 import { QuickMongoError } from './utils/QuickMongoError'
-import { If, IsObject, Maybe, RestOrArray } from '../types/utils'
+import { ExtractFromArray, If, IsObject, Maybe, RestOrArray } from '../types/utils'
 
 import { createTypesArray } from '../structures/errors'
 
@@ -583,38 +583,13 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * Pushes the specified value into the target array in database.
-     *
-     * [!!!] The type of target value must be an array.
-     *
-     * @param {K} key The key to access the target in database by.
-     * @param {V} value The value to be pushed into the target array in database.
-     * @returns {Promise<V[]>} Updated target array from database.
-     *
-     * @example
-     * const membersPushResult = await quickMongo.push('members', 'William')
-     * console.log(membersPushResult) // -> ['John', 'William']
-     *
-     * // You can also pass in multiple values to push into the target array:
-     * const currenciesPushResult = await quickMongo.push('currencies', 'Euro', 'Rupee')
-     * console.log(currenciesPushResult) // -> ['Dollar', 'Euro', 'Rupee']
-     *
-     * // ^ Assuming that the initial database object for this example is:
-     * // {
-     * //    members: ['John'],
-     * //    currencies: ['Dollar']
-     * // }
-     */
-    public async push(key: K, value: V): Promise<V[]>
-
-    /**
      * Pushes the specified value(s) into the target array in database.
      *
      * [!!!] The type of target value must be an array.
      *
      * @param {K} key The key to access the target in database by.
-     * @param {RestOrArray<V>} values The value(s) to be pushed into the target array in database.
-     * @returns {Promise<V[]>} Updated target array from database.
+     * @param {RestOrArray<ExtractFromArray<V>>} values The value(s) to be pushed into the target array in database.
+     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
      *
      * @example
      * const membersPushResult = await quickMongo.push('members', 'William')
@@ -630,7 +605,8 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar']
      * // }
      */
-    public async push(key: K, ...values: RestOrArray<V>): Promise<V[]> {
+    public async push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]> {
+        this.push('asd' as any, null as any, null as any)
         const targetArray = this.get(key) || []
 
         if (!Array.isArray(targetArray)) {
@@ -655,7 +631,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * @param {K} key The key to access the target in database by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
      * @param {V} value The value to be pushed into the target array in database.
-     * @returns {Promise<V[]>} Updated target array from database.
+     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
      *
      * @example
      * const membersPullResult = await quickMongo.pull('members', 1, 'James')
@@ -666,7 +642,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    members: ['John', 'William', 'Tom']
      * // }
      */
-    public async pull(key: K, targetArrayElementIndex: number, value: V): Promise<V[]> {
+    public async pull(key: K, targetArrayElementIndex: number, value: V): Promise<ExtractFromArray<V>[]> {
         const targetArray = this.get(key) ?? []
 
         if (!Array.isArray(targetArray)) {
@@ -696,37 +672,13 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * Removes the specified element from the target array in database.
-     *
-     * [!!!] The type of target value must be an array.
-     *
-     * @param {K} key The key to access the target in database by.
-     * @param {number} targetArrayElementIndex The index to find the element in target array by.
-     * @returns {Promise<V[]>} Updated target array from database.
-     *
-     * @example
-     * const membersPopResult = await quickMongo.pop('members', 1)
-     * console.log(membersPopResult) // -> ['John', 'Tom']
-     *
-     * const currenciesPopResult = await quickMongo.pop('currencies', 1)
-     * console.log(currenciesPopResult) // -> ['Dollar', 'Euro']
-     *
-     * // ^ Assuming that the initial database object for this example is:
-     * // {
-     * //    members: ['John', 'William', 'Tom'],
-     * //    currencies: ['Dollar', 'Rupee', 'Euro']
-     * // }
-     */
-    public async pop(key: K, targetArrayElementIndex: number): Promise<V[]>
-
-    /**
      * Removes the specified element(s) from the target array in database.
      *
      * [!!!] The type of target value must be an array.
      *
      * @param {K} key The key to access the target in database by.
-     * @param {RestOrArray<number>} targetArrayElementIndexes The index(es) to find the element(s) in target array by.
-     * @returns {Promise<V[]>} Updated target array from database.
+     * @param {RestOrArray<ExtractFromArray<number>>} targetArrayElementIndexes The index(es) to find the element(s) in target array by.
+     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
      *
      * @example
      * const membersPopResult = await quickMongo.pop('members', 1)
@@ -741,7 +693,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar', 'Rupee', 'Euro']
      * // }
      */
-    public async pop(key: K, ...targetArrayElementIndexes: RestOrArray<number>): Promise<V[]> {
+    public async pop(key: K, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<V>[]> {
         const targetArray = this.get(key) ?? []
 
         if (!Array.isArray(targetArray)) {

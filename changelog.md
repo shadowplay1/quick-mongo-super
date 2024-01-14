@@ -6,8 +6,8 @@
 
 ## 🕘 | Changelog
 
-**v2.0.3**
-- Typings bugfixes.
+**v2.0.5**
+- Typings bug fixes.
 
 **v2.0.2**
 - Removed the `TValue` type parameter from all database operations methods due to it breaking the type of the specifying value.

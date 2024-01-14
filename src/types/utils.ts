@@ -32,3 +32,9 @@ export type IsObject<T> = T extends null
  * @template T The type to convert into rest-or-array type.
  */
 export type RestOrArray<T> = T[] | [T[]]
+
+/**
+ * Extracts the type from the `Array<T>` type.
+ * @template T The array type to extract the type from.
+ */
+export type ExtractFromArray<A> = A extends Array<infer T> ? T : A
