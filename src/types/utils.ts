@@ -1,5 +1,5 @@
 /**
- * Represents the nullish type.
+ * Represents the nullish (`T` or `null`) type.
  * @template T The type to make nullish.
  */
 export type Maybe<T> = T | null
