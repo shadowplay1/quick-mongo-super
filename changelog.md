@@ -6,7 +6,7 @@
 
 ## 🕘 | Changelog
 
-**v2.0.6**
+**v2.0.7**
 - Small bug fixes.
 
 **v2.0.5**
