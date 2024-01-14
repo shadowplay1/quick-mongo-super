@@ -606,7 +606,6 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public async push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]> {
-        this.push('asd' as any, null as any, null as any)
         const targetArray = this.get(key) || []
 
         if (!Array.isArray(targetArray)) {
@@ -677,7 +676,9 @@ export class QuickMongo<K extends string = string, V = any> {
      * [!!!] The type of target value must be an array.
      *
      * @param {K} key The key to access the target in database by.
-     * @param {RestOrArray<ExtractFromArray<number>>} targetArrayElementIndexes The index(es) to find the element(s) in target array by.
+     * @param {RestOrArray<ExtractFromArray<number>>} targetArrayElementIndexes
+     * The index(es) to find the element(s) in target array by.
+     *
      * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
      *
      * @example
@@ -693,7 +694,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar', 'Rupee', 'Euro']
      * // }
      */
-    public async pop(key: K, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<V>[]> {
+    public async pop(
+        key: K,
+        ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>
+    ): Promise<ExtractFromArray<V>[]> {
         const targetArray = this.get(key) ?? []
 
         if (!Array.isArray(targetArray)) {

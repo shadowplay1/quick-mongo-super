@@ -6,6 +6,9 @@
 
 ## 🕘 | Changelog
 
+**v2.0.6**
+- Small bug fixes.
+
 **v2.0.5**
 - Typings bug fixes.
 
