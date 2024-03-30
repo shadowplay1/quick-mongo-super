@@ -4,7 +4,7 @@ import { typeOf } from '../lib/utils/functions/typeOf.function'
 export const errors = {
     CONNECTION_NOT_ESTABLISHED:
         'Failed to connect to MongoDB. Please double-check the specified ' +
-        'the connection URI and make sure that you\'re performing the ' +
+        'connection URI and make sure that you\'re performing the ' +
         'database connection using the `QuickMongoClient.connect()` method.',
     CONNECTION_URI_NOT_SPECIFIED: 'The MongoDB connection URI must be specified.',
     INVALID_CONNECTION_URI: 'The specified MongoDB connection URI is invalid.',
