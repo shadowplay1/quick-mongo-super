@@ -118,7 +118,7 @@ export class QuickMongoClient<
         if (
             typeof connectionURI !== 'string' ||
             (!connectionURI.startsWith('mongodb://') &&
-            !connectionURI.startsWith('mongodb+srv://'))
+                !connectionURI.startsWith('mongodb+srv://'))
         ) {
             throw new QuickMongoError('INVALID_CONNECTION_URI')
         }
@@ -136,14 +136,18 @@ export class QuickMongoClient<
      * @returns {Promise<QuickMongoClient<TInitialDatabaseData>>} Connected QuickMongoClient instance.
      */
     public async connect(): Promise<QuickMongoClient<TInitialDatabaseData>> {
-        await connect(this._connectionURI, {
-            ...this.mongoClientOptions
-        })
+        try {
+            await connect(this._connectionURI, {
+                ...this.mongoClientOptions
+            })
 
-        this.connected = true
-        this.emit('connect', this)
+            this.connected = true
+            this.emit('connect', this)
 
-        return this
+            return this
+        } catch (err) {
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
+        }
     }
 
     /**

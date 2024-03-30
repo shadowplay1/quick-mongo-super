@@ -967,8 +967,12 @@ export class QuickMongo<K extends string = string, V = any> {
      * console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
      */
     public async raw<TInternalDataValue = any>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
-        const data = await this._model.find()
-        return data as any
+        try {
+            const data = await this._model.find()
+            return data as any
+        } catch (err) {
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
+        }
     }
 
     /**

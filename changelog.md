@@ -6,6 +6,9 @@
 
 ## 🕘 | Changelog
 
+**v2.0.10**
+- Fixed cases when the exception if failed to connect to the MongoDB cluster **won't be thrown**.
+
 **v2.0.9**
 - Added exceptions on incorrect format of the **MongoDB connection URI** or its absence in `QuickMongoClient` constructor.
 - Added exceptions on incorrectly specified constructor parameters or their absence in `QuickMongo` constructor.
