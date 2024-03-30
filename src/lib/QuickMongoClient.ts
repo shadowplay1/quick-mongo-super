@@ -2,9 +2,12 @@ import { connect, disconnect } from 'mongoose'
 import { MongoClientOptions } from 'mongodb'
 
 import { IQuickMongoEvents } from '../types/Database'
+
 import { Emitter } from './utils/Emitter'
+import { typeOf } from './utils/functions/typeOf.function'
 
 import { QuickMongo } from './QuickMongo'
+import { QuickMongoError } from './utils/QuickMongoError'
 
 /**
  * Quick Mongo Client class.
@@ -109,6 +112,18 @@ export class QuickMongoClient<
         mongoClientOptions?: MongoClientOptions
     ) {
         super()
+
+        if (!connectionURI) {
+            throw new QuickMongoError('CONNECTION_URI_NOT_SPECIFIED')
+        }
+
+        if (
+            typeOf(connectionURI) !== 'string' ||
+            (!connectionURI.startsWith('mongodb://') &&
+            !connectionURI.startsWith('mongodb+srv://'))
+        ) {
+            throw new QuickMongoError('INVALID_CONNECTION_URI')
+        }
 
         this.databases = []
 

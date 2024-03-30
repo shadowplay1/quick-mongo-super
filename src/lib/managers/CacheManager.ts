@@ -82,7 +82,7 @@ export class CacheManager<K extends string, V> {
         let data = this.getCacheObject()
 
         if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
 
         if (!key) {
@@ -134,7 +134,7 @@ export class CacheManager<K extends string, V> {
         const data = this.getCacheObject()
 
         if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
 
         if (!key) {
@@ -193,7 +193,7 @@ export class CacheManager<K extends string, V> {
         const data = this.getCacheObject()
 
         if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
 
         if (!key) {

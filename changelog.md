@@ -6,6 +6,11 @@
 
 ## 🕘 | Changelog
 
+**v2.0.9**
+- Added exceptions on incorrect format of the **MongoDB connection URI** or its absence in `QuickMongoClient` constructor.
+- Added exceptions on incorrectly specified constructor parameters or their absence in `QuickMongo` constructor.
+- Added an exception if failed to connect to the **MongoDB cluster**.
+
 **v2.0.8**
 - Updated dependencies.
 - Removed unnecessary internal MongoDB configuration.

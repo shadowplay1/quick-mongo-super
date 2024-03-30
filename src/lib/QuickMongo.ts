@@ -1,4 +1,4 @@
-import { Model, model, models } from 'mongoose'
+import { Model, MongooseError, model, models } from 'mongoose'
 
 import {
     IDatabaseConfiguration,
@@ -131,6 +131,56 @@ export class QuickMongo<K extends string = string, V = any> {
      * console.log(mongoWithInitialData.all()) // -> { somethingToSetInDatabase: 'something' }
      */
     public constructor(client: QuickMongoClient<any>, databaseConfiguration: IDatabaseConfiguration) {
+        if (!client) {
+            throw new QuickMongoError('REQUIRED_CONSTRUCTOR_PARAMETER_MISSING', 'client', 'QuickMongo')
+        }
+
+        if (!(client instanceof QuickMongoClient)) {
+            throw new QuickMongoError(
+                'INVALID_CONSTRUCTOR_PARAMETER_TYPE',
+                'client', 'QuickMongo',
+                'QuickMongo class instance', typeOf(client)
+            )
+        }
+
+        if (!databaseConfiguration) {
+            throw new QuickMongoError(
+                'REQUIRED_CONSTRUCTOR_PARAMETER_MISSING',
+                'databaseConfiguration', 'QuickMongo',
+            )
+        }
+
+        if (typeof databaseConfiguration !== 'object') {
+            throw new QuickMongoError(
+                'INVALID_CONSTRUCTOR_PARAMETER_TYPE',
+                'databaseConfiguration', 'QuickMongo',
+                'object', typeOf(databaseConfiguration)
+            )
+        }
+
+        if (!databaseConfiguration.name) {
+            throw new QuickMongoError(
+                'REQUIRED_CONSTRUCTOR_PARAMETER_MISSING',
+                'databaseConfiguration.name', 'QuickMongo'
+            )
+        }
+
+        if (typeof databaseConfiguration.name !== 'string') {
+            throw new QuickMongoError(
+                'INVALID_CONSTRUCTOR_PARAMETER_TYPE',
+                'databaseConfiguration.name', 'QuickMongo',
+                'string', typeOf(databaseConfiguration.name)
+            )
+        }
+
+        if (databaseConfiguration.collectionName && typeof databaseConfiguration.collectionName !== 'string') {
+            throw new QuickMongoError(
+                'INVALID_CONSTRUCTOR_PARAMETER_TYPE',
+                'databaseConfiguration.collectionName', 'QuickMongo',
+                'string', typeOf(databaseConfiguration.collectionName)
+            )
+        }
+
         this._cache = new CacheManager(client)
         this._client = client
 
@@ -139,6 +189,7 @@ export class QuickMongo<K extends string = string, V = any> {
             internalDatabaseSchema,
             databaseConfiguration.collectionName
         )
+
 
         this.name = databaseConfiguration.name
         this.collectionName = databaseConfiguration.collectionName
@@ -163,7 +214,7 @@ export class QuickMongo<K extends string = string, V = any> {
         let deleteLatency = -1
 
         if (!this._client.connected) {
-            throw new QuickMongoError('NOT_CONNECTED')
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
 
         const readStartDate = Date.now()
@@ -727,7 +778,7 @@ export class QuickMongo<K extends string = string, V = any> {
                 .some(x => x)
         ) {
             throw new QuickMongoError(
-                'ONE_OR_MORE_TYPES_INVALID',
+                'ONE_OR_MORE_ARRAY_TYPES_INVALID',
                 'targetArrayElementIndexes',
                 'number',
                 createTypesArray(targetArrayElementIndexes)
@@ -874,19 +925,25 @@ export class QuickMongo<K extends string = string, V = any> {
      * await quickMongo.loadCache() // this will download all the database contents into the cache
      */
     public async loadCache(): Promise<void> {
-        const database = await this.allFromDatabase<Record<K, any>>()
-        const initialDatabaseData = this._client.initialDatabaseData
+        try {
+            const database = await this.allFromDatabase<Record<K, any>>()
+            const initialDatabaseData = this._client.initialDatabaseData
 
-        if (this._client.initialDatabaseData && !Object.keys(database).length) {
-            for (const key of Object.keys(initialDatabaseData)) {
-                this.set(key as K, initialDatabaseData[key])
-                this._cache.set(key as K, initialDatabaseData[key] ?? null)
+            if (this._client.initialDatabaseData && !Object.keys(database).length) {
+                for (const key of Object.keys(initialDatabaseData)) {
+                    this.set(key as K, initialDatabaseData[key])
+                    this._cache.set(key as K, initialDatabaseData[key] ?? null)
+                }
             }
-        }
 
-        for (const key in database) {
-            const dataObject = database[key]
-            this._cache.set(key, dataObject ?? null)
+            for (const key in database) {
+                const dataObject = database[key]
+                this._cache.set(key, dataObject ?? null)
+            }
+        } catch (err) {
+            if (err instanceof MongooseError) {
+                throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
+            }
         }
     }
 

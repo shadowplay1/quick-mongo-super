@@ -4,13 +4,17 @@
  * @returns {string} Input exact type.
  */
 export const typeOf = (input: any): string => {
-    if ((typeof input == 'object' || typeof input == 'function') && input?.prototype) {
-        return input.name
-    }
-
     if (input === null || input === undefined || (typeof input == 'number' && isNaN(input))) {
         return `${input}`
     }
 
-    return input.constructor.name
+    if (input.prototype) {
+        return `${input.name} class instance`
+    }
+
+    if ((typeof input == 'object' || typeof input == 'function') && input?.prototype) {
+        return input.name
+    }
+
+    return input.constructor.name.toLowerCase()
 }
