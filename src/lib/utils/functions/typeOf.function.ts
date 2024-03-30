@@ -16,5 +16,5 @@ export const typeOf = (input: any): string => {
         return input.name
     }
 
-    return input.constructor.name.toLowerCase()
+    return input.constructor.name
 }

@@ -2,9 +2,7 @@ import { connect, disconnect } from 'mongoose'
 import { MongoClientOptions } from 'mongodb'
 
 import { IQuickMongoEvents } from '../types/Database'
-
 import { Emitter } from './utils/Emitter'
-import { typeOf } from './utils/functions/typeOf.function'
 
 import { QuickMongo } from './QuickMongo'
 import { QuickMongoError } from './utils/QuickMongoError'
@@ -118,7 +116,7 @@ export class QuickMongoClient<
         }
 
         if (
-            typeOf(connectionURI) !== 'string' ||
+            typeof connectionURI !== 'string' ||
             (!connectionURI.startsWith('mongodb://') &&
             !connectionURI.startsWith('mongodb+srv://'))
         ) {
