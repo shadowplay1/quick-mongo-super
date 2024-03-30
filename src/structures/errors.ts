@@ -44,4 +44,6 @@ export const createTypesArray = <T>(
     return `[${elements.map(element => typeOf(element))}]`
 }
 
-export type TargetParamType = 'string' | 'number' | 'array' | 'object' | `${string} class instance`
+export type TargetParamType =
+    'string' | 'number' | 'array' |
+    'object' | `${string} class instance`
