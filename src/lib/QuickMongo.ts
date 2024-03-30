@@ -826,7 +826,7 @@ export class QuickMongo<K extends string = string, V = any> {
         }
 
         this._cache.clear()
-        await this._model.deleteMany()
+        await this._model.collection.deleteMany()
 
         return true
     }

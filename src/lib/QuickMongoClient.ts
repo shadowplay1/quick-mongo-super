@@ -1,7 +1,9 @@
 import { connect, disconnect } from 'mongoose'
+import { MongoClientOptions } from 'mongodb'
 
 import { IQuickMongoEvents } from '../types/Database'
 import { Emitter } from './utils/Emitter'
+
 import { QuickMongo } from './QuickMongo'
 
 /**
@@ -60,6 +62,12 @@ export class QuickMongoClient<
      */
     public initialDatabaseData: TInitialDatabaseData
 
+    /**
+     * MongoDB client connection options.
+     * @type {MongoClientOptions}
+     */
+    public mongoClientOptions?: MongoClientOptions
+
     readonly [Symbol.toStringTag] = 'QuickMongoClient'
 
     /**
@@ -72,6 +80,8 @@ export class QuickMongoClient<
      * @param {string} connectionURI The MongoDB cluster connection URI to connect to.
      * @param {TInitialDatabaseData} initialDatabaseData
      * The database object to set in database if the database is empty on initialation.
+     *
+     * @param {MongoClientOptions} mongoClientOptions MongoDB client connection options.
      *
      * @template TInitialDatabaseData (object) - The type of the object to be set in new empty databases.
      *
@@ -93,13 +103,19 @@ export class QuickMongoClient<
      *     collectionName: 'collectionName' // optional
      * })
      */
-    public constructor(connectionURI: string, initialDatabaseData?: TInitialDatabaseData) {
+    public constructor(
+        connectionURI: string,
+        initialDatabaseData?: TInitialDatabaseData,
+        mongoClientOptions?: MongoClientOptions
+    ) {
         super()
 
         this.databases = []
 
-        this.initialDatabaseData = initialDatabaseData
         this._connectionURI = connectionURI
+        this.mongoClientOptions = mongoClientOptions
+
+        this.initialDatabaseData = initialDatabaseData
     }
 
     /**
@@ -108,8 +124,7 @@ export class QuickMongoClient<
      */
     public async connect(): Promise<QuickMongoClient<TInitialDatabaseData>> {
         await connect(this._connectionURI, {
-            useNewUrlParser: true,
-            useUnifiedTopology: true
+            ...this.mongoClientOptions
         })
 
         this.connected = true

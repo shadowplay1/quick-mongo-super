@@ -1,6 +1,6 @@
 {
   "name": "quick-mongo-super",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "Quick Mongo Super is a light-weight and easy-to-use Node.js module written in TypeScript to work with MongoDB.",
   "main": "./dist/src/index.js",
   "types": "./dist/typings/src/index.d.ts",
@@ -14,7 +14,7 @@
   "author": "shadowplay1 <shadowplay483@gmail.com>",
   "license": "MIT",
   "dependencies": {
-    "mongoose": "5.13"
+    "mongoose": "^8.2.4"
   },
   "directories": {
     "lib": "./dist",

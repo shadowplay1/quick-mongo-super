@@ -6,3 +6,6 @@ dist/
 
 # miscellaneous
 misc/
+
+# bun lock file
+bun.lockb

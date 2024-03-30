@@ -6,6 +6,13 @@
 
 ## 🕘 | Changelog
 
+**v2.0.8**
+- Updated dependencies.
+- Removed unnecessary internal MongoDB configuration.
+- Added compatibility with **Bun**.
+- Fixed a bug when running `QuickMongo.clear()` method was nuking data in the **whole MongoDB cluster** instead of data in **specific QuickMongo collection**.
+- Added a new optional `mongoClientOptions` parameter in `QuickMongoClient` constructor to allow passing specific MongoDB client options into the `mongodb` module.
+
 **v2.0.7**
 - Small bug fixes.
 
