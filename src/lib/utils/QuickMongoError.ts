@@ -18,7 +18,7 @@ export class QuickMongoError<TErrorCode extends keyof typeof errors> extends Err
         let errorMessage = errors[errorCode]
 
         for (let i = 0; i < params.length; i++) {
-            errorMessage = errorMessage.replace(`{${i + 1}}`, params[i])
+            errorMessage = errorMessage.replaceAll(`{${i + 1}}`, params[i])
         }
 
         super(errorMessage)

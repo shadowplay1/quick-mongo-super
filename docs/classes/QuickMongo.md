@@ -44,6 +44,7 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 - **Public:**
   - `name` (`string`): Database name.
   - `collectionName` (`string`): Collection name.
+  - `size` (`number`): Determines the number of keys in the root of the database. Equivalent to `QuickMongo.keys().length`.
 
 - **Private:**
   - `_cache` (`CacheManager<any, IDatabaseInternalStructure<any>>`): Cache Manager.
@@ -290,6 +291,9 @@ Removes the specified element(s) from the target array in the database.
 
 ## `keys(key?: K): string[]`
 Returns an array of object keys by specified database key.
+
+- **Type parameters:**
+  - `TKeys` (`TupleOrArray<string>`, defaults to `string[]`) - The tuple or array of a type of keys to be returned.
 
 - **Parameters:**
   - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object keys of the database root.

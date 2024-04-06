@@ -7,8 +7,6 @@ import { QuickMongo, QuickMongoClient } from '../src'
 
 const sleep = promisify(setTimeout)
 
-
-// eslint-disable-next-line
 const quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018')
 quickMongoClient.connected = true
 

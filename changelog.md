@@ -6,6 +6,13 @@
 
 ## 🕘 | Changelog
 
+**v2.1.0**
+- Added a `size` property in `QuickMongo` class that determines the number of keys in the root of the database. Equivalent to `QuickMongo.keys().length`.
+- Added a `TKeys` type parameter in `QuickMongo.keys()` method that determines the type of returned keys.
+- Added a check if the device is online (connected to the internet) when connecting to online (non-local) MongoDB cluster.
+- Small bugfixes and improvements.
+- Typos fixes.
+
 **v2.0.10**
 - Fixed cases when the exception if failed to connect to the MongoDB cluster **won't be thrown**.
 

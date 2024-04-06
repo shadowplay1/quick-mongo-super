@@ -1,8 +1,8 @@
 /**
- * Represents the nullish (`T` or `null`) type.
+ * Represents the nullish type (`T` or `null`) and excludes `undefined` from it.
  * @template T The type to make nullish.
  */
-export type Maybe<T> = T | null
+export type Maybe<T> = Exclude<T | null, undefined>
 
 /**
  * Conditional type that returns the type based on the condition type result.
@@ -34,7 +34,26 @@ export type IsObject<T> = T extends null
 export type RestOrArray<T> = T[] | [T[]]
 
 /**
+ * Extracts the type from the `RestOrArray<T>` type and passes it into that type.
+ *
+ * Useful to prevent accidentally creating the `RestOrArray<RestOrArray<T>>` instances.
+ *
+ * `T` is being extracted from `RestOrArray<RestOrArray<T>>` type and being passed into `RestOrArray<T>` type.
+ *
+ * @template T The `RestOrArray<T>` type to extract the type from.
+ */
+export type ExtractFromRestOrArray<T> = T extends RestOrArray<infer R>
+    ? RestOrArray<R>
+    : RestOrArray<T>
+
+/**
  * Extracts the type from the `Array<T>` type.
  * @template T The array type to extract the type from.
  */
 export type ExtractFromArray<A> = A extends Array<infer T> ? T : A
+
+/**
+ * Converts the specified type `T` into the array of `T` or just `T` if it's a valid tuple.
+ * @template T The type to convert.
+ */
+export type TupleOrArray<T> = T extends [...infer _Rest] ? T : T[]

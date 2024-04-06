@@ -1,7 +1,6 @@
 import { describe, expect, test, afterAll } from '@jest/globals'
 import { QuickMongo, QuickMongoClient } from '../src'
 
-// eslint-disable-next-line
 const connectionURI = 'mongodb://127.0.0.1:27018'
 const quickMongoClient = new QuickMongoClient(connectionURI)
 

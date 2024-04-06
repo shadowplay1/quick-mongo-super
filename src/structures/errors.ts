@@ -1,7 +1,10 @@
-import { RestOrArray } from '../types/utils'
+import { ExtractFromRestOrArray } from '../types/utils'
 import { typeOf } from '../lib/utils/functions/typeOf.function'
 
 export const errors = {
+    DEVICE_IS_OFFLINE: 'Your device appears to be offline so it\'s impossible to proceed with ' +
+        'connection to your online MongoDB cluster. Please connect your device to the internet or switch to the ' +
+        'local MongoDB database and try again.',
     CONNECTION_NOT_ESTABLISHED:
         'Failed to connect to MongoDB. Please double-check the specified ' +
         'connection URI and make sure that you\'re performing the ' +
@@ -20,7 +23,7 @@ export const errors = {
     INVALID_TARGET: 'The target in database must be a type of {1}. Received target type: {2}.'
 }
 
-export interface IErrorParams extends Record<keyof typeof errors, any[]> {
+export interface IErrorParams extends Record<keyof typeof errors, string[]> {
     CONNECTION_NOT_ESTABLISHED: []
     UNKNOWN_ERROR: [],
     CONNECTION_URI_NOT_SPECIFIED: [],
@@ -36,11 +39,7 @@ export interface IErrorParams extends Record<keyof typeof errors, any[]> {
     INVALID_TARGET: [targetType: TargetParamType, receivedType: string]
 }
 
-export const createTypesArray = <T>(
-    ...elements: T extends RestOrArray<infer R>
-        ? RestOrArray<R>
-        : RestOrArray<T>
-): string => {
+export const createTypesArray = <T>(...elements: ExtractFromRestOrArray<T>): string => {
     return `[${elements.map(element => typeOf(element))}]`
 }
 

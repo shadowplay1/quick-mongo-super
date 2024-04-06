@@ -5,9 +5,13 @@ export * from './lib/managers/CacheManager'
 
 export * from './lib/utils/Emitter'
 export * from './lib/utils/QuickMongoError'
+export * from './lib/utils/TypedObject'
 
 export * from './lib/utils/functions/isObject.function'
+export * from './lib/utils/functions/isNumber.function'
+
 export * from './lib/utils/functions/typeOf.function'
+export * from './lib/utils/functions/setTimer.function'
 
 export * from './schemas/internal.schema'
 

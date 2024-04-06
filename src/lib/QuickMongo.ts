@@ -15,9 +15,15 @@ import { isObject } from './utils/functions/isObject.function'
 import { typeOf } from './utils/functions/typeOf.function'
 
 import { isNumber } from './utils/functions/isNumber.function'
+import { TypedObject } from './utils/TypedObject'
 
 import { QuickMongoError } from './utils/QuickMongoError'
-import { ExtractFromArray, If, IsObject, Maybe, RestOrArray } from '../types/utils'
+
+import {
+    ExtractFromArray, If,
+    IsObject, Maybe, RestOrArray,
+    TupleOrArray
+} from '../types/utils'
 
 import { createTypesArray } from '../structures/errors'
 
@@ -26,8 +32,8 @@ import { createTypesArray } from '../structures/errors'
  *
  * Type parameters:
  *
- * - `K` (string) - The type of The key to access the target in database by.
- * - `V` (any) - The type of the values in the database.
+ * - `K` (`string`) - The type of The key to access the target in database by.
+ * - `V` (`any`) - The type of the values in the database.
  *
  * @template K (string) - The type of The key to access the target in database by.
  * @template V (any) - The type of the values in the database.
@@ -92,8 +98,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `K` (string) - The type of The key to access the target in database by.
-     * - `V` (any) - The type of the values in the database.
+     * - `K` (`string`) - The type of The key to access the target in database by.
+     * - `V` (`any`) - The type of the values in the database.
      *
      * @param {QuickMongoClient<any>} client Quick Mongo client to get attached to.
      * @param {IDatabaseConfiguration} databaseConfiguration Database configuration object.
@@ -190,12 +196,19 @@ export class QuickMongo<K extends string = string, V = any> {
             databaseConfiguration.collectionName
         )
 
-
         this.name = databaseConfiguration.name
         this.collectionName = databaseConfiguration.collectionName
 
         this.loadCache()
         this._client.databases.push(this)
+    }
+
+    /**
+     * Determines the number of keys in the root of the database. Equivalent to `QuickMongo.keys().length`.
+     * @type {number}
+     */
+    public get size(): number {
+        return this.keys().length
     }
 
     /**
@@ -263,7 +276,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public get(key: K): Maybe<V> {
-        return this._cache.get<V>(key)
+        return this._cache.get<V>(key) as Maybe<V>
     }
 
     /**
@@ -332,7 +345,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TObjectReturnValue` (any, defaults to `any`) - Type the return type fallbacks to if `TVa\lue` is an object.
+     * - `TObjectReturnValue` (`any`, defaults to `any`) - Type the return type fallbacks to if `TValue` is an object.
      *
      * @param {string} key The key to write in the target.
      * @param {V} value The value to write.
@@ -798,6 +811,10 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * If `key` parameter is omitted, then an array of object keys of database root object will be returned.
      *
+     * Type parameters:
+     *
+     * - `TKeys` (`TupleOrArray<string>`, defaults to `string[]`) - The tuple or array of a type of keys to be returned.
+     *
      * @param {K} [key] The key to access the target in database by.
      * @returns {string[]} Database object keys array.
      *
@@ -826,15 +843,15 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public keys(key?: K): string[] {
+    public keys<TKeys extends TupleOrArray<string> = string[]>(key?: K): TKeys {
         if (!key) {
-            return Object.keys(this.all())
+            return TypedObject.keys<TKeys>(this.all())
         }
 
         const data = this.get(key)
+        const keys = TypedObject.keys<TKeys>(data)
 
-        return Object.keys(data || {})
-            .filter(key => data[key] !== undefined && data[key] !== null)
+        return keys.filter(key => data[key] !== undefined && data[key] !== null) as TKeys
     }
 
     /**
@@ -900,7 +917,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `T` (object) - The type of object of all the database object to be returned.
+     * - `T` (`object`) - The type of object of all the database object to be returned.
      *
      * @returns {T} Cached database contents.
      * @template T (object) - The type of object of all the database object to be returned.
@@ -926,13 +943,13 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public async loadCache(): Promise<void> {
         try {
-            const database = await this.allFromDatabase<Record<K, any>>()
+            const database = await this.allFromDatabase<K>()
             const initialDatabaseData = this._client.initialDatabaseData
 
-            if (this._client.initialDatabaseData && !Object.keys(database).length) {
-                for (const key of Object.keys(initialDatabaseData)) {
-                    this.set(key as K, initialDatabaseData[key])
-                    this._cache.set(key as K, initialDatabaseData[key] ?? null)
+            if (this._client.initialDatabaseData && !TypedObject.keys(database).length) {
+                for (const key of TypedObject.keys<K[]>(initialDatabaseData)) {
+                    this.set(key, initialDatabaseData[key])
+                    this._cache.set(key, initialDatabaseData[key] ?? null)
                 }
             }
 
@@ -954,7 +971,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TInternalDataValue` (any) - The type of `__VALUE` property in each raw data object.
+     * - `TInternalDataValue` (`any`) - The type of `__VALUE` property in each raw data object.
      *
      * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>}
      * Raw database content - the data as it is stored in internal [__KEY]-[__VALUE] storage format that was made
@@ -980,7 +997,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TValue` (object) - The type of object of all the database object to be returned.
+     * - `TValue` (`any`) - The type of object of all the database object to be returned.
+     * Will be returned as `Record<string, TValue>`.
      *
      * @template TValue (object) - The type of object of all the database object to be returned.
      * @returns {Promise<TValue>} Fetched database contents.
@@ -989,7 +1007,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * const allDatabase = quickMongo.allFromDatabase()
      * console.log(allDatabase) // -> { ... (the object of all the data stored in database) }
      */
-    public async allFromDatabase<TValue extends Record<string, any> = V>(): Promise<TValue> {
+    public async allFromDatabase<TValue = V>(): Promise<Record<string, TValue>> {
         const obj = {}
         const elements = await this.raw() || []
 

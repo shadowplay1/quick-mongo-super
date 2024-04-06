@@ -1,5 +1,9 @@
+import fetch from 'node-fetch'
+
 import { connect, disconnect } from 'mongoose'
 import { MongoClientOptions } from 'mongodb'
+
+import { setAsyncFunctionTimer } from './utils/functions/setTimer.function'
 
 import { IQuickMongoEvents } from '../types/Database'
 import { Emitter } from './utils/Emitter'
@@ -12,9 +16,9 @@ import { QuickMongoError } from './utils/QuickMongoError'
  *
  * Type parameters:
  *
- * - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
+ * - `TInitialDatabaseData` (`object`) - The type of the object to be set in new empty databases.
  *
- * @template TInitialDatabaseData (object) - The type of the object to be set in new empty databases.
+ * @template TInitialDatabaseData (`object`) - The type of the object to be set in new empty databases.
  *
  * @example
  * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
@@ -76,7 +80,7 @@ export class QuickMongoClient<
      *
      * Type parameters:
      *
-     * - `TInitialDatabaseData` (object) - The type of the object to be set in new empty databases.
+     * - `TInitialDatabaseData` (`object`) - The type of the object to be set in new empty databases.
      *
      * @param {string} connectionURI The MongoDB cluster connection URI to connect to.
      * @param {TInitialDatabaseData} initialDatabaseData
@@ -121,6 +125,14 @@ export class QuickMongoClient<
                 !connectionURI.startsWith('mongodb+srv://'))
         ) {
             throw new QuickMongoError('INVALID_CONNECTION_URI')
+        }
+
+        if (!connectionURI.includes('localhost') && !connectionURI.includes('127.0.0.1')) {
+            setAsyncFunctionTimer(async () => fetch('https://example.com'), 10000).then(isOnline => {
+                if (!isOnline) {
+                    throw new QuickMongoError('DEVICE_IS_OFFLINE')
+                }
+            })
         }
 
         this.databases = []

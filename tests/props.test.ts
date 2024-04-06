@@ -10,9 +10,7 @@ const initialDatabaseObject = {
     hello: 'world'
 }
 
-// eslint-disable-next-line
 const quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018', initialDatabaseObject)
-
 quickMongoClient.connected = true
 
 beforeAll(async () => {
