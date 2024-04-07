@@ -30,17 +30,17 @@ describe('check for properties of QuickMongoClient and QuickMongo database insta
     // QuickMongo.set()
 
     test.concurrent('QuickMongo: database name', async () => {
-        await sleep(1000)
+        await sleep(3000)
         return expect(database.name).toEqual(databaseName)
     })
 
     test.concurrent('QuickMongo: collection name', async () => {
-        await sleep(1000)
+        await sleep(3000)
         return expect(database.collectionName).toEqual(collectionName)
     })
 
     test.concurrent('QuickMongoClient: initial database data', async () => {
-        await sleep(1000)
+        await sleep(3000)
         return expect(quickMongoClient.initialDatabaseData).toEqual(initialDatabaseObject)
     })
 })

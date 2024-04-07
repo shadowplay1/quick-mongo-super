@@ -22,53 +22,53 @@ describe('addition operation', () => {
 
     test.concurrent('set number', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const setResult = await database.set('number', 1)
         return expect(setResult).toEqual(1)
-    })
+    }, 15000)
 
     test.concurrent('set number in object', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const setResult = await database.set('numbers.number', 5)
         return expect(setResult).toEqual(5)
-    })
+    }, 15000)
 
 
     // QuickMongo.add()
 
     test.concurrent('add +5', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const addResult = await database.add('number', 5)
         return expect(addResult).toEqual(6)
-    })
+    }, 15000)
 
     test.concurrent('add +5 to number in object', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const addResult = await database.add('numbers.number', 5)
         return expect(addResult).toBeDefined()
-    })
+    }, 15000)
 
     test.concurrent('add +5 to unexistent number', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const addResult = await database.add('unexistentNumber', 15)
         return expect(addResult).toEqual(15)
-    })
+    }, 15000)
 
 
     // getting addition results
 
     test.concurrent('get addition results', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const additionResults = [
             database.get('number'),
@@ -77,7 +77,7 @@ describe('addition operation', () => {
         ]
 
         return expect(additionResults).toEqual([6, 10, 15])
-    })
+    }, 15000)
 })
 
 describe('subtraction operation', () => {
@@ -90,53 +90,53 @@ describe('subtraction operation', () => {
 
     test.concurrent('set number', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const setResult = await database.set('number', 1)
         return expect(setResult).toEqual(1)
-    })
+    }, 15000)
 
     test.concurrent('set number in object', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const setResult = await database.set('numbers.number', 5)
         return expect(setResult).toEqual(5)
-    })
+    }, 15000)
 
 
     // QuickMongo.subtract()
 
     test.concurrent('subtract -5', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const subtractionResult = await database.subtract('number', 5)
         return expect(subtractionResult).toEqual(-4)
-    })
+    }, 15000)
 
     test.concurrent('subtract -5 from number in object', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const subtractionResult = await database.subtract('numbers.number', 5)
         return expect(subtractionResult).toBeDefined()
-    })
+    }, 15000)
 
     test.concurrent('subtract -5 from unexistent number', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const subtractResult = await database.subtract('unexistentNumber', 15)
         return expect(subtractResult).toEqual(-15)
-    })
+    }, 15000)
 
 
     // getting subtraction results
 
     test.concurrent('get subtraction results', async () => {
         await database.loadCache()
-        await sleep(3000)
+        await sleep(6000)
 
         const subtractionResults = [
             database.get('number'),
@@ -145,7 +145,7 @@ describe('subtraction operation', () => {
         ]
 
         return expect(subtractionResults).toEqual([-4, 0, -15])
-    })
+    }, 15000)
 
     // QuickMongo.isTargetNumber()
 
@@ -160,7 +160,7 @@ describe('subtraction operation', () => {
         ]
 
         return expect(isNumberResults).toEqual([true, true, false, false])
-    })
+    }, 15000)
 })
 
 

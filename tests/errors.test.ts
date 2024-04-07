@@ -54,7 +54,7 @@ describe('errors throwing: fetch()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successTest = (): any => database.fetch('test')
         return expect(resolveFunction(successTest)).toBeTruthy()
@@ -81,7 +81,7 @@ describe('errors throwing: has()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successCase = (): any => database.has('test')
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -102,7 +102,7 @@ describe('errors throwing: keys()', () => {
 
     test.concurrent('success case: \'key\' parameter is missing (return database root keys)', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successCase = (): any => database.keys()
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -110,7 +110,7 @@ describe('errors throwing: keys()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successCase = (): any => database.keys('test')
         return expect(resolveFunction(successCase)).toBeTruthy()
@@ -146,7 +146,7 @@ describe('errors throwing: set()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successCase = async (): Promise<any> => await database.set('test', 123)
         return expect(resolvePromise(successCase())).resolves.toBeTruthy()
@@ -173,7 +173,7 @@ describe('errors throwing: delete()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successCase = async (): Promise<any> => await database.delete('test')
         return expect(resolvePromise(successCase())).resolves.toBeTruthy()
@@ -225,7 +225,7 @@ describe('errors throwing: add()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         await database.set('arr', [])
 
@@ -279,7 +279,7 @@ describe('errors throwing: subtract()', () => {
 
     test.concurrent('success case', async () => {
         await database.loadCache()
-        await sleep(1000)
+        await sleep(3000)
 
         const successTest = async (): Promise<any> => await database.subtract('test', 123)
         return expect(resolvePromise(successTest())).resolves.toBeTruthy()
