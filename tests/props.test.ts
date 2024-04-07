@@ -10,37 +10,39 @@ const initialDatabaseObject = {
     hello: 'world'
 }
 
-const quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018', initialDatabaseObject)
-quickMongoClient.connected = true
+const databaseName = 'test_database'
+const collectionName = 'test_database_collection'
+
+let quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018', initialDatabaseObject)
+let database: QuickMongo<string, any>
 
 beforeAll(async () => {
-    await quickMongoClient.connect()
-})
+    const client = await quickMongoClient.connect()
+    quickMongoClient = client
 
-describe('check for properties of QuickMongoClient and QuickMongo database instances to be correct', () => {
-    const databaseName = 'test_database'
-    const collectionName = 'test_database_collection'
-
-    const database = new QuickMongo<string, any>(quickMongoClient, {
+    database = new QuickMongo<string, any>(quickMongoClient, {
         name: databaseName,
         collectionName: collectionName
     })
 
+    await database.deleteAll()
+})
 
+describe('check for properties of QuickMongoClient and QuickMongo database instances to be correct', () => {
     // QuickMongo.set()
 
     test.concurrent('QuickMongo: database name', async () => {
-        await sleep(3000)
+        await sleep(1000)
         return expect(database.name).toEqual(databaseName)
     })
 
     test.concurrent('QuickMongo: collection name', async () => {
-        await sleep(3000)
+        await sleep(1000)
         return expect(database.collectionName).toEqual(collectionName)
     })
 
     test.concurrent('QuickMongoClient: initial database data', async () => {
-        await sleep(3000)
+        await sleep(1000)
         return expect(quickMongoClient.initialDatabaseData).toEqual(initialDatabaseObject)
     })
 })
@@ -50,6 +52,4 @@ describe('check for properties of QuickMongoClient and QuickMongo database insta
 afterAll(async () => {
     await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
     await quickMongoClient.disconnect()
-
-    return
 })
