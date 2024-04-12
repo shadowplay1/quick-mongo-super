@@ -2,6 +2,12 @@
 
 Determines if the specified type is object and returns the checking result as boolean.
 
+
+# References in this doc
+- Built-ins:
+  - [`Record<K, T>`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)
+
+
 ## Implementation
 ```ts
 export type IsObject<T> = T extends null

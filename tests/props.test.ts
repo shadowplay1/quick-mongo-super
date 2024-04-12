@@ -1,9 +1,5 @@
-import { promisify } from 'util'
-
 import { describe, expect, test, afterAll, beforeAll } from '@jest/globals'
 import { QuickMongo, QuickMongoClient } from '../src'
-
-const sleep = promisify(setTimeout)
 
 const initialDatabaseObject = {
     test: 123,
@@ -29,27 +25,34 @@ beforeAll(async () => {
 })
 
 describe('check for properties of QuickMongoClient and QuickMongo database instances to be correct', () => {
-    // QuickMongo.set()
-
     test.concurrent('QuickMongo: database name', async () => {
-        await sleep(1000)
         return expect(database.name).toEqual(databaseName)
     })
 
     test.concurrent('QuickMongo: collection name', async () => {
-        await sleep(1000)
         return expect(database.collectionName).toEqual(collectionName)
     })
 
+    test.concurrent('QuickMongo: empty database size', async () => {
+        return expect(database.size).toEqual(0)
+    })
+
+    test.concurrent('QuickMongo: database size with 2 keys', async () => {
+        await database.set('test1', 1)
+        await database.set('test2', 2)
+
+        return expect(database.size).toEqual(2)
+    })
+
     test.concurrent('QuickMongoClient: initial database data', async () => {
-        await sleep(1000)
         return expect(quickMongoClient.initialDatabaseData).toEqual(initialDatabaseObject)
     })
 })
 
 
 // post-testing cleanup
+
 afterAll(async () => {
-    await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
+    await database.deleteAll()
     await quickMongoClient.disconnect()
 })

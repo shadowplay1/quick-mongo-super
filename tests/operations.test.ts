@@ -1,13 +1,7 @@
-// TODO: remove artificial delays
 // TODO: perform operations and check database in the same tests
-// TODO: uncomment 'attempt to get deleted data' test
-
-import { promisify } from 'util'
 
 import { describe, expect, test, afterAll, beforeAll } from '@jest/globals'
 import { QuickMongo, QuickMongoClient } from '../src'
-
-const _sleep = promisify(setTimeout)
 
 let quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018')
 let database: QuickMongo<string, any>
@@ -25,57 +19,33 @@ beforeAll(async () => {
 })
 
 describe('get, set, delete operations', () => {
-    // QuickMongo.set()
+    // QuickMongo.set() & QuickMongo.get()
 
     test.concurrent('set data', async () => {
-        const setResults = [
-            await database.set('someString', 'hello'),
-            await database.set('someString123', 'hello123')
-        ]
+        await database.set('someString', 'hello')
+        await database.set('someString123', 'hello123')
 
-        return expect(setResults).toEqual(['hello', 'hello123'])
-    })
-
-    test.concurrent('set objects data', async () => {
-        const setResults = [
-            await database.set('someObject.someProperty.hello', 'hi'),
-            await database.set('someObject.someProperty.hi', 'hello')
-        ]
-
-        return expect(setResults).toEqual(['hi', 'hello'])
-    })
-
-
-    // QuickMongo.get()
-
-    test.concurrent('get data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
-
-        const getResults = [
+        const operationResults = [
             database.get('someString'),
             database.get('someString123')
         ]
 
-        return expect(getResults).toEqual(['hello', 'hello123'])
+        return expect(operationResults).toEqual(['hello', 'hello123'])
     })
 
-    test.concurrent('get objects data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
+    test.concurrent('set objects data', async () => {
+        await database.set('someObject.someProperty.hello', 'hi')
+        await database.set('someObject.someProperty.hi', 'hello')
 
-        const getResults = [
+        const operationResults = [
             database.get('someObject.someProperty.hello'),
             database.get('someObject.someProperty.hi')
         ]
 
-        return expect(getResults).toEqual(['hi', 'hello'])
+        return expect(operationResults).toEqual(['hi', 'hello'])
     })
 
     test.concurrent('get unexistent value', async () => {
-        await database.loadCache()
-        await _sleep(1000)
-
         const getResult = database.get('somethingElse')
         return expect(getResult).toBeNull()
     })
@@ -84,8 +54,8 @@ describe('get, set, delete operations', () => {
     // QuickMongo.has()
 
     test.concurrent('has data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
+        await database.set('someString', 'hello')
+        await database.set('someString123', 'hello123')
 
         const hasResults = [
             database.has('someString'),
@@ -96,8 +66,8 @@ describe('get, set, delete operations', () => {
     })
 
     test.concurrent('has objects data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
+        await database.set('someObject.someProperty.hello', 'hi')
+        await database.set('someObject.someProperty.hi', 'hello')
 
         const hasResults = [
             database.has('someObject.someProperty.hello'),
@@ -116,33 +86,18 @@ describe('get, set, delete operations', () => {
     // QuickMongo.delete()
 
     test.concurrent('delete data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
+        await database.delete('someString123')
+        await database.delete('someObject.someProperty.hi')
 
-        const deleteResults = [
-            await database.delete('someString123'),
-            await database.delete('someObject.someProperty.hi')
+        const deletedItems = [
+            database.get('someString123'),
+            database.get('someObject.someProperty.hi')
         ]
 
-        return expect(deleteResults).toEqual([true, true])
+        return expect(deletedItems).toEqual([null, null])
     })
 
-    // test.concurrent('attempt to get deleted data', async () => {
-    //     await database.loadCache()
-    //     await _sleep(1000)
-
-    //     const deletedGetResults = [
-    //         database.get('someString123'),
-    //         database.get('someObject.someProperty.hi')
-    //     ]
-
-    //     return expect(deletedGetResults).toEqual([null, null])
-    // })
-
     test.concurrent('delete unexistent data', async () => {
-        await database.loadCache()
-        await _sleep(1000)
-
         const unexistentDeleteResults = [
             await database.delete('justSomething'),
             await database.delete('someRandomObject.someRandomProperty.randomProp')
@@ -154,7 +109,8 @@ describe('get, set, delete operations', () => {
 
 
 // post-testing cleanup
+
 afterAll(async () => {
-    await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
+    await database.deleteAll()
     await quickMongoClient.disconnect()
 })

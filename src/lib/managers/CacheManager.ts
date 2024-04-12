@@ -150,22 +150,6 @@ export class CacheManager<K extends string, V> {
         }
 
         const keys = key.split('.')
-
-        /*  for (let i = 0; i < keys.length; i++) {
-            if (keys.length > 1) {
-                if (!isObject(data[keys[i]])) {
-                    data[keys[i]] = {}
-                }
-
-                data[keys[i]] = {
-                    ...data?.[keys[i]],
-                    [keys.at(-1)]: value
-                }
-            } else {
-                data[keys[0]] = value
-            }
-        }*/
-
         let currentObj = data
 
         for (let i = 0; i < keys.length; i++) {
@@ -179,8 +163,7 @@ export class CacheManager<K extends string, V> {
             }
         }
 
-
-        this._cache.set(keys[0] as K, data?.[keys[0]] || null)
+        this._cache.set(keys[0] as K, data?.[keys[0]] ?? null)
         return data
     }
 

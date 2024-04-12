@@ -2,7 +2,7 @@
 
 Represents the configuration object of the `QuickMongo` database instance.
 
-## Implemenatation
+## Implementation
 ```ts
 export interface IDatabaseConfiguration {
     name: string

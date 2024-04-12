@@ -6,6 +6,26 @@
 
 ## 🕘 | Changelog
 
+**v2.2.0**
+- Added `QuickMongo.values()` method; it works the same way as `QuickMongo.keys()`, but returns the object **values** instead of object **keys**.
+- Added **6** new **array-like** methods in `QuickMongo` class that simplify the **read** operations on **database object values**:
+  - `QuickMongo.find()`
+  - `QuickMongo.map()`
+  - `QuickMongo.findIndex()`
+  - `QuickMongo.filter()`
+  - `QuickMongo.some()`
+  - `QuickMongo.every()`
+- Fixed **caching** bug when **all** falsy values were represented as `null` in the cache.
+- Fixed any **falsy** result being represented as `null` in `QuickMongo.random()` method. 
+- Fully reworked some of the existing **unit tests**.
+- Added **references** to used **types/classes/interfaces/built-ins** in documentation.
+- Fixed **documentation** mismatches.
+- Fixed **JSDoc** mismatches.
+- Small documentation improvements.
+- Improved **descriptions** of some types.
+- Added **missing JSDoc** in `TypedObject` class and in `IDatabaseInternalStructure<T>` and `IDatabaseRequestsLatencyData` types.
+- Fixed typos.
+
 **v2.1.0**
 - Added a `size` property in `QuickMongo` class that determines the number of keys in the root of the database. Equivalent to `QuickMongo.keys().length`.
 - Added a `TKeys` type parameter in `QuickMongo.keys()` method that determines the type of returned keys.

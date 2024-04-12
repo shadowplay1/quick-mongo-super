@@ -2,7 +2,13 @@
 
 Represents the database operations latency object.
 
-## Implemenatation
+
+# References in this doc
+- Built-ins:
+  - [`Record<K, T>`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)
+
+
+## Implementation
 ```ts
 export type IDatabaseRequestsLatencyData = Record<
     'readLatency' | 'writeLatency' | 'deleteLatency',

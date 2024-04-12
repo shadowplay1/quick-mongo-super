@@ -2,7 +2,7 @@
 
 Represents a type that works as an array of specified type or ...spread of specified type.
 
-## Implemenatation
+## Implementation
 ```ts
 export type RestOrArray<T> = T[] | [T[]]
 ```

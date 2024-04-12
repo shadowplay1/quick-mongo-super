@@ -10,7 +10,8 @@ export type Maybe<T> = Exclude<T | null, undefined>
  * @template IfTrue The type to be returned if the condition type `T` is `true`.
  * @template IfFalse The type to be returned if the condition type `T` is `false`.
  */
-export type If<T extends boolean,
+export type If<
+    T extends boolean,
     IfTrue,
     IfFalse = null
 > = T extends true ? IfTrue : IfFalse
@@ -47,7 +48,7 @@ export type ExtractFromRestOrArray<T> = T extends RestOrArray<infer R>
     : RestOrArray<T>
 
 /**
- * Extracts the type from the `Array<T>` type.
+ * From the type `A`, extracts the type `T` from the `Array<T>` type, or returns `A` if not array type was specified.
  * @template T The array type to extract the type from.
  */
 export type ExtractFromArray<A> = A extends Array<infer T> ? T : A
@@ -57,3 +58,10 @@ export type ExtractFromArray<A> = A extends Array<infer T> ? T : A
  * @template T The type to convert.
  */
 export type TupleOrArray<T> = T extends [...infer _Rest] ? T : T[]
+
+/**
+ * Represents a `predicate` callback function from array methods such as `Array.map()`, `Array.find()`, etc.
+ * @template T The type of the item in the array.
+ * @template R The return type of the function.
+ */
+export type QueryFunction<T, R = any> = (item: T, index: number, values: T[]) => R

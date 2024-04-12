@@ -6,7 +6,13 @@ Useful to prevent accidentally creating the `RestOrArray<RestOrArray<T>>` instan
 
 `T` is being extracted from `RestOrArray<RestOrArray<T>>` type and being passed into `RestOrArray<T>` type.
 
-## Implemenatation
+
+## References in this doc
+- Types:
+  - [`RestOrArray<T>`](./RestOrArray.md)
+
+
+## Implementation
 ```ts
 export type ExtractFromRestOrArray<T> = T extends RestOrArray<infer R>
     ? RestOrArray<R>

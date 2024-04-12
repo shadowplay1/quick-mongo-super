@@ -21,8 +21,8 @@ import { QuickMongoError } from './utils/QuickMongoError'
 
 import {
     ExtractFromArray, If,
-    IsObject, Maybe, RestOrArray,
-    TupleOrArray
+    IsObject, Maybe, QueryFunction,
+    RestOrArray, TupleOrArray
 } from '../types/utils'
 
 import { createTypesArray } from '../structures/errors'
@@ -35,8 +35,8 @@ import { createTypesArray } from '../structures/errors'
  * - `K` (`string`) - The type of The key to access the target in database by.
  * - `V` (`any`) - The type of the values in the database.
  *
- * @template K (string) - The type of The key to access the target in database by.
- * @template V (any) - The type of the values in the database.
+ * @template K (`string`) - The type of The key to access the target in database by.
+ * @template V (`any`) - The type of the values in the database.
  *
  * @example
  * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
@@ -104,8 +104,8 @@ export class QuickMongo<K extends string = string, V = any> {
      * @param {QuickMongoClient<any>} client Quick Mongo client to get attached to.
      * @param {IDatabaseConfiguration} databaseConfiguration Database configuration object.
      *
-     * @template K (string) - The type of The key to access the target in database by.
-     * @template V (any) - The type of the values in the database.
+     * @template K (`string`) - The type of The key to access the target in database by.
+     * @template V (`any`) - The type of the values in the database.
      *
      * @example
      * const { QuickMongoClient, QuickMongo } = require('quick-mongo-super')
@@ -250,6 +250,110 @@ export class QuickMongo<K extends string = string, V = any> {
             writeLatency,
             deleteLatency
         }
+    }
+
+    /**
+     * This method is the same as `Array.find()`.
+     *
+     * Iterates over root database values, finds the element in database values array
+     * by specified condition in the callback function and returns the result.
+     *
+     * @param {QueryFunction<V>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `find` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {Maybe<V>}
+     */
+    public find(queryFunction: QueryFunction<V>): Maybe<V> {
+        const values = this.values()
+        return values.find(queryFunction) as Maybe<V> ?? null
+    }
+
+    /**
+     * This method is the same as `Array.map()`.
+     *
+     * Calls a defined callback function on each element of an array,
+     * and returns an array that contains the results.
+     *
+     * @param {QueryFunction<V, TReturnType>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `map` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {TReturnType[]}
+     */
+    public map<TReturnType>(queryFunction: QueryFunction<V, TReturnType>): TReturnType[] {
+        const values = this.values()
+        return values.map(queryFunction)
+    }
+
+    /**
+     * This method is the same as `Array.findIndex()`.
+     *
+     * Iterates over root database values, finds the index of the element in database values array
+     * by specified condition in the callback function and returns the result.
+     *
+     * @param {QueryFunction<V>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `findIndex` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {number}
+     */
+    public findIndex(queryFunction: QueryFunction<V>): number {
+        const values = this.values()
+        return values.findIndex(queryFunction)
+    }
+
+    /**
+     * This method is the same as `Array.filter()`.
+     *
+     * Iterates over root database values, finds all the element that match the
+     * specified condition in the callback function and returns the result.
+     *
+     * @param {QueryFunction<V>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `filter` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {V[]}
+     */
+    public filter(queryFunction: QueryFunction<V>): V[] {
+        const values = this.values()
+        return values.filter(queryFunction)
+    }
+
+    /**
+     * This method is the same as `Array.some()`.
+     *
+     * Iterates over root database values and checks if the
+     * specified condition in the callback function returns `true`
+     * for **any** of the elements of the database object values array.
+     *
+     * @param {QueryFunction<V>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `some` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {boolean}
+     */
+    public some(queryFunction: QueryFunction<V>): boolean {
+        const values = this.values()
+        return values.some(queryFunction)
+    }
+
+    /**
+     * This method is the same as `Array.every()`.
+     *
+     * Iterates over root database values and checks if the
+     * specified condition in the callback function returns `true`
+     * for **all** of the elements of the database object values array.
+     *
+     * @param {QueryFunction<V>} queryFunction
+     * A function that accepts up to three arguments.
+     * The `every` method calls the `queryFunction` once for each element in database object values array.
+     *
+     * @returns {boolean}
+     */
+    public every(queryFunction: QueryFunction<V>): boolean {
+        const values = this.values()
+        return values.every(queryFunction)
     }
 
     /**
@@ -813,7 +917,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TKeys` (`TupleOrArray<string>`, defaults to `string[]`) - The tuple or array of a type of keys to be returned.
+     * - `TKeys` (`TupleOrArray<string>`, defaults to `K[]`) - The tuple or array of a type of keys to be returned.
      *
      * @param {K} [key] The key to access the target in database by.
      * @returns {string[]} Database object keys array.
@@ -826,7 +930,8 @@ export class QuickMongo<K extends string = string, V = any> {
      * console.log(prop5Keys) // -> ['prop6']
      *
      * const prop6Keys = quickMongo.keys('prop3.prop5.prop6')
-     * console.log(prop6Keys) // -> [] (empty since the value in `prop6`, 111 a primitive value and not an actual object)
+     * console.log(prop6Keys)
+     * // ^ -> [] (empty since the value in `prop6`, 111, is a primitive value and not an actual object)
      *
      * const databaseKeys = quickMongo.keys()
      * // in this example, `key` parameter is omitted - object keys of database object are being returned
@@ -843,15 +948,66 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public keys<TKeys extends TupleOrArray<string> = string[]>(key?: K): TKeys {
+    public keys<TKeys extends TupleOrArray<string> = K[]>(key?: K): TKeys {
         if (!key) {
-            return TypedObject.keys<TKeys>(this.all())
+            const allDatabase = this.all()
+            return TypedObject.keys<TKeys>(allDatabase)
         }
 
         const data = this.get(key)
         const keys = TypedObject.keys<TKeys>(data)
 
         return keys.filter(key => data[key] !== undefined && data[key] !== null) as TKeys
+    }
+
+    /**
+     * Returns an array of object values by specified database key.
+     *
+     * If `key` parameter is omitted, then an array of object values of database root object will be returned.
+     *
+     * Type parameters:
+     *
+     * - `TValues` (`TupleOrArray<any>`, defaults to `V[]`) - The tuple or array of a type of values to be returned.
+     *
+     * @param {K} [key] The key to access the target in database by.
+     * @returns {TValues[]} Database object values array.
+     *
+     * @example
+     * const prop3Values = quickMongo.values('prop3')
+     * console.log(prop3Values) // -> [789, { prop6: 111 }]
+     *
+     * const prop5Values = quickMongo.values('prop3.prop5')
+     * console.log(prop5Values) // -> []
+     *
+     * const prop6Values = quickMongo.values('prop3.prop5.prop6')
+     * console.log(prop6Values)
+     * // ^ -> [] (empty since the value in `prop6`, 111, is a primitive value and not an actual object)
+     *
+     * const databaseValues = quickMongo.values()
+     * // in this example, `key` parameter is omitted - object values of database object are being returned
+     *
+     * console.log(databaseValues) // -> [123, 456, { prop4: 789, prop5: { prop6: 111 } }]
+     *
+     * const unexistentValues = quickMongo.values('somethingElse')
+     * console.log(unexistentValues) // -> [] (empty since the key `somethingElse` does not exist in database)
+     *
+     * // ^ Assuming that the initial database object for this example is:
+     * // {
+     * //    prop1: 123,
+     * //    prop2: 456,
+     * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
+     * // }
+     */
+    public values<TValues extends TupleOrArray<any> = V>(key?: K): TValues[] {
+        if (!key) {
+            const allDatabase = this.all()
+            return TypedObject.values<TValues[]>(allDatabase)
+        }
+
+        const data = this.get(key)
+        const values = TypedObject.values<TValues[]>(data)
+
+        return values
     }
 
     /**
@@ -876,7 +1032,7 @@ export class QuickMongo<K extends string = string, V = any> {
             throw new QuickMongoError('INVALID_TARGET', 'array', typeOf(array))
         }
 
-        return array[Math.floor(Math.random() * array.length)] || null
+        return array[Math.floor(Math.random() * array.length)] ?? null
     }
 
     /**

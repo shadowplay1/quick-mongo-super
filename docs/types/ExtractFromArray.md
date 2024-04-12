@@ -1,8 +1,8 @@
 # **`ExtractFromArray<T>` Type**
 
-Extracts the type from the `Array<T>` type.
+From the type `A`, extracts the type `T` from the `Array<T>` type, or returns `A` if not array type was specified.
 
-## Implemenatation
+## Implementation
 ```ts
 export type ExtractFromArray<A> = A extends Array<infer T> ? T : A
 ```

@@ -1,11 +1,32 @@
 # **`QuickMongo<K, V>` Class**
 
 # Intro
-This is the **full** documentation of all the database mathods of `QuickMongo` class.
+This is the **full** documentation of all the database methods of `QuickMongo` class.
 
 This includes all the methods, types, descriptions and **brief** examples on how each method could be used.
 
 You can see the **detailed** examples on usage of each method in both **JavaScript** and **TypeScript** [here](https://github.com/shadowplay1/quick-mongo-super/tree/main/examples).
+
+
+# References in this doc
+- Classes:
+  - [`QuickMongoClient<TInitialDatabaseData>`](../classes/QuickMongoClient.md)
+- Types:
+  - [`Maybe<T>`](../types/Maybe.md)
+  - [`If<T, IfTrue, IfFalse>`](../types/If.md)
+  - [`IsObject<T>`](../types/IsObject.md)
+  - [`RestOrArray<T>`](../types/RestOrArray.md)
+  - [`TupleOrArray<T>`](../types/TupleOrArray.md)
+  - [`ExtractFromArray<A>`](../types/ExtractFromArray.md)
+  - [`QueryFunction<T, R>`](../types/QueryFunction.md)
+- Interfaces:
+  - [`IDatabaseConfiguration`](../interfaces/IDatabaseConfiguration.md)
+  - [`IDatabaseInternalStructure<T>`](../interfaces/IDatabaseInternalStructure.md)
+- External Classes:
+  - [`Model<T>`](https://mongoosejs.com/docs/typescript.html)
+- Built-ins:
+  - [`Record<K, T>`](https://www.typescriptlang.org/docs/handbook/utility-types.html#recordkeys-type)
+
 
 ## Constructor
 ```ts
@@ -52,7 +73,7 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
   - `_model` (`Model<IDatabaseInternalStructure<any>>`): Internal Mongoose model to work with.
 
 
-# Events
+## Events
 *none*
 
 
@@ -121,7 +142,7 @@ Determines if the data is stored in database.
 Writes the specified value into database under the specified key.
 
 - **Type Parameters:**
-  - `TObjectReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TVa\lue` is an object.
+  - `TObjectReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TValue` is an object.
 
 - **Parameters:**
   - `key` (`string`): The key to write in the target.
@@ -238,6 +259,67 @@ Determines whether the specified target is a number.
 ```
 
 
+## `find(queryFunction: QueryFunction<V>): Maybe<V>`
+This method is the same as `Array.find()`.
+
+Iterates over root database values, finds the element in database values array by specified condition in the callback function and returns the result.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V>`): A function that accepts up to three arguments. The `find` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `Maybe<V>`
+
+## `map<TReturnType>(queryFunction: QueryFunction<V, TReturnType>): TReturnType[]`
+This method is the same as `Array.map()`.
+
+Calls a defined callback function on each element of an array, and returns an array that contains the results.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V, TReturnType>`): A function that accepts up to three arguments. The `map` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `TReturnType[]`
+
+## `findIndex(queryFunction: QueryFunction<V>): number`
+This method is the same as `Array.findIndex()`.
+
+Iterates over root database values, finds the index of the element in database values array by specified condition in the callback function and returns the result.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V>`): A function that accepts up to three arguments. The `findIndex` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `number`
+
+## `filter(queryFunction: QueryFunction<V>): V[]`
+This method is the same as `Array.filter()`.
+
+Iterates over root database values, finds all the element that match the specified condition in the callback function and returns the result.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V>`): A function that accepts up to three arguments. The `filter` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `V[]`
+
+## `some(queryFunction: QueryFunction<V>): boolean`
+This method is the same as `Array.some()`.
+
+Iterates over root database values and checks if the specified condition in the callback function returns `true` for **any** of the elements of the database object values array.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V>`): A function that accepts up to three arguments. The `some` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `boolean`
+
+## `every(queryFunction: QueryFunction<V>): boolean`
+This method is the same as `Array.every()`.
+
+Iterates over root database values and checks if the specified condition in the callback function returns `true` for **all** of the elements of the database object values array.
+
+- **Parameters:**
+  - `queryFunction` (`QueryFunction<V>`): A function that accepts up to three arguments. The `every` method calls the `queryFunction` once for each element in database object values array.
+
+- **Returns:** `boolean
+
+
 ## `push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]>`
 Pushes the specified value(s) into the target array in the database.
 
@@ -289,11 +371,11 @@ Removes the specified element(s) from the target array in the database.
   console.log(membersPopResult); // -> ['John', 'Tom']
 ```
 
-## `keys(key?: K): string[]`
+## `keys<TKeys extends TupleOrArray<string> = K[]>(key?: K): TKeys[]`
 Returns an array of object keys by specified database key.
 
 - **Type parameters:**
-  - `TKeys` (`TupleOrArray<string>`, defaults to `string[]`) - The tuple or array of a type of keys to be returned.
+  - `TValues` (`TupleOrArray<string>`, defaults to `K[]`) - The tuple or array of a type of keys to be returned.
 
 - **Parameters:**
   - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object keys of the database root.
@@ -303,6 +385,22 @@ Returns an array of object keys by specified database key.
 ```ts
   const prop3Keys = quickMongo.keys('prop3');
   console.log(prop3Keys); // -> ['prop4', 'prop5']
+```
+
+## `values<TValues extends TupleOrArray<any> = V>(key?: K): TValues[]`
+Returns an array of object values by specified database key.
+
+- **Type parameters:**
+  - `TValues` (`TupleOrArray<any>`, defaults to `V[]`) - The tuple or array of a type of values to be returned.
+
+- **Parameters:**
+  - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object values of the database root.
+
+- **Returns:** `V[]` - Database object values array.
+- **Example:**
+```ts
+  const prop3Values = quickMongo.va('prop3');
+  console.log(prop3Values); // -> [789, { prop6: 111 }]
 ```
 
 
@@ -386,8 +484,7 @@ Makes a database request and fetches the raw database content - the data as it i
   console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
 ```
 
-
-## `allFromDatabase<TValue extends Record<string, any> = V>(): Promise<TValue>`
+## `allFromDatabase<TValue = V>(): Promise<Record<string, TValue>>`
 Makes a direct request to the remote cluster and fetches all its contents.
 
 - **Type parameters:**
@@ -395,7 +492,7 @@ Makes a direct request to the remote cluster and fetches all its contents.
 
 - **Returns:** `Promise<TValue>` - Fetched database contents.
 
-- **Eaxmple:**
+- **Example:**
 ```ts
   const allDatabase = quickMongo.allFromDatabase()
   console.log(allDatabase) // -> { ... (the object of all the data stored in database) }

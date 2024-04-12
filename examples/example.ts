@@ -50,8 +50,8 @@ const main = async () => {
 
     // QuickMongo type parameters:
     //
-    // - `K` (string) - The type of The key to access the target in database by.
-    // - `V` (any) - The type of the values in the database.
+    // - `K` (`string`) - The type of The key to access the target in database by.
+    // - `V` (`any`) - The type of the values in the database.
 
     // Initialize the database.
     const quickMongo = new QuickMongo<string, any>(quickMongoClient, {

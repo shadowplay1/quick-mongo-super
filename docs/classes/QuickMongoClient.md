@@ -1,5 +1,10 @@
 # **`QuickMongoClient<TInitialDatabaseData>` Class**
 
+## References in this doc
+- Classes:
+  - [`QuickMongo<K, V>`](./QuickMongo.md)
+
+
 ## Constructor
 ```ts
 new QuickMongoClient<TInitialDatabaseData>(connectionURI: string, initialDatabaseData?: TInitialDatabaseData)

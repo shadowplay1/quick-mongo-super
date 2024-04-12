@@ -2,7 +2,7 @@
 
 Represents the object of the way data stored in the internal `[__KEY]-[__VALUE]` storage format that was made to achieve better data accessibility across the module.
 
-## Implemenatation
+## Implementation
 ```ts
 export interface IDatabaseInternalStructure<T = any> {
     __KEY: string
@@ -11,7 +11,7 @@ export interface IDatabaseInternalStructure<T = any> {
 ```
 
 - **Type Parameters:**
-  - `T` (`any`) - The type of `__VALUE` property in each raw data object.
+  - `T` (`any`, defaults to `any`) - The type of `__VALUE` property in each raw data object.
 
 - **Properties:**
   - `__KEY` (`string`): The key to store the data under.

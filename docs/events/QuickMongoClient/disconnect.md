@@ -2,7 +2,7 @@
 
 Emits when the MongoDB connection was destroyed.
 
-- **Eaxmple:**
+- **Example:**
 ```ts
 quickMongo.on('disconnect', () => {
     console.log('Disconnected from MongoDB.')

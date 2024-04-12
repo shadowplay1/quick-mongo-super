@@ -23,8 +23,9 @@ describe('initialize the connection and database', () => {
     })
 })
 
+
 // post-testing cleanup
+
 afterAll(async () => {
-    await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
     await quickMongoClient.disconnect()
 })

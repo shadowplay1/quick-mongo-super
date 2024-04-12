@@ -2,7 +2,7 @@
 
 Converts the specified type `T` into the array of `T` or just `T` if it's a valid tuple.
 
-## Implemenatation
+## Implementation
 ```ts
 export type TupleOrArray<T> = T extends [...infer _Rest] ? T : T[]
 ```

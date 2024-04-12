@@ -14,99 +14,73 @@ beforeAll(async () => {
     })
 
     await database.deleteAll()
+
+    await database.set('number', 1)
+    await database.set('numbers.number', 2)
+
+    await database.set('number_2', 6)
+    await database.set('numbers.number_2', 7)
 })
 
 describe('addition operation', () => {
-    // setting initial values
-
-    test.concurrent('set number', async () => {
-        const setResult = await database.set('number', 1)
-        return expect(setResult).toEqual(1)
-    })
-
-    test.concurrent('set number in object', async () => {
-        const setResult = await database.set('numbers.number', 5)
-        return expect(setResult).toEqual(5)
-    })
-
-
     // QuickMongo.add()
 
     test.concurrent('add +5', async () => {
-        const addResult = await database.add('number', 5)
-        return expect(addResult).toEqual(6)
+        // setting initial values
+        await database.set('number', 1)
+        await database.set('numbers.number', 2)
+
+        await database.add('number', 5) // adding 5 to initial value, 1
+
+        const additionResult = database.get('number')
+        return expect(additionResult).toEqual(6)
     })
 
     test.concurrent('add +5 to number in object', async () => {
-        const addResult = await database.add('numbers.number', 5)
-        return expect(addResult).toBeDefined()
+        await database.set('numbers.number', 2) // setting initial value
+        await database.add('numbers.number', 5) // adding 5 to initial value, 2
+
+        const additionResult = database.get('numbers.number')
+        return expect(additionResult).toEqual(7)
     })
 
     test.concurrent('add +5 to unexistent number', async () => {
-        const addResult = await database.add('unexistentNumber', 5)
-        return expect(addResult).toEqual(5)
-    })
+        await database.add('unexistentNumber', 5) // adding 5 to initial value, 0
 
-
-    // getting addition results
-
-    test.concurrent('get addition results', async () => {
-        const additionResults = [
-            database.get('number'),
-            database.get('numbers.number'),
-            database.get('unexistentNumber')
-        ]
-
-        // previous tests cleanup
-        database.delete('unexistentNumber')
-
-        return expect(additionResults).toEqual([6, 10, 5])
+        const additionResult = database.get('unexistentNumber')
+        return expect(additionResult).toEqual(5)
     })
 })
 
 describe('subtraction operation', () => {
-    // setting initial values
-
-    test.concurrent('set number', async () => {
-        const setResult = await database.set('number', 1)
-        return expect(setResult).toEqual(1)
-    })
-
-    test.concurrent('set number in object', async () => {
-        const setResult = await database.set('numbers.number', 5)
-        return expect(setResult).toEqual(5)
-    })
-
-
     // QuickMongo.subtract()
 
     test.concurrent('subtract -5', async () => {
-        const subtractionResult = await database.subtract('number', 5)
-        return expect(subtractionResult).toEqual(-4)
+        // setting initial values
+        await database.set('number_2', 6)
+        await database.set('numbers.number_2', 7)
+
+        await database.subtract('number_2', 5) // subtracting 5 from initial value, 6
+
+        const subtractionResult = database.get('number_2')
+        return expect(subtractionResult).toEqual(1)
     })
 
     test.concurrent('subtract -5 from number in object', async () => {
-        const subtractionResult = await database.subtract('numbers.number', 5)
-        return expect(subtractionResult).toBeDefined()
+        await database.set('numbers.number_2', 7)
+        await database.subtract('numbers.number_2', 5) // subtracting 5 from initial value, 7
+
+        const subtractionResult = database.get('numbers.number_2')
+        return expect(subtractionResult).toEqual(2)
     })
 
     test.concurrent('subtract -5 from unexistent number', async () => {
-        const subtractResult = await database.subtract('unexistentNumber', 5)
-        return expect(subtractResult).toEqual(-5)
+        await database.subtract('unexistentNumber123', 5) // subtracting 5 from initial value, 0
+
+        const subtractionResult = database.get('unexistentNumber123')
+        return expect(subtractionResult).toEqual(-5)
     })
 
-
-    // getting subtraction results
-
-    test.concurrent('get subtraction results', async () => {
-        const subtractionResults = [
-            database.get('number'),
-            database.get('numbers.number'),
-            database.get('unexistentNumber')
-        ]
-
-        return expect(subtractionResults).toEqual([-4, 0, -5])
-    })
 
     // QuickMongo.isTargetNumber()
 
@@ -126,7 +100,8 @@ describe('subtraction operation', () => {
 
 
 // post-testing cleanup
+
 afterAll(async () => {
-    await Promise.all(quickMongoClient.databases.map(database => database.deleteAll()))
+    await database.deleteAll()
     await quickMongoClient.disconnect()
 })
