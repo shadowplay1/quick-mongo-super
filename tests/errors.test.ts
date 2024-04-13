@@ -58,11 +58,6 @@ describe('errors throwing: fetch()', () => {
 })
 
 describe('errors throwing: has()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
-    })
-
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
         const errorTest = (): any => database.has()
@@ -82,11 +77,6 @@ describe('errors throwing: has()', () => {
 })
 
 describe('errors throwing: keys()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
-    })
-
     test.concurrent('\'key\' parameter type is incorrect', async () => {
         // @ts-expect-error
         const errorTest = (): any => database.keys(123)
@@ -108,11 +98,6 @@ describe('errors throwing: keys()', () => {
 // setting, deleting data
 
 describe('errors throwing: set()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database_0',
-        collectionName: 'test_database_collection_0'
-    })
-
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.set()
@@ -138,11 +123,6 @@ describe('errors throwing: set()', () => {
 })
 
 describe('errors throwing: delete()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
-    })
-
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.delete()
@@ -165,11 +145,6 @@ describe('errors throwing: delete()', () => {
 // math operations
 
 describe('errors throwing: add()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
-    })
-
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.add()
@@ -213,11 +188,6 @@ describe('errors throwing: add()', () => {
 })
 
 describe('errors throwing: subtract()', () => {
-    const database = new QuickMongo<string, any>(quickMongoClient, {
-        name: 'test_database',
-        collectionName: 'test_database_collection'
-    })
-
     test.concurrent('\'key\' parameter is missing', async () => {
         // @ts-expect-error
         const errorTest = async (): Promise<any> => await database.subtract()
@@ -269,5 +239,6 @@ describe('errors throwing: subtract()', () => {
 // post-testing cleanup
 
 afterAll(async () => {
+    await database.deleteAll()
     await quickMongoClient.disconnect()
 })

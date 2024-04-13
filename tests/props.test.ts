@@ -6,8 +6,8 @@ const initialDatabaseObject = {
     hello: 'world'
 }
 
-const databaseName = 'test_database'
-const collectionName = 'test_database_collection'
+const databaseName = 'test_database_0'
+const collectionName = 'test_database_collection_0'
 
 let quickMongoClient = new QuickMongoClient('mongodb://127.0.0.1:27018', initialDatabaseObject)
 let database: QuickMongo<string, any>
