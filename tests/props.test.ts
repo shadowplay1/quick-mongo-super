@@ -38,6 +38,8 @@ describe('check for properties of QuickMongoClient and QuickMongo database insta
     })
 
     test.concurrent('QuickMongo: database size with 2 keys', async () => {
+        await database.deleteAll()
+
         await database.set('test1', 1)
         await database.set('test2', 2)
 
