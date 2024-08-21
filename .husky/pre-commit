@@ -2,6 +2,6 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 bash ./scripts/lint.sh --fix
-rm -rf ./dist && tsc
+rm -rf ./dist && npx tsc
 
 git add .

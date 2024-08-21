@@ -16,7 +16,7 @@
 
 ## 📂 | Installation
 <b>Please note:</br><b>
-<b>Node.js 14.0.0 or newer is required.</b><br>
+<b>Node.js v14.0.0 or newer is required.</b><br>
 ```bash
 $ npm i quick-mongo-super
 $ yarn add quick-mongo-super
@@ -52,6 +52,6 @@ $ pnpm add quick-mongo-super
 <br>
 <b>If you don't understand something or you are experiencing problems, feel free to join our <a href="https://discord.gg/4pWKq8vUnb">Support Server</a>.</b>
 <br>
-<b>Module Created by ShadowPlay.</b>
+<b>Module Created by <b>@shadowplay_</b> on discord.</b>
 
 # ❤️ Thanks for choosing Quick Mongo Super ❤️

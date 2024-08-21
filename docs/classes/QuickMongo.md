@@ -19,6 +19,9 @@ You can see the **detailed** examples on usage of each method in both **JavaScri
   - [`TupleOrArray<T>`](../types/TupleOrArray.md)
   - [`ExtractFromArray<A>`](../types/ExtractFromArray.md)
   - [`QueryFunction<T, R>`](../types/QueryFunction.md)
+  - [`FirstObjectKey<TKey>`](../types/FirstObjectKey.md)
+  - [`ObjectPath<T, TKey>`](../types/ObjectPath.md)
+  - [`ObjectValue<T, P>`](../types/ObjectValue.md)
 - Interfaces:
   - [`IDatabaseConfiguration`](../interfaces/IDatabaseConfiguration.md)
   - [`IDatabaseInternalStructure<T>`](../interfaces/IDatabaseInternalStructure.md)
@@ -79,13 +82,48 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 
 ## Methods
 
-## `get(key: K): Maybe<V>`
+## `get<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
 Retrieves a value from database by a key.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
-- **Returns:** `Maybe<V>` - The value of the target in database.
+- **Returns:** `Maybe<ObjectValue<V, P>>` - The value of the target in database.
+- **Example:**
+```ts
+  const simpleValue = quickMongo.fetch('simpleValue')
+  console.log(simpleValue) // -> 123
+
+  // You can use the dot notation to access the database object properties:
+  const objectPropertyAccessed = quickMongo.fetch('player.inventory')
+  console.log(objectPropertyAccessed) // -> []
+```
+
+## `getFromDatabase<P extends ObjectPath<V>>(key: P): Promise<Maybe<ObjectValue<V, P>>>`
+Retrieves a value from database by a key via sending a **direct request** to remote cluster, **omitting** the cache.
+
+- **Parameters:**
+  - `key` (`P`): The key to access the target in database by.
+
+- **Returns:** `Promise<Maybe<ObjectValue<V, P>>>` - The value of the target in database.
+- **Example:**
+```ts
+  const simpleValue = await quickMongo.getFromDatabase('simpleValue')
+  console.log(simpleValue) // -> 123
+
+  // You can use the dot notation to access the database object properties:
+  const objectPropertyAccessed = await quickMongo.getFromDatabase('player.inventory')
+  console.log(objectPropertyAccessed) // -> []
+```
+
+
+## `fetch<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
+Retrieves a value from database by a key.
+
+- **Parameters:**
+  - `key` (`P`): The key to access the target in database by.
+
+- **Returns:** `Maybe<ObjectValue<V, P>>` - The value of the target in database.
 - **Example:**
 ```ts
   const simpleValue = quickMongo.fetch('simpleValue')
@@ -97,31 +135,11 @@ Retrieves a value from database by a key.
 ```
 
 
-## `fetch(key: K): Maybe<V>`
-Retrieves a value from database by a key.
-
-This method is an alias for `QuickMongo.get()` method.
-
-- **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
-
-- **Returns:** `Maybe<V>` - The value of the target in database.
-- **Example:**
-```ts
-  const simpleValue = quickMongo.fetch('simpleValue')
-  console.log(simpleValue) // -> 123
-
-  // You can use the dot notation to access the database object properties:
-  const objectPropertyAccessed = quickMongo.fetch('player.inventory')
-  console.log(objectPropertyAccessed) // -> []
-```
-
-
-## `has(key: K): boolean`
+## `has<P extends ObjectPath<V>>(key: P): boolean`
 Determines if the data is stored in database.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the data is stored in database.
 - **Example:**
@@ -138,22 +156,18 @@ Determines if the data is stored in database.
 ```
 
 
-## `set<TObjectReturnValue = any>(key: K, value: V): Promise<If<IsObject<V>, TObjectReturnValue, V>>`
+## `set<P extends ObjectPath<V>>(key: P, value: ObjectValue<V, P>): Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`
 Writes the specified value into database under the specified key.
 
-- **Type Parameters:**
-  - `TObjectReturnValue` (`any`, defaults to `any`): Type the return type fallbacks to if `TValue` is an object.
-
 - **Parameters:**
-  - `key` (`string`): The key to write in the target.
-  - `value` (`V`): The value to write.
+  - `key` (`P`): The key to write in the target.
+  - `value` (`ObjectValue<V, P>`): The value to write.
 
-- **Returns:** `Promise<If<IsObject<V>, TReturnValue, V>>`:
+- **Returns:** `Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`:
   - If the `value` parameter's type is not an object (string, number, boolean, etc), then the specified
   `value` parameter (type of `V`) will be returned.
 
-  - If an object is specified in the `value` parameter, then the database object will be returned.
-  (type of `TReturnValue` - fallback to the manual typing of returned database object for specified key)
+  - If an object is specified in the `value` parameter, then the object of the first key will be returned. (type of `FirstObjectKey<P>` - first object key (e.g. in key `member.user.id`, the first key will be `member`))
 
 - **Example:**
 ```ts
@@ -176,11 +190,11 @@ Writes the specified value into database under the specified key.
 ```
 
 
-## `delete(key: K): Promise<boolean>`
+## `delete<P extends ObjectPath<V>>(key: P): Promise<boolean>`
 Deletes the data from database by key.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
 - **Returns:** `Promise<boolean>` - Whether the deletition was successful.
 - **Example:**
@@ -201,13 +215,13 @@ Sends a read, write and delete requests to the remote database and returns the r
 ```
 
 
-## `add(key: K, numberToAdd: number): Promise<number>`
+## `add<P extends ObjectPath<V>>(key: P, numberToAdd: number): Promise<number>`
 Performs an arithmetical addition on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
   - `numberToAdd` (`number`): The number to add to the target number in the database.
 
 - **Returns:** `Promise<number>` - Addition operation result.
@@ -219,23 +233,23 @@ Performs an arithmetical addition on a target number in the database.
 ```
 
 
-## `subtract(key: K, numberToSubtract: number): Promise<number>`
+## `subtract<P extends ObjectPath<V>>(key: P, numberToSubtract: number): Promise<number>`
 Performs an arithmetical subtraction on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
   - `numberToSubtract` (`number`): The number to subtract from the target number in the database.
 
 - **Returns:** `Promise<number>` - Subtraction operation result.
 
 
-## `isTargetArray(key: K): boolean`
+## `isTargetArray<P extends ObjectPath<V>>(key: P): boolean`
 Determines whether the specified target is an array.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the target is an array.
 - **Example:**
@@ -245,11 +259,11 @@ Determines whether the specified target is an array.
 ```
 
 
-## `isTargetNumber(key: K): boolean`
+## `isTargetNumber<P extends ObjectPath<V>>(key: P): boolean`
 Determines whether the specified target is a number.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the target is a number.
 - **Example:**
@@ -260,7 +274,7 @@ Determines whether the specified target is a number.
 
 
 ## `find(queryFunction: QueryFunction<V>): Maybe<V>`
-This method is the same as `Array.find()`.
+This method works the same way as `Array.find()`.
 
 Iterates over root database values, finds the element in database values array by specified condition in the callback function and returns the result.
 
@@ -270,7 +284,7 @@ Iterates over root database values, finds the element in database values array b
 - **Returns:** `Maybe<V>`
 
 ## `map<TReturnType>(queryFunction: QueryFunction<V, TReturnType>): TReturnType[]`
-This method is the same as `Array.map()`.
+This method works the same way as `Array.map()`.
 
 Calls a defined callback function on each element of an array, and returns an array that contains the results.
 
@@ -280,7 +294,7 @@ Calls a defined callback function on each element of an array, and returns an ar
 - **Returns:** `TReturnType[]`
 
 ## `findIndex(queryFunction: QueryFunction<V>): number`
-This method is the same as `Array.findIndex()`.
+This method works the same way as `Array.findIndex()`.
 
 Iterates over root database values, finds the index of the element in database values array by specified condition in the callback function and returns the result.
 
@@ -290,7 +304,7 @@ Iterates over root database values, finds the index of the element in database v
 - **Returns:** `number`
 
 ## `filter(queryFunction: QueryFunction<V>): V[]`
-This method is the same as `Array.filter()`.
+This method works the same way as `Array.filter()`.
 
 Iterates over root database values, finds all the element that match the specified condition in the callback function and returns the result.
 
@@ -300,7 +314,7 @@ Iterates over root database values, finds all the element that match the specifi
 - **Returns:** `V[]`
 
 ## `some(queryFunction: QueryFunction<V>): boolean`
-This method is the same as `Array.some()`.
+This method works the same way as `Array.some()`.
 
 Iterates over root database values and checks if the specified condition in the callback function returns `true` for **any** of the elements of the database object values array.
 
@@ -310,7 +324,7 @@ Iterates over root database values and checks if the specified condition in the 
 - **Returns:** `boolean`
 
 ## `every(queryFunction: QueryFunction<V>): boolean`
-This method is the same as `Array.every()`.
+This method works the same way as `Array.every()`.
 
 Iterates over root database values and checks if the specified condition in the callback function returns `true` for **all** of the elements of the database object values array.
 
@@ -320,16 +334,16 @@ Iterates over root database values and checks if the specified condition in the 
 - **Returns:** `boolean
 
 
-## `push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]>`
+## `push<P extends ObjectPath<V>>(key: P, ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value(s) into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
-  - `values` (`RestOrArray<ExtractFromArray<V>>`): The value(s) to be pushed into the target array.
+  - `key` (`P`): The key to access the target in database by.
+  - `values` (`RestOrArray<ExtractFromArray<ObjectValue<V, P>>>`): The value(s) to be pushed into the target array.
 
-- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<ObjectValue<V, P>>[]> ` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPushResult = await quickMongo.push('members', 'William');
@@ -337,17 +351,17 @@ Pushes the specified value(s) into the target array in the database.
 ```
 
 
-## `pull(key: K, targetArrayElementIndex: number, value: V): Promise<ExtractFromArray<V>[]>`
+## `pull<P extends ObjectPath<V>>(key: P, targetArrayElementIndex: number, value: ObjectValue<V, P>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
   - `targetArrayElementIndex` (`number`): The index to find the element in target array.
   - `value` (`V`): The value to be pushed into the target array.
 
-- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<ObjectValue<V, P>>[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPullResult = await quickMongo.pull('members', 1, 'James');
@@ -355,48 +369,42 @@ Pushes the specified value into the target array in the database.
 ```
 
 
-## `pop(key: K, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<V>[]>`
+## `pop<P extends ObjectPath<V>>(key: P, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Removes the specified element(s) from the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
   - `targetArrayElementIndexes` (`RestOrArray<ExtractFromArray<number>>`): The index(es) to find the element(s) in target array by.
 
-- **Returns:** `Promise<ExtractFromArray<V>[]>` - Updated target array from the database.
+- **Returns:** `Promise<ExtractFromArray<ObjectValue<V, P>>[]>` - Updated target array from the database.
 - **Example:**
 ```ts
   const membersPopResult = await quickMongo.pop('members', 1);
   console.log(membersPopResult); // -> ['John', 'Tom']
 ```
 
-## `keys<TKeys extends TupleOrArray<string> = K[]>(key?: K): TKeys[]`
+## `keys<P extends ObjectPath<V>>(key?: P): ObjectPath<P>[]`
 Returns an array of object keys by specified database key.
 
-- **Type parameters:**
-  - `TValues` (`TupleOrArray<string>`, defaults to `K[]`) - The tuple or array of a type of keys to be returned.
-
 - **Parameters:**
-  - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object keys of the database root.
+  - `key` (`P`, **optional**): The key to access the target in database by. If omitted, returns object keys of the database root.
 
-- **Returns:** `string[]` - Database object keys array.
+- **Returns:** `ObjectPath<P>[]` - Database object keys array.
 - **Example:**
 ```ts
   const prop3Keys = quickMongo.keys('prop3');
   console.log(prop3Keys); // -> ['prop4', 'prop5']
 ```
 
-## `values<TValues extends TupleOrArray<any> = V>(key?: K): TValues[]`
+## `values<P extends ObjectPath<V>>(key?: P): ObjectValue<V, P>[]`
 Returns an array of object values by specified database key.
 
-- **Type parameters:**
-  - `TValues` (`TupleOrArray<any>`, defaults to `V[]`) - The tuple or array of a type of values to be returned.
-
 - **Parameters:**
-  - `key` (`K`, **optional**): The key to access the target in database by. If omitted, returns object values of the database root.
+  - `key` (`P`, **optional**): The key to access the target in database by. If omitted, returns object values of the database root.
 
-- **Returns:** `V[]` - Database object values array.
+- **Returns:** `ObjectValue<V, P>[]` - Database object values array.
 - **Example:**
 ```ts
   const prop3Values = quickMongo.va('prop3');
@@ -404,13 +412,13 @@ Returns an array of object values by specified database key.
 ```
 
 
-## `random(key: K): V`
+## `random<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
 Picks a random element of array in the database and returns the picked array element.
 
 - **Parameters:**
-  - `key` (`K`): The key to access the target in database by.
+  - `key` (`P`): The key to access the target in database by.
 
-- **Returns:** `V` - The randomly picked element in the array.
+- **Returns:** `Maybe<ObjectValue<V, P>>` - The randomly picked element in the database array.
 - **Example:**
 ```ts
   const array = quickMongo.get('exampleArray') // assuming that the array is ['example1', 'example2', 'example3']
@@ -443,11 +451,11 @@ This method is an alias for `QuickMongo.clear()` method.
 ```
 
 
-## `all<T extends Record<string, any> = any>(): T`
+## `all<T extends Record<string, any> = Record<string, any>>(): T`
 Gets all the database contents from the cache.
 
 - **Type Parameters:**
-  - `T` (`object`): The type of object of all the database object to be returned.
+  - `T` (`object`, defaults to `Record<string, any>`): The type of object of all the database object to be returned.
 
 - **Returns:** `T` - Cached database contents.
 - **Example:**
@@ -469,11 +477,11 @@ It's **not required** to run this method on starting or after any database opera
 ```
 
 
-## `raw<TInternalDataValue = any>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]>`
+## `raw<TInternalDataValue = V>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]>`
 Makes a database request and fetches the raw database content - the data as it is stored in the internal `[__KEY]-[__VALUE]` storage format that was made to achieve better data accessibility across the module.
 
 - **Type parameters:**
-  - `TInternalDataValue` (`any`): The type of `__VALUE` property in each raw data object.
+  - `TInternalDataValue` (`any`, defaults to `V`): The type of `__VALUE` property in each raw data object.
 
 - **Returns:** `Promise<IDatabaseInternalStructure<TInternalDataValue>[]>` - Raw database content - the data as it is stored in internal `[__KEY]-[__VALUE]` storage format that was made to achieve better data accessibility across the module.
 
@@ -484,11 +492,11 @@ Makes a database request and fetches the raw database content - the data as it i
   console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
 ```
 
-## `allFromDatabase<TValue = V>(): Promise<Record<string, TValue>>`
+## `allFromDatabase<TValue = V>(): Promise<Record<K, TValue>>`
 Makes a direct request to the remote cluster and fetches all its contents.
 
 - **Type parameters:**
-  - `TValue` (`object`): The type of object of all the database object to be returned.
+  - `TValue` (`any`, defaults to `V`): The type of object of all the database object to be returned.
 
 - **Returns:** `Promise<TValue>` - Fetched database contents.
 

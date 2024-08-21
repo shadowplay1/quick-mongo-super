@@ -15,4 +15,3 @@ export type If<
   - `T` (`boolean`): The condition to return a boolean value.
   - `IfTrue` (`any`): The type to be returned if the condition type `T` is `true`
   - `IfFalse` (`any`, defaults to `null`): The type to be returned if the condition type `T` is `false`
-

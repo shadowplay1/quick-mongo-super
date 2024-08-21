@@ -5,6 +5,6 @@ module.exports = {
     testEnvironment: 'node',
 
     modulePathIgnorePatterns: [
-        './dist/'
+        'dist/'
     ]
 }

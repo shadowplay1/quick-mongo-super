@@ -6,6 +6,16 @@
 
 ## 🕘 | Changelog
 
+**v3.0.0**
+- Improved documentation, fixed typos & mismatches.
+- Fixed minor types bugs.
+- Bumped `mongoose` to the latest version, `v8.5.3`
+- Added unneeded package files into `.npmignore` to reduce the final npm package size.
+- Completely changed the type system - now all the values are being **inferred** from the object keys you specify in database requests (with keys autocomplete as well 👀)!
+- Added a new `QuickMongo.getFromDatabase()` method that works the same way as `QuickMongo.get()`, but instead of getting the data from **cache**, a request being made to **remote cluster**.
+
+**NOTE:** This release is being considered **major** due to **significant** changes to the types system of the module which might **impact** TypeScript users.
+
 **v2.2.0**
 - Added `QuickMongo.values()` method; it works the same way as `QuickMongo.keys()`, but returns the object **values** instead of object **keys**.
 - Added **6** new **array-like** methods in `QuickMongo` class that simplify the **read** operations on **database object values**:

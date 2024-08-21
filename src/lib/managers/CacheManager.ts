@@ -56,7 +56,7 @@ export class CacheManager<K extends string, V> {
      * @returns {any} Object representation of the cache map.
      * @template V The type of cache object to return.
      */
-    public getCacheObject<V = any>(): V {
+    public getCacheObject<V extends Record<K, any> = any>(): V {
         const mapData: Record<any, any> = {}
 
         for (const [key, value] of this._cache.entries()) {

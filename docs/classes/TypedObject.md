@@ -1,17 +1,18 @@
-# **`TypedObject` Class**
+# **`TypedObject` Class *(static)***
 
 # Intro
 Utility class for working with objects.
 
-Provides **static** methods for retrieving keys and values of an object.
+Provides **static** methods for retrieving keys and values of an object with addition of types.
 
 This class enhances type safety by providing better typings for object keys and values.
 
 
 # References in this doc
 - Types:
-  - [`TupleOrArray<T>`](../types/TupleOrArray.md)
-
+  - [`ExtractObjectKeys<T>`](../types/ExtractObjectKeys.md)
+  - [`ExtractObjectValues<T>`](../types/ExtractObjectValues.md)
+  - [`ExtractObjectEntries<T>`](../types/ExtractObjectEntries.md)
 
 ## Constructor
 *none*
@@ -21,25 +22,37 @@ This class includes static methods to work with objects. It's **not intended** t
 
 ## Methods
 
-## `static keys<K extends TupleOrArray<string> = string[]>(obj: any): K `
+## `static keys<TObject extends Record<string, any>>(obj: TObject): ExtractObjectKeys<TObject>[]`
 Returns the names of the enumerable string properties and methods of an object.
 
 - **Type Parameters:**
-  - `K` (`TupleOrArray<string>`, defaults to `string[]`): The type of the array containing the names of the enumerable string properties and methods.
+  - `TObject` (`Record<string, any>`): The object to get the object keys types from.
 
 - **Parameters:**
-  - `obj` (`any`): Object that contains the properties and methods.
+  - `obj` (`TObject`): Object to get the keys from.
 
-- **Returns:** `K` - Array of names of the enumerable string properties and methods of the specified object.
+- **Returns:** `ExtractObjectKeys<TObject>[]` - Array of names of the enumerable string properties and methods of the specified object.
 
 
-## `static values<V extends TupleOrArray<any> = any[]>(obj: any): V`
+## `static values<TObject extends Record<string, any>>(obj: TObject): ExtractObjectValues<TObject>[]`
 Returns an array of values of the enumerable properties of an object.
 
 - **Type Parameters:**
-  - `TObjectReturnValue` (`TupleOrArray<any>`, defaults to `any[]`): The type of the array containing the values of the enumerable properties.
+  - `TObject` (`Record<string, any>`): The object to get the object values types from.
 
 - **Parameters:**
-  - `obj` (`any`): Object that contains the properties and methods.
+  - `obj` (`TObject`): Object to get the values from.
 
-- **Returns:** `V` - Array of values of the enumerable properties of the specified object.
+- **Returns:** `ExtractObjectValues<TObject>[]` - Array of values of the enumerable properties of the specified object.
+
+
+## `static entries<TObject extends Record<string, any>>(obj: TObject): ExtractObjectEntries<TObject>[]`
+Returns an array of entries (key-value pairs) of the enumerable properties of an object.
+
+- **Type Parameters:**
+  - `TObject` (`Record<string, any>`): The object to get the object entries types (key-value pairs types) from.
+
+- **Parameters:**
+  - `obj` (`TObject`): Object to get the entries from.
+
+- **Returns:** `ExtractObjectEntries<TObject>[]` - Array of entries (key-value pairs) of the enumerable properties of the specified object.

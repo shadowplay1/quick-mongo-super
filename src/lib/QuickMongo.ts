@@ -20,9 +20,9 @@ import { TypedObject } from './utils/TypedObject'
 import { QuickMongoError } from './utils/QuickMongoError'
 
 import {
-    ExtractFromArray, If,
-    IsObject, Maybe, QueryFunction,
-    RestOrArray, TupleOrArray
+    ExtractFromArray, FirstObjectKey,
+    If, IsObject, Maybe, ObjectPath,
+    ObjectValue, QueryFunction, RestOrArray
 } from '../types/utils'
 
 import { createTypesArray } from '../structures/errors'
@@ -73,7 +73,7 @@ export class QuickMongo<K extends string = string, V = any> {
     private _client: QuickMongoClient<any>
 
     /**
-     * Internal Mongoose model to work with.
+     * Internal Mongoose model for the module to work with.
      * @type {Model<IDatabaseInternalStructure<any>>}
      * @private
      */
@@ -220,7 +220,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * console.log(ping) // -> { readLatency: 123, writeLatency: 124, deleteLatency: 125 }
      */
     public async ping(): Promise<IDatabaseRequestsLatencyData> {
-        const pingDatabaseKey = '___PING___' as K
+        const pingDatabaseKey = '___PING___' as any
 
         let readLatency = -1
         let writeLatency = -1
@@ -253,7 +253,7 @@ export class QuickMongo<K extends string = string, V = any> {
     }
 
     /**
-     * This method is the same as `Array.find()`.
+     * This method works the same way as `Array.find()`.
      *
      * Iterates over root database values, finds the element in database values array
      * by specified condition in the callback function and returns the result.
@@ -262,15 +262,15 @@ export class QuickMongo<K extends string = string, V = any> {
      * A function that accepts up to three arguments.
      * The `find` method calls the `queryFunction` once for each element in database object values array.
      *
-     * @returns {Maybe<V>}
+     * @returns {Maybe<V>} The search
      */
     public find(queryFunction: QueryFunction<V>): Maybe<V> {
         const values = this.values()
-        return values.find(queryFunction) as Maybe<V> ?? null
+        return values.find(queryFunction as QueryFunction<ObjectValue<V, any>>) as Maybe<V> ?? null
     }
 
     /**
-     * This method is the same as `Array.map()`.
+     * This method works the same way as `Array.map()`.
      *
      * Calls a defined callback function on each element of an array,
      * and returns an array that contains the results.
@@ -283,11 +283,11 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public map<TReturnType>(queryFunction: QueryFunction<V, TReturnType>): TReturnType[] {
         const values = this.values()
-        return values.map(queryFunction)
+        return values.map(queryFunction as QueryFunction<ObjectValue<V, any>, TReturnType>)
     }
 
     /**
-     * This method is the same as `Array.findIndex()`.
+     * This method works the same way as `Array.findIndex()`.
      *
      * Iterates over root database values, finds the index of the element in database values array
      * by specified condition in the callback function and returns the result.
@@ -300,11 +300,11 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public findIndex(queryFunction: QueryFunction<V>): number {
         const values = this.values()
-        return values.findIndex(queryFunction)
+        return values.findIndex(queryFunction as QueryFunction<ObjectValue<V, any>>)
     }
 
     /**
-     * This method is the same as `Array.filter()`.
+     * This method works the same way as `Array.filter()`.
      *
      * Iterates over root database values, finds all the element that match the
      * specified condition in the callback function and returns the result.
@@ -317,11 +317,11 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public filter(queryFunction: QueryFunction<V>): V[] {
         const values = this.values()
-        return values.filter(queryFunction)
+        return values.filter(queryFunction as QueryFunction<ObjectValue<V, any>>) as V[]
     }
 
     /**
-     * This method is the same as `Array.some()`.
+     * This method works the same way as `Array.some()`.
      *
      * Iterates over root database values and checks if the
      * specified condition in the callback function returns `true`
@@ -335,11 +335,11 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public some(queryFunction: QueryFunction<V>): boolean {
         const values = this.values()
-        return values.some(queryFunction)
+        return values.some(queryFunction as QueryFunction<ObjectValue<V, any>>)
     }
 
     /**
-     * This method is the same as `Array.every()`.
+     * This method works the same way as `Array.every()`.
      *
      * Iterates over root database values and checks if the
      * specified condition in the callback function returns `true`
@@ -353,14 +353,14 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public every(queryFunction: QueryFunction<V>): boolean {
         const values = this.values()
-        return values.every(queryFunction)
+        return values.every(queryFunction as QueryFunction<ObjectValue<V, any>>)
     }
 
     /**
      * Retrieves a value from database by a key.
      *
-     * @param {K} key The key to access the target in database by.
-     * @returns {Maybe<V>} The value of the target in database.
+     * @param {P} key The key to access the target in database by.
+     * @returns {Maybe<ObjectValue<V, P>>} The value of the target in database.
      *
      * @example
      * const simpleValue = quickMongo.get('simpleValue')
@@ -379,8 +379,61 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public get(key: K): Maybe<V> {
-        return this._cache.get<V>(key) as Maybe<V>
+    public get<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
+        return this._cache.get(key)
+    }
+
+    /**
+     * Retrieves a value from database by a key via sending a **direct request**
+     * to remote cluster, **omitting** the cache.
+     *
+     * @param {P} key The key to access the target in database by.
+     * @returns {Promise<Maybe<ObjectValue<V, P>>>} The value of the target in database.
+     *
+     * @example
+     * const simpleValue = await quickMongo.getFromDatabase('simpleValue')
+     * console.log(simpleValue) // -> 123
+     *
+     * const databaseObjectProperty = await quickMongo.getFromDatabase('youCanAlso.accessDatabaseObjectProperties.likeThat')
+     * console.log(databaseObjectProperty) // -> 'hello world!'
+     *
+     * // ^ Assuming that the initial database object for this example is:
+     * // {
+     * //    simpleValue: 123,
+     * //    youCanAlso: {
+     * //        accessDatabaseObjectProperties: {
+     * //            likeThat: 'hello world!'
+     * //        }
+     * //    }
+     * // }
+     */
+    public async getFromDatabase<P extends ObjectPath<V>>(key: P): Promise<Maybe<ObjectValue<V, P>>> {
+        if (!this._client.connected) {
+            throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
+        }
+
+        if (!key) {
+            throw new QuickMongoError('REQUIRED_PARAMETER_MISSING', 'key')
+        }
+
+        if (typeof key !== 'string') {
+            throw new QuickMongoError('INVALID_TYPE', 'key', 'string', typeOf(key))
+        }
+
+        const keys = key.split('.')
+
+        let data = await this.allFromDatabase() as Maybe<ObjectValue<V, P>>
+        let parsedData = data
+
+        for (let i = 0; i < keys.length; i++) {
+            if (keys.length - 1 == i) {
+                data = parsedData?.[keys[i]] ?? null
+            }
+
+            parsedData = parsedData?.[keys[i]]
+        }
+
+        return data
     }
 
     /**
@@ -388,8 +441,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * - This method is an alias for {@link QuickMongo.get()} method.
      *
-     * @param {K} key The key to access the target in database by.
-     * @returns {Maybe<V>} The value from database.
+     * @param {P} key The key to access the target in database by.
+     * @returns {Maybe<ObjectValue<V, P>>} The value from database.
      *
      * @example
      * const simpleValue = quickMongo.fetch('simpleValue')
@@ -407,13 +460,13 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public fetch(key: K): Maybe<V> {
+    public fetch<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
         return this.get(key)
     }
 
     /**
      * Determines if the data is stored in database.
-     * @param {K} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @returns {boolean} Whether the data is stored in database.
      *
      * @example
@@ -440,26 +493,23 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public has(key: K): boolean {
-        return this.get(key) !== null && this.get(key) !== undefined
+    public has<P extends ObjectPath<V>>(key: P): boolean {
+        const target = this.get(key)
+        return target !== null && target !== undefined
     }
 
     /**
      * Writes the specified value into database under the specified key.
      *
-     * Type parameters:
-     *
-     * - `TObjectReturnValue` (`any`, defaults to `any`) - Type the return type fallbacks to if `TValue` is an object.
-     *
      * @param {string} key The key to write in the target.
-     * @param {V} value The value to write.
+     * @param {ObjectValue<V, P>} value The value to write.
      *
-     * @returns {Promise<If<IsObject<V>, TObjectReturnValue, V>>}
+     * @returns {Promise<If<IsObject<V>, FirstObjectKey<P>, V>>}
      * - If the `value` parameter's type is not an object (string, number, boolean, etc), then the specified
-     * `value` parameter (type of `V`) will be returned.
+     * `value` parameter (type of `ObjectValue<V, P>`) will be returned.
      *
-     * - If an object is specified in the `value` parameter, then the database object will be returned.
-     * (type of `TObjectReturnValue` - fallback to the manual typing of returned database object for specified key)
+     * - If an object is specified in the `value` parameter, then the object of the first key will be returned.
+     * (type of `FirstObjectKey<P>` - first object key (e.g. in key `member.user.id`, the first key will be `member`))
      *
      * @example
      * // Assuming that the initial database object for this example is empty.
@@ -481,22 +531,6 @@ export class QuickMongo<K extends string = string, V = any> {
      * // Using objects as value will return the object of key `thats`:
      * await quickMongo.set('thats.an.object', { hello: 'world' }) // -> { an: { object: { hello: 'world' } } }
      *
-     * // ^ If you need to type the returning objects, use the 2nd type argument for this:
-     *
-     * // Assuming that we have the following returning object structure:
-     * interface MyCustomObjectType {
-     *     an: {
-     *         object: {
-     *             hello: string
-     *         }
-     *     }
-     * }
-     *
-     * const typedObjectSetResult = await quickMongo.set<any, MyCustomObjectType>('thats.an.object', { hello: 'world' })
-     * //         ^ typedObjectSetResult: MyCustomObjectType
-     *
-     * console.log(typedObjectSetResult) // -> { an: { object: { hello: 'world' } } }
-     *
      * // ^ After these manipulations, the database object will look like this:
      * // {
      * //     "something": "hello from quick-mongo-super!",
@@ -512,7 +546,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //     }
      * // }
      */
-    public async set<TObjectReturnValue = any>(key: K, value: V): Promise<If<IsObject<V>, TObjectReturnValue, V>> {
+    public async set<P extends ObjectPath<V>>(
+        key: P,
+        value: ObjectValue<V, P>
+    ): Promise<If<IsObject<V>, FirstObjectKey<P>, V>> {
         const allDatabase = this.all()
         this._cache.set(key, value)
 
@@ -552,7 +589,7 @@ export class QuickMongo<K extends string = string, V = any> {
 
     /**
      * Deletes the data from database by key.
-     * @param {K} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @returns {Promise<boolean>} Whether the deletition was successful.
      *
      * @example
@@ -574,7 +611,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //     }
      * // }
      */
-    public async delete(key: K): Promise<boolean> {
+    public async delete<P extends ObjectPath<V>>(key: P): Promise<boolean> {
         const allDatabase = this.all()
 
         if (!this.has(key)) {
@@ -617,7 +654,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {string} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @param {number} numberToAdd The number to add to the target number in database.
      * @returns {Promise<number>} Addition operation result.
      *
@@ -638,7 +675,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 5
      * // }
      */
-    public async add(key: K, numberToAdd: number): Promise<number> {
+    public async add<P extends ObjectPath<V>>(key: P, numberToAdd: number): Promise<number> {
         const targetNumber = this.get(key) ?? 0 as any
 
         if (!isNumber(targetNumber)) {
@@ -653,7 +690,7 @@ export class QuickMongo<K extends string = string, V = any> {
             throw new QuickMongoError('INVALID_TYPE', 'numberToAdd', 'number', typeOf(numberToAdd))
         }
 
-        const result = await this.set(key, targetNumber + numberToAdd as V)
+        const result = await this.set(key, targetNumber + numberToAdd)
         return result as any
     }
 
@@ -662,7 +699,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {string} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @param {number} numberToSubtract The number to subtract from the target number in database.
      * @returns {Promise<number>} Subtraction operation result.
      *
@@ -683,7 +720,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 10
      * // }
      */
-    public async subtract(key: K, numberToSubtract: number): Promise<number> {
+    public async subtract<P extends ObjectPath<V>>(key: P, numberToSubtract: number): Promise<number> {
         const targetNumber: any = this.get(key) ?? 0
 
         if (!isNumber(targetNumber)) {
@@ -705,7 +742,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Determines whether the specified target is an array.
      *
-     * @param {string} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @returns {boolean} Whether the target is an array.
      *
      * @example
@@ -721,7 +758,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notArray: 123
      * // }
      */
-    public isTargetArray(key: K): boolean {
+    public isTargetArray<P extends ObjectPath<V>>(key: P): boolean {
         const target = this.get(key)
         return Array.isArray(target)
     }
@@ -729,7 +766,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Determines whether the specified target is a number.
      *
-     * @param {string} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @returns {boolean} Whether the target is a number.
      *
      * @example
@@ -745,7 +782,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notNumber: []
      * // }
      */
-    public isTargetNumber(key: K): boolean {
+    public isTargetNumber<P extends ObjectPath<V>>(key: P): boolean {
         const target = this.get(key)
         return isNumber(target)
     }
@@ -755,9 +792,11 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {K} key The key to access the target in database by.
-     * @param {RestOrArray<ExtractFromArray<V>>} values The value(s) to be pushed into the target array in database.
-     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
+     * @param {P} key The key to access the target in database by.
+     * @param {RestOrArray<ExtractFromArray<ObjectValue<V, P>>>} values
+     * The value(s) to be pushed into the target array in database.
+     *
+     * @returns {Promise<Array<ExtractFromArray<ObjectValue<V, P>>>>} Updated target array from database.
      *
      * @example
      * const membersPushResult = await quickMongo.push('members', 'William')
@@ -773,7 +812,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar']
      * // }
      */
-    public async push(key: K, ...values: RestOrArray<ExtractFromArray<V>>): Promise<ExtractFromArray<V>[]> {
+    public async push<P extends ObjectPath<V>>(
+        key: P,
+        ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>
+    ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
         const targetArray = this.get(key) || []
 
         if (!Array.isArray(targetArray)) {
@@ -795,10 +837,10 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {K} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
      * @param {V} value The value to be pushed into the target array in database.
-     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
+     * @returns {Promise<Array<ExtractFromArray<ObjectValue<V, P>>>>} Updated target array from database.
      *
      * @example
      * const membersPullResult = await quickMongo.pull('members', 1, 'James')
@@ -809,7 +851,11 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    members: ['John', 'William', 'Tom']
      * // }
      */
-    public async pull(key: K, targetArrayElementIndex: number, value: V): Promise<ExtractFromArray<V>[]> {
+    public async pull<P extends ObjectPath<V>>(
+        key: P,
+        targetArrayElementIndex: number,
+        value: ObjectValue<V, P>
+    ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
         const targetArray = this.get(key) ?? []
 
         if (!Array.isArray(targetArray)) {
@@ -843,11 +889,11 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {K} key The key to access the target in database by.
+     * @param {P} key The key to access the target in database by.
      * @param {RestOrArray<ExtractFromArray<number>>} targetArrayElementIndexes
      * The index(es) to find the element(s) in target array by.
      *
-     * @returns {Promise<ExtractFromArray<V>[]>} Updated target array from database.
+     * @returns {Promise<Array<ExtractFromArray<ObjectValue<V, P>>>>} Updated target array from database.
      *
      * @example
      * const membersPopResult = await quickMongo.pop('members', 1)
@@ -862,10 +908,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar', 'Rupee', 'Euro']
      * // }
      */
-    public async pop(
-        key: K,
+    public async pop<P extends ObjectPath<V>>(
+        key: P,
         ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>
-    ): Promise<ExtractFromArray<V>[]> {
+    ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
         const targetArray = this.get(key) ?? []
 
         if (!Array.isArray(targetArray)) {
@@ -919,8 +965,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * - `TKeys` (`TupleOrArray<string>`, defaults to `K[]`) - The tuple or array of a type of keys to be returned.
      *
-     * @param {K} [key] The key to access the target in database by.
-     * @returns {string[]} Database object keys array.
+     * @param {P} [key] The key to access the target in database by.
+     * @returns {Array<ObjectPath<P>>} Database object keys array.
      *
      * @example
      * const prop3Keys = quickMongo.keys('prop3')
@@ -948,16 +994,16 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public keys<TKeys extends TupleOrArray<string> = K[]>(key?: K): TKeys {
+    public keys<P extends ObjectPath<V>>(key?: P): ObjectPath<P>[] {
         if (!key) {
             const allDatabase = this.all()
-            return TypedObject.keys<TKeys>(allDatabase)
+            return TypedObject.keys(allDatabase) as ObjectPath<P>[]
         }
 
         const data = this.get(key)
-        const keys = TypedObject.keys<TKeys>(data)
+        const keys = TypedObject.keys(data)
 
-        return keys.filter(key => data[key] !== undefined && data[key] !== null) as TKeys
+        return keys.filter(key => data[key] !== undefined && data[key] !== null) as any
     }
 
     /**
@@ -965,12 +1011,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * If `key` parameter is omitted, then an array of object values of database root object will be returned.
      *
-     * Type parameters:
-     *
-     * - `TValues` (`TupleOrArray<any>`, defaults to `V[]`) - The tuple or array of a type of values to be returned.
-     *
-     * @param {K} [key] The key to access the target in database by.
-     * @returns {TValues[]} Database object values array.
+     * @param {P} [key] The key to access the target in database by.
+     * @returns {Array<ObjectValue<V, P>>} Database object values array.
      *
      * @example
      * const prop3Values = quickMongo.values('prop3')
@@ -998,16 +1040,16 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public values<TValues extends TupleOrArray<any> = V>(key?: K): TValues[] {
+    public values<P extends ObjectPath<V>>(key?: P): ObjectValue<V, P>[] {
         if (!key) {
             const allDatabase = this.all()
-            return TypedObject.values<TValues[]>(allDatabase)
+            return TypedObject.values(allDatabase)
         }
 
         const data = this.get(key)
-        const values = TypedObject.values<TValues[]>(data)
+        const values = TypedObject.values(data)
 
-        return values
+        return values as ObjectValue<V, P>[]
     }
 
     /**
@@ -1015,8 +1057,8 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {K} key The key to access the target in database by.
-     * @returns {V} The randomly picked element in the array.
+     * @param {P} key The key to access the target in database by.
+     * @returns {Maybe<ObjectValue<V, P>>} The randomly picked element in the database array.
      *
      * @example
      * const array = quickMongo.get('exampleArray') // assuming that the array is ['example1', 'example2', 'example3']
@@ -1025,7 +1067,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * const randomArrayElement = quickMongo.random('exampleArray')
      * console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
      */
-    public random(key: K): V {
+    public random<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
         const array = this.get(key)
 
         if (!Array.isArray(array)) {
@@ -1073,16 +1115,18 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `T` (`object`) - The type of object of all the database object to be returned.
+     * - `T` (`object`, defaults to `Record<string, any>`) - The type of object of all the database object to be returned.
      *
      * @returns {T} Cached database contents.
-     * @template T (object) - The type of object of all the database object to be returned.
+     *
+     * @template T (object, defaults to `Record<string, any>`) -
+     * The type of object of all the database object to be returned.
      *
      * @example
      * const database = quickMongo.all()
      * console.log(database) // -> { ... (the object of all the data stored in database) }
      */
-    public all<T extends Record<string, any> = any>(): T {
+    public all<T extends Record<string, any> = Record<string, any>>(): T {
         return this._cache.getCacheObject<T>()
     }
 
@@ -1099,12 +1143,12 @@ export class QuickMongo<K extends string = string, V = any> {
      */
     public async loadCache(): Promise<void> {
         try {
-            const database = await this.allFromDatabase<K>()
+            const database = await this.allFromDatabase()
             const initialDatabaseData = this._client.initialDatabaseData
 
             if (this._client.initialDatabaseData && !TypedObject.keys(database).length) {
-                for (const key of TypedObject.keys<K[]>(initialDatabaseData)) {
-                    this.set(key, initialDatabaseData[key])
+                for (const key of TypedObject.keys(initialDatabaseData)) {
+                    this.set(key as any, initialDatabaseData[key])
                     this._cache.set(key, initialDatabaseData[key] ?? null)
                 }
             }
@@ -1127,22 +1171,22 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TInternalDataValue` (`any`) - The type of `__VALUE` property in each raw data object.
+     * - `TInternalDataValue` (`any`, defaults to `V`) - The type of `__VALUE` property in each raw data object.
      *
-     * @returns {Promise<IDatabaseInternalStructure<TInternalDataValue>[]>}
+     * @returns {Promise<Array<IDatabaseInternalStructure<TInternalDataValue>>>}
      * Raw database content - the data as it is stored in internal [__KEY]-[__VALUE] storage format that was made
      * to achieve better data accessibility across the module.
      *
-     * @template TInternalDataValue (any) - The type of `__VALUE` property in each raw data object.
+     * @template TInternalDataValue (any, defaults to `V`) - The type of `__VALUE` property in each raw data object.
      *
      * @example
      * const rawData = await quickMongo.raw()
      * console.log(rawData) // -> [{_id: '6534ee98408514005215ad2d', __KEY: 'something', __VALUE: 'something', __v: 0}, ...]
      */
-    public async raw<TInternalDataValue = any>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
+    public async raw<TInternalDataValue = V>(): Promise<IDatabaseInternalStructure<TInternalDataValue>[]> {
         try {
             const data = await this._model.find()
-            return data as any
+            return data
         } catch (err) {
             throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
@@ -1153,17 +1197,16 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * Type parameters:
      *
-     * - `TValue` (`any`) - The type of object of all the database object to be returned.
-     * Will be returned as `Record<string, TValue>`.
+     * - `TValue` (`any`, defaults to `V`) - The type of object of all the database object to be returned.
      *
-     * @template TValue (object) - The type of object of all the database object to be returned.
-     * @returns {Promise<TValue>} Fetched database contents.
+     * @template TValue (`object`) - The type of object of all the database object to be returned.
+     * @returns {Promise<Record<K, TValue>>} Fetched database contents.
      *
      * @example
      * const allDatabase = quickMongo.allFromDatabase()
      * console.log(allDatabase) // -> { ... (the object of all the data stored in database) }
      */
-    public async allFromDatabase<TValue = V>(): Promise<Record<string, TValue>> {
+    public async allFromDatabase<TValue = V>(): Promise<Record<K, TValue>> {
         const obj = {}
         const elements = await this.raw() || []
 

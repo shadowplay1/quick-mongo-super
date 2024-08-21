@@ -1,5 +1,6 @@
-# git files
+# git & github files
 .git/
+.github/
 
 # husky scripts
 .husky/
@@ -7,8 +8,9 @@
 # ci/cd
 .github/
 
-# documentation
+# documentation & changelog
 docs/
+changelog.md
 
 # bash scripts
 scripts/
@@ -19,8 +21,9 @@ node_modules/
 # utilities
 utils/
 
-# local testing
+# testing
 test/
+tests/
 misc/
 dist/misc/
 dist/test
@@ -35,6 +38,8 @@ src/
 .gitattributes
 .eslintrc.js
 tsconfig.json
+jest.config.js
+commitlint.config.js
 
 # ignore lists
 .gitignore
@@ -42,4 +47,5 @@ tsconfig.json
 
 # to reduce the final package size
 package-lock.json
+bun.lockb
 examples/
