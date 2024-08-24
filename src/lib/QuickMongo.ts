@@ -20,6 +20,7 @@ import { TypedObject } from './utils/TypedObject'
 import { QuickMongoError } from './utils/QuickMongoError'
 
 import {
+    AutocompletableString,
     ExtractFromArray, FirstObjectKey,
     If, IsObject, Maybe, ObjectPath,
     ObjectValue, QueryFunction, RestOrArray
@@ -359,7 +360,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Retrieves a value from database by a key.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {Maybe<ObjectValue<V, P>>} The value of the target in database.
      *
      * @example
@@ -379,7 +380,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public get<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
+    public get<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         return this._cache.get(key)
     }
 
@@ -387,7 +388,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * Retrieves a value from database by a key via sending a **direct request**
      * to remote cluster, **omitting** the cache.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {Promise<Maybe<ObjectValue<V, P>>>} The value of the target in database.
      *
      * @example
@@ -407,7 +408,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public async getFromDatabase<P extends ObjectPath<V>>(key: P): Promise<Maybe<ObjectValue<V, P>>> {
+    public async getFromDatabase<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<Maybe<ObjectValue<V, P>>> {
         if (!this._client.connected) {
             throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
@@ -441,7 +442,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * - This method is an alias for {@link QuickMongo.get()} method.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {Maybe<ObjectValue<V, P>>} The value from database.
      *
      * @example
@@ -460,13 +461,13 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public fetch<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
+    public fetch<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         return this.get(key)
     }
 
     /**
      * Determines if the data is stored in database.
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {boolean} Whether the data is stored in database.
      *
      * @example
@@ -493,7 +494,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public has<P extends ObjectPath<V>>(key: P): boolean {
+    public has<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return target !== null && target !== undefined
     }
@@ -501,7 +502,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Writes the specified value into database under the specified key.
      *
-     * @param {string} key The key to write in the target.
+     * @param {AutocompletableString<P>} key The key to write in the target.
      * @param {ObjectValue<V, P>} value The value to write.
      *
      * @returns {Promise<If<IsObject<V>, FirstObjectKey<P>, V>>}
@@ -547,7 +548,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public async set<P extends ObjectPath<V>>(
-        key: P,
+        key: AutocompletableString<P>,
         value: ObjectValue<V, P>
     ): Promise<If<IsObject<V>, FirstObjectKey<P>, V>> {
         const allDatabase = this.all()
@@ -589,7 +590,7 @@ export class QuickMongo<K extends string = string, V = any> {
 
     /**
      * Deletes the data from database by key.
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {Promise<boolean>} Whether the deletition was successful.
      *
      * @example
@@ -611,7 +612,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //     }
      * // }
      */
-    public async delete<P extends ObjectPath<V>>(key: P): Promise<boolean> {
+    public async delete<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<boolean> {
         const allDatabase = this.all()
 
         if (!this.has(key)) {
@@ -654,7 +655,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @param {number} numberToAdd The number to add to the target number in database.
      * @returns {Promise<number>} Addition operation result.
      *
@@ -675,7 +676,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 5
      * // }
      */
-    public async add<P extends ObjectPath<V>>(key: P, numberToAdd: number): Promise<number> {
+    public async add<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToAdd: number): Promise<number> {
         const targetNumber = this.get(key) ?? 0 as any
 
         if (!isNumber(targetNumber)) {
@@ -699,7 +700,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be a number.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @param {number} numberToSubtract The number to subtract from the target number in database.
      * @returns {Promise<number>} Subtraction operation result.
      *
@@ -720,7 +721,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 10
      * // }
      */
-    public async subtract<P extends ObjectPath<V>>(key: P, numberToSubtract: number): Promise<number> {
+    public async subtract<P extends ObjectPath<V>>(
+        key: AutocompletableString<P>,
+        numberToSubtract: number
+    ): Promise<number> {
         const targetNumber: any = this.get(key) ?? 0
 
         if (!isNumber(targetNumber)) {
@@ -742,7 +746,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Determines whether the specified target is an array.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {boolean} Whether the target is an array.
      *
      * @example
@@ -758,7 +762,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notArray: 123
      * // }
      */
-    public isTargetArray<P extends ObjectPath<V>>(key: P): boolean {
+    public isTargetArray<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return Array.isArray(target)
     }
@@ -766,7 +770,7 @@ export class QuickMongo<K extends string = string, V = any> {
     /**
      * Determines whether the specified target is a number.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {boolean} Whether the target is a number.
      *
      * @example
@@ -782,7 +786,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notNumber: []
      * // }
      */
-    public isTargetNumber<P extends ObjectPath<V>>(key: P): boolean {
+    public isTargetNumber<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return isNumber(target)
     }
@@ -792,7 +796,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @param {RestOrArray<ExtractFromArray<ObjectValue<V, P>>>} values
      * The value(s) to be pushed into the target array in database.
      *
@@ -813,7 +817,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public async push<P extends ObjectPath<V>>(
-        key: P,
+        key: AutocompletableString<P>,
         ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>
     ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
         const targetArray = this.get(key) || []
@@ -837,7 +841,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @param {number} targetArrayElementIndex The index to find the element in target array by.
      * @param {V} value The value to be pushed into the target array in database.
      * @returns {Promise<Array<ExtractFromArray<ObjectValue<V, P>>>>} Updated target array from database.
@@ -852,7 +856,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public async pull<P extends ObjectPath<V>>(
-        key: P,
+        key: AutocompletableString<P>,
         targetArrayElementIndex: number,
         value: ObjectValue<V, P>
     ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
@@ -889,7 +893,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @param {RestOrArray<ExtractFromArray<number>>} targetArrayElementIndexes
      * The index(es) to find the element(s) in target array by.
      *
@@ -909,7 +913,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * // }
      */
     public async pop<P extends ObjectPath<V>>(
-        key: P,
+        key: AutocompletableString<P>,
         ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>
     ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
         const targetArray = this.get(key) ?? []
@@ -1057,7 +1061,7 @@ export class QuickMongo<K extends string = string, V = any> {
      *
      * [!!!] The type of target value must be an array.
      *
-     * @param {P} key The key to access the target in database by.
+     * @param {AutocompletableString<P>} key The key to access the target in database by.
      * @returns {Maybe<ObjectValue<V, P>>} The randomly picked element in the database array.
      *
      * @example
@@ -1067,7 +1071,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * const randomArrayElement = quickMongo.random('exampleArray')
      * console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
      */
-    public random<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>> {
+    public random<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         const array = this.get(key)
 
         if (!Array.isArray(array)) {

@@ -57,24 +57,26 @@ module.exports = {
             'never'
         ],
 
-        '@typescript-eslint/no-extra-semi': 'warn',
-
+        '@typescript-eslint/ban-types': 'off',
+        
         'no-plusplus': 'off',
         'implicit-arrow-linebreak': 'off',
         'operator-linebreak': 'off',
-
+        
         'arrow-body-style': 'off',
         'no-param-reassign': 'off',
         'consistent-return': 'off',
         'function-paren-newline': 'off',
         'no-mixed-spaces-and-tabs': 'off',
-
+        
         'eol-last': 'warn',
-
+        
         'linebreak-style': [
             'error',
             'unix'
         ],
+        
+        '@typescript-eslint/no-extra-semi': 'warn',
 
         '@typescript-eslint/consistent-type-definitions': [
             'warn',

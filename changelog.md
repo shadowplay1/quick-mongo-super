@@ -6,6 +6,9 @@
 
 ## 🕘 | Changelog
 
+**v3.0.1**
+- Now all the `key` parameters allow to pass in the normal `string` type, alongside the **keys autocomplete** feature released in **v3.0.0**.
+
 **v3.0.0**
 - Improved documentation, fixed typos & mismatches.
 - Fixed minor types bugs.

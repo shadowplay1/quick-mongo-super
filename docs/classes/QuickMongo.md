@@ -22,6 +22,7 @@ You can see the **detailed** examples on usage of each method in both **JavaScri
   - [`FirstObjectKey<TKey>`](../types/FirstObjectKey.md)
   - [`ObjectPath<T, TKey>`](../types/ObjectPath.md)
   - [`ObjectValue<T, P>`](../types/ObjectValue.md)
+  - [`AutocompletableString<S>`](../types/AutocompletableString.md)
 - Interfaces:
   - [`IDatabaseConfiguration`](../interfaces/IDatabaseConfiguration.md)
   - [`IDatabaseInternalStructure<T>`](../interfaces/IDatabaseInternalStructure.md)
@@ -82,7 +83,7 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 
 ## Methods
 
-## `get<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
+## `get<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Retrieves a value from database by a key.
 
 - **Parameters:**
@@ -99,7 +100,7 @@ Retrieves a value from database by a key.
   console.log(objectPropertyAccessed) // -> []
 ```
 
-## `getFromDatabase<P extends ObjectPath<V>>(key: P): Promise<Maybe<ObjectValue<V, P>>>`
+## `getFromDatabase<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<Maybe<ObjectValue<V, P>>>`
 Retrieves a value from database by a key via sending a **direct request** to remote cluster, **omitting** the cache.
 
 - **Parameters:**
@@ -117,7 +118,7 @@ Retrieves a value from database by a key via sending a **direct request** to rem
 ```
 
 
-## `fetch<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
+## `fetch<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Retrieves a value from database by a key.
 
 - **Parameters:**
@@ -135,7 +136,7 @@ Retrieves a value from database by a key.
 ```
 
 
-## `has<P extends ObjectPath<V>>(key: P): boolean`
+## `has<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
 Determines if the data is stored in database.
 
 - **Parameters:**
@@ -156,7 +157,7 @@ Determines if the data is stored in database.
 ```
 
 
-## `set<P extends ObjectPath<V>>(key: P, value: ObjectValue<V, P>): Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`
+## `set<P extends ObjectPath<V>>(key: AutocompletableString<P>, value: ObjectValue<V, P>): Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`
 Writes the specified value into database under the specified key.
 
 - **Parameters:**
@@ -190,7 +191,7 @@ Writes the specified value into database under the specified key.
 ```
 
 
-## `delete<P extends ObjectPath<V>>(key: P): Promise<boolean>`
+## `delete<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<boolean>`
 Deletes the data from database by key.
 
 - **Parameters:**
@@ -215,7 +216,7 @@ Sends a read, write and delete requests to the remote database and returns the r
 ```
 
 
-## `add<P extends ObjectPath<V>>(key: P, numberToAdd: number): Promise<number>`
+## `add<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToAdd: number): Promise<number>`
 Performs an arithmetical addition on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
@@ -233,7 +234,7 @@ Performs an arithmetical addition on a target number in the database.
 ```
 
 
-## `subtract<P extends ObjectPath<V>>(key: P, numberToSubtract: number): Promise<number>`
+## `subtract<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToSubtract: number): Promise<number>`
 Performs an arithmetical subtraction on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
@@ -245,7 +246,7 @@ Performs an arithmetical subtraction on a target number in the database.
 - **Returns:** `Promise<number>` - Subtraction operation result.
 
 
-## `isTargetArray<P extends ObjectPath<V>>(key: P): boolean`
+## `isTargetArray<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
 Determines whether the specified target is an array.
 
 - **Parameters:**
@@ -259,7 +260,7 @@ Determines whether the specified target is an array.
 ```
 
 
-## `isTargetNumber<P extends ObjectPath<V>>(key: P): boolean`
+## `isTargetNumber<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
 Determines whether the specified target is a number.
 
 - **Parameters:**
@@ -334,7 +335,7 @@ Iterates over root database values and checks if the specified condition in the 
 - **Returns:** `boolean
 
 
-## `push<P extends ObjectPath<V>>(key: P, ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `push<P extends ObjectPath<V>>(key: AutocompletableString<P>, ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value(s) into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
@@ -351,7 +352,7 @@ Pushes the specified value(s) into the target array in the database.
 ```
 
 
-## `pull<P extends ObjectPath<V>>(key: P, targetArrayElementIndex: number, value: ObjectValue<V, P>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `pull<P extends ObjectPath<V>>(key: AutocompletableString<P>, targetArrayElementIndex: number, value: ObjectValue<V, P>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
@@ -369,7 +370,7 @@ Pushes the specified value into the target array in the database.
 ```
 
 
-## `pop<P extends ObjectPath<V>>(key: P, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `pop<P extends ObjectPath<V>>(key: AutocompletableString<P>, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Removes the specified element(s) from the target array in the database.
 
 **[!!!] The type of target value must be an array.**
@@ -412,7 +413,7 @@ Returns an array of object values by specified database key.
 ```
 
 
-## `random<P extends ObjectPath<V>>(key: P): Maybe<ObjectValue<V, P>>`
+## `random<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Picks a random element of array in the database and returns the picked array element.
 
 - **Parameters:**

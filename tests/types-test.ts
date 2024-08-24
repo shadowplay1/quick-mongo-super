@@ -67,17 +67,15 @@ quickMongo.get('nested.nested2')
 quickMongo.get('nested.nested3')
 quickMongo.get('nested.nested3.nested31')
 quickMongo.get('nested.nested3.nested32')
+quickMongo.get('test')
+quickMongo.get('sdfsdfsdf')
+quickMongo.get('sdfsdfsdf')
+quickMongo.get('nested123')
+quickMongo.get('nested.nested3.asdasdasd')
+quickMongo.get('nested.nested2.nested31')
 quickMongo1.get('test')
 quickMongo1.get('sdfsdfsdf')
 
-// @ts-expect-error
-quickMongo.get('sdfsdfsdf')
-// @ts-expect-error
-quickMongo.get('nested123')
-// @ts-expect-error
-quickMongo.get('nested.nested3.asdasdasd')
-// @ts-expect-error
-quickMongo.get('nested.nested2.nested31')
 // @ts-expect-error
 quickMongo.get(123)
 // @ts-expect-error
@@ -101,7 +99,6 @@ quickMongo.set('nested.nested3', {
 })
 quickMongo.set('nested.nested3.nested31', 'asdasdasd')
 quickMongo.set('nested.nested3.nested32', 123)
-
 
 // @ts-expect-error
 quickMongo.set('name', 123)

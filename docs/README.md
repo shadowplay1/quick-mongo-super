@@ -1,4 +1,4 @@
-# `quick-mongo-super v3.0.0` documentation
+# `quick-mongo-super v3.0.1` documentation
 
 ## Classes
 - [`QuickMongo<K, V>`](classes/QuickMongo.md)
@@ -21,6 +21,7 @@
 - [`ExtractObjectKeys<T>`](types/ExtractObjectKeys.md)
 - [`ExtractObjectValues<T>`](types/ExtractObjectValues.md)
 - [`ExtractObjectEntries<T>`](types/ExtractObjectEntries.md)
+- [`AutocompletableString<S>`](types/AutocompletableString.md)
 
 ## Interfaces
 - [`IDatabaseConfiguration`](interfaces/IDatabaseConfiguration.md)

@@ -153,6 +153,17 @@ export type ExtractObjectEntries<T extends Record<string, any>> = [ExtractObject
 export type IsAny<T> = 0 extends (1 & T) ? true : false
 
 /**
+ * Makes the string union type autocompletable with a `string` type.
+ *
+ * Type parameters:
+ *
+ * - `S` (`string`) - The autocompletable union string type to make compatible with a `string` type.
+ *
+ * @template S - The autocompletable union string type to make compatible with a `string` type.
+ */
+export type AutocompletableString<S extends string> = S | (string & {})
+
+/**
  * Extracts the first key from the specified object path.
  * (for example, in key `member.user.id`, the first key will be `member`)
  *
