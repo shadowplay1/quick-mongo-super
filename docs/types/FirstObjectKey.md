@@ -13,6 +13,8 @@ Extracts the first key from the specified object path. (for example, in key `mem
 export type FirstObjectKey<TKey extends ObjectPath<string, any>> =
     TKey extends `${infer Key}.${infer _Rest}`
         ? Key
+        : TKey extends string
+            ? TKey
         : never
 ```
 

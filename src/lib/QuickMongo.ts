@@ -380,7 +380,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public get<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
+    public get<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         return this._cache.get(key)
     }
 
@@ -408,7 +408,9 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public async getFromDatabase<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<Maybe<ObjectValue<V, P>>> {
+    public async getFromDatabase<P extends AutocompletableString<ObjectPath<V>>>(
+        key: AutocompletableString<P>
+    ): Promise<Maybe<ObjectValue<V, P>>> {
         if (!this._client.connected) {
             throw new QuickMongoError('CONNECTION_NOT_ESTABLISHED')
         }
@@ -461,7 +463,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public fetch<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
+    public fetch<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         return this.get(key)
     }
 
@@ -494,7 +496,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    }
      * // }
      */
-    public has<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
+    public has<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return target !== null && target !== undefined
     }
@@ -547,10 +549,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //     }
      * // }
      */
-    public async set<P extends ObjectPath<V>>(
+    public async set<P extends AutocompletableString<ObjectPath<V>>>(
         key: AutocompletableString<P>,
         value: ObjectValue<V, P>
-    ): Promise<If<IsObject<V>, FirstObjectKey<P>, V>> {
+    ): Promise<If<IsObject<V>, ObjectValue<V, FirstObjectKey<P>>, V>> {
         const allDatabase = this.all()
         this._cache.set(key, value)
 
@@ -612,7 +614,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //     }
      * // }
      */
-    public async delete<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<boolean> {
+    public async delete<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Promise<boolean> {
         const allDatabase = this.all()
 
         if (!this.has(key)) {
@@ -676,7 +678,10 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 5
      * // }
      */
-    public async add<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToAdd: number): Promise<number> {
+    public async add<P extends AutocompletableString<ObjectPath<V>>>(
+        key: AutocompletableString<P>,
+        numberToAdd: number
+    ): Promise<number> {
         const targetNumber = this.get(key) ?? 0 as any
 
         if (!isNumber(targetNumber)) {
@@ -721,7 +726,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    points: 10
      * // }
      */
-    public async subtract<P extends ObjectPath<V>>(
+    public async subtract<P extends AutocompletableString<ObjectPath<V>>>(
         key: AutocompletableString<P>,
         numberToSubtract: number
     ): Promise<number> {
@@ -762,7 +767,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notArray: 123
      * // }
      */
-    public isTargetArray<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
+    public isTargetArray<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return Array.isArray(target)
     }
@@ -786,7 +791,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    notNumber: []
      * // }
      */
-    public isTargetNumber<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean {
+    public isTargetNumber<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean {
         const target = this.get(key)
         return isNumber(target)
     }
@@ -816,7 +821,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar']
      * // }
      */
-    public async push<P extends ObjectPath<V>>(
+    public async push<P extends AutocompletableString<ObjectPath<V>>>(
         key: AutocompletableString<P>,
         ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>
     ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
@@ -855,7 +860,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    members: ['John', 'William', 'Tom']
      * // }
      */
-    public async pull<P extends ObjectPath<V>>(
+    public async pull<P extends AutocompletableString<ObjectPath<V>>>(
         key: AutocompletableString<P>,
         targetArrayElementIndex: number,
         value: ObjectValue<V, P>
@@ -912,7 +917,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    currencies: ['Dollar', 'Rupee', 'Euro']
      * // }
      */
-    public async pop<P extends ObjectPath<V>>(
+    public async pop<P extends AutocompletableString<ObjectPath<V>>>(
         key: AutocompletableString<P>,
         ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>
     ): Promise<ExtractFromArray<ObjectValue<V, P>>[]> {
@@ -998,7 +1003,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public keys<P extends ObjectPath<V>>(key?: P): ObjectPath<P>[] {
+    public keys<P extends AutocompletableString<ObjectPath<V>>>(key?: P): ObjectPath<P>[] {
         if (!key) {
             const allDatabase = this.all()
             return TypedObject.keys(allDatabase) as ObjectPath<P>[]
@@ -1044,7 +1049,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * //    prop3: { prop4: 789, prop5: { prop6: 111 } }
      * // }
      */
-    public values<P extends ObjectPath<V>>(key?: P): ObjectValue<V, P>[] {
+    public values<P extends AutocompletableString<ObjectPath<V>>>(key?: P): ObjectValue<V, P>[] {
         if (!key) {
             const allDatabase = this.all()
             return TypedObject.values(allDatabase)
@@ -1071,7 +1076,7 @@ export class QuickMongo<K extends string = string, V = any> {
      * const randomArrayElement = quickMongo.random('exampleArray')
      * console.log(randomArrayElement) // -> randomly picked array element: either 'example1', 'example2', or 'example3'
      */
-    public random<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
+    public random<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>> {
         const array = this.get(key)
 
         if (!Array.isArray(array)) {

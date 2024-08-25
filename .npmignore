@@ -1,6 +1,5 @@
-# git & github files
+# git files
 .git/
-.github/
 
 # husky scripts
 .husky/

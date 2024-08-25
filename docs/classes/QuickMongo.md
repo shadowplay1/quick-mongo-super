@@ -83,11 +83,11 @@ new QuickMongo<K, V>(quickMongoClient: QuickMongoClient, databaseOptions?: IData
 
 ## Methods
 
-## `get<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
+## `get<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Retrieves a value from database by a key.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `Maybe<ObjectValue<V, P>>` - The value of the target in database.
 - **Example:**
@@ -100,11 +100,11 @@ Retrieves a value from database by a key.
   console.log(objectPropertyAccessed) // -> []
 ```
 
-## `getFromDatabase<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<Maybe<ObjectValue<V, P>>>`
+## `getFromDatabase<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Promise<Maybe<ObjectValue<V, P>>>`
 Retrieves a value from database by a key via sending a **direct request** to remote cluster, **omitting** the cache.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `Promise<Maybe<ObjectValue<V, P>>>` - The value of the target in database.
 - **Example:**
@@ -118,11 +118,11 @@ Retrieves a value from database by a key via sending a **direct request** to rem
 ```
 
 
-## `fetch<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
+## `fetch<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Retrieves a value from database by a key.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `Maybe<ObjectValue<V, P>>` - The value of the target in database.
 - **Example:**
@@ -136,11 +136,11 @@ Retrieves a value from database by a key.
 ```
 
 
-## `has<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
+## `has<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean`
 Determines if the data is stored in database.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the data is stored in database.
 - **Example:**
@@ -157,14 +157,14 @@ Determines if the data is stored in database.
 ```
 
 
-## `set<P extends ObjectPath<V>>(key: AutocompletableString<P>, value: ObjectValue<V, P>): Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`
+## `set<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, value: ObjectValue<V, P>): Promise<If<IsObject<V>, ObjectValue<V, FirstObjectKey<P>>, V>>`
 Writes the specified value into database under the specified key.
 
 - **Parameters:**
-  - `key` (`P`): The key to write in the target.
+  - `key` (`AutocompletableString<P>`): The key to write in the target.
   - `value` (`ObjectValue<V, P>`): The value to write.
 
-- **Returns:** `Promise<If<IsObject<V>, FirstObjectKey<P>, V>>`:
+- **Returns:** `Promise<If<IsObject<V>, ObjectValue<V, FirstObjectKey<P>>, V>>`:
   - If the `value` parameter's type is not an object (string, number, boolean, etc), then the specified
   `value` parameter (type of `V`) will be returned.
 
@@ -191,11 +191,11 @@ Writes the specified value into database under the specified key.
 ```
 
 
-## `delete<P extends ObjectPath<V>>(key: AutocompletableString<P>): Promise<boolean>`
+## `delete<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Promise<boolean>`
 Deletes the data from database by key.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `Promise<boolean>` - Whether the deletition was successful.
 - **Example:**
@@ -216,13 +216,13 @@ Sends a read, write and delete requests to the remote database and returns the r
 ```
 
 
-## `add<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToAdd: number): Promise<number>`
+## `add<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, numberToAdd: number): Promise<number>`
 Performs an arithmetical addition on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
   - `numberToAdd` (`number`): The number to add to the target number in the database.
 
 - **Returns:** `Promise<number>` - Addition operation result.
@@ -234,23 +234,23 @@ Performs an arithmetical addition on a target number in the database.
 ```
 
 
-## `subtract<P extends ObjectPath<V>>(key: AutocompletableString<P>, numberToSubtract: number): Promise<number>`
+## `subtract<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, numberToSubtract: number): Promise<number>`
 Performs an arithmetical subtraction on a target number in the database.
 
 **[!!!] The type of target value must be a number.**
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
   - `numberToSubtract` (`number`): The number to subtract from the target number in the database.
 
 - **Returns:** `Promise<number>` - Subtraction operation result.
 
 
-## `isTargetArray<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
+## `isTargetArray<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean`
 Determines whether the specified target is an array.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the target is an array.
 - **Example:**
@@ -260,11 +260,11 @@ Determines whether the specified target is an array.
 ```
 
 
-## `isTargetNumber<P extends ObjectPath<V>>(key: AutocompletableString<P>): boolean`
+## `isTargetNumber<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): boolean`
 Determines whether the specified target is a number.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `boolean` - Whether the target is a number.
 - **Example:**
@@ -335,13 +335,13 @@ Iterates over root database values and checks if the specified condition in the 
 - **Returns:** `boolean
 
 
-## `push<P extends ObjectPath<V>>(key: AutocompletableString<P>, ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `push<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, ...values: RestOrArray<ExtractFromArray<ObjectValue<V, P>>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value(s) into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
   - `values` (`RestOrArray<ExtractFromArray<ObjectValue<V, P>>>`): The value(s) to be pushed into the target array.
 
 - **Returns:** `Promise<ExtractFromArray<ObjectValue<V, P>>[]> ` - Updated target array from the database.
@@ -352,13 +352,13 @@ Pushes the specified value(s) into the target array in the database.
 ```
 
 
-## `pull<P extends ObjectPath<V>>(key: AutocompletableString<P>, targetArrayElementIndex: number, value: ObjectValue<V, P>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `pull<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, targetArrayElementIndex: number, value: ObjectValue<V, P>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Pushes the specified value into the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
   - `targetArrayElementIndex` (`number`): The index to find the element in target array.
   - `value` (`V`): The value to be pushed into the target array.
 
@@ -370,13 +370,13 @@ Pushes the specified value into the target array in the database.
 ```
 
 
-## `pop<P extends ObjectPath<V>>(key: AutocompletableString<P>, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
+## `pop<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>, ...targetArrayElementIndexes: RestOrArray<ExtractFromArray<number>>): Promise<ExtractFromArray<ObjectValue<V, P>>[]>`
 Removes the specified element(s) from the target array in the database.
 
 **[!!!] The type of target value must be an array.**
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
   - `targetArrayElementIndexes` (`RestOrArray<ExtractFromArray<number>>`): The index(es) to find the element(s) in target array by.
 
 - **Returns:** `Promise<ExtractFromArray<ObjectValue<V, P>>[]>` - Updated target array from the database.
@@ -386,7 +386,7 @@ Removes the specified element(s) from the target array in the database.
   console.log(membersPopResult); // -> ['John', 'Tom']
 ```
 
-## `keys<P extends ObjectPath<V>>(key?: P): ObjectPath<P>[]`
+## `keys<P extends AutocompletableString<ObjectPath<V>>>(key?: P): ObjectPath<P>[]`
 Returns an array of object keys by specified database key.
 
 - **Parameters:**
@@ -399,7 +399,7 @@ Returns an array of object keys by specified database key.
   console.log(prop3Keys); // -> ['prop4', 'prop5']
 ```
 
-## `values<P extends ObjectPath<V>>(key?: P): ObjectValue<V, P>[]`
+## `values<P extends AutocompletableString<ObjectPath<V>>>(key?: P): ObjectValue<V, P>[]`
 Returns an array of object values by specified database key.
 
 - **Parameters:**
@@ -413,11 +413,11 @@ Returns an array of object values by specified database key.
 ```
 
 
-## `random<P extends ObjectPath<V>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
+## `random<P extends AutocompletableString<ObjectPath<V>>>(key: AutocompletableString<P>): Maybe<ObjectValue<V, P>>`
 Picks a random element of array in the database and returns the picked array element.
 
 - **Parameters:**
-  - `key` (`P`): The key to access the target in database by.
+  - `key` (`AutocompletableString<P>`): The key to access the target in database by.
 
 - **Returns:** `Maybe<ObjectValue<V, P>>` - The randomly picked element in the database array.
 - **Example:**

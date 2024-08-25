@@ -1,4 +1,4 @@
-# `quick-mongo-super v3.0.1` documentation
+# `quick-mongo-super v3.0.2` documentation
 
 ## Classes
 - [`QuickMongo<K, V>`](classes/QuickMongo.md)

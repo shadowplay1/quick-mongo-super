@@ -6,6 +6,10 @@
 
 ## 🕘 | Changelog
 
+**v3.0.2**
+- Fixed the type bug when inputting keys that don't exist in the interface would lead to unexpected `value` type.
+- Fixed the incorrect return type of `QuickMongo.set()` method.
+
 **v3.0.1**
 - Now all the `key` parameters allow to pass in the normal `string` type, alongside the **keys autocomplete** feature released in **v3.0.0**.
 

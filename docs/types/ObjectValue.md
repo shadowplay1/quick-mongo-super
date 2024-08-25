@@ -10,8 +10,8 @@ Extracts the value from the specified object path.
 
 ## Implementation
 ```ts
-export type ObjectValue<T, P extends ObjectPath<T>> =
-    T extends string | number | boolean | symbol
+export type ObjectValue<T, P extends ObjectPath<T> | AutocompletableString<ObjectPath<T>>> =
+    T extends AutocompletableString<P> | string | number | boolean | symbol
         ? T
         : P extends `${infer Key}.${infer Rest}`
             ? Key extends keyof T
@@ -21,9 +21,9 @@ export type ObjectValue<T, P extends ObjectPath<T>> =
                 : never
             : P extends keyof T
                 ? T[P]
-                : null
+                : T
 ```
 
 - **Type Parameters:**
   - `T` (`any`): The object to extract the value from.
-  - `P` (`ObjectPath<T>`): The object path to extract the value from.
+  - `P` (`ObjectPath<T>` or `AutocompletableString<ObjectPath<T>>`): The object path to extract the value from.
